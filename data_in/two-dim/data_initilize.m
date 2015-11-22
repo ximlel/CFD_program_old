@@ -1,0 +1,17 @@
+run ./Blunt/value_start.m;
+run ./CB/value_start.m;
+run ./contact_only/value_start.m;
+run ./Cylinder/value_start.m;
+run ./odd_even/value_start.m;
+run ./one_line_dp/value_start.m;
+run ./one_line_du/value_start.m;
+run ./Riemann_2D3_Quad/value_start.m;
+run ./Riemann_2D3_Tria/value_start.m;
+run ./RMI/value_start.m;
+run ./Saltzman/value_start.m;
+run ./Sedov/value_start.m;
+run ./Sod/value_start.m;
+run ./Sod_10/value_start.m;
+run ./steady_shear/value_start.m;
+run ./steady_shock/value_start.m;
+run ./Test1/value_start.m;
