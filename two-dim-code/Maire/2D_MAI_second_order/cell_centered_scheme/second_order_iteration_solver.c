@@ -34,7 +34,7 @@ int second_order_iteration_solver
 	else if(strcmp(limiter,"Ven")==0)
 		miu = miu_Ven;
         else
-        printf("No limiter!");
+        printf("No limiter!\n");
 	
 	int i, j, k, l;
 	int NUM_CC;
@@ -305,6 +305,10 @@ int second_order_iteration_solver
 						for(i = 0; i < NUM_PP*2; ++i)
 							POINT_POINT[l][i+1] = POINT_save[i];
 		}
+
+
+	printf("Grid constructed.\n");
+
   
 //------------THE MAIN LOOP-------------
 	for(i = 0; i < N; ++i)

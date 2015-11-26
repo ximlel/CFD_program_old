@@ -32,9 +32,6 @@
 # Debug files
 *.dSYM/
 
-# Plot
-*.vtk
-*.tec
 
 
 #========================LaTeX project===============
@@ -186,3 +183,15 @@ pythontex-files-*/
 # endfloat
 *.ttt
 *.fff
+
+
+================================
+
+# Plot
+*.vtk
+*.tec
+
+# Text Backup
+.*~
+.#*
+*#

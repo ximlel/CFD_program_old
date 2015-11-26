@@ -17,9 +17,10 @@ gcc -c ./Riemann_solver_exact.c -g
 
 
 cd $INITIAL_PATH/finite_volume_solver/
+gcc -c ./first_order_solver.c -I ../ -g
 gcc -c ./linear_GRP_solver_LAG.c -I ../-g
 gcc -c ./second_order_solver.c -I ../ -g
-ar crv finite_volume_solver.a linear_GRP_solver_LAG.o second_order_solver.o
+ar crv finite_volume_solver.a first_order_solver.o linear_GRP_solver_LAG.o second_order_solver.o
 ranlib finite_volume_solver.a
 
 cd ../
@@ -36,6 +37,9 @@ cd $INITIAL_PATH
 
 ./LAG_source.out Sod Sod GRP -1 0.43
 ./LAG_source.out Shock_Contact Shock_Contact GRP -1 0.49
+
+./LAG_source.out Sod Sod Riemann_exact -1 0.43
+./LAG_source.out Shock_Contact Shock_Contact Riemann_exact -1 0.49
 
 
 exit 0

@@ -164,6 +164,10 @@ int stop_step=0;
 						for(i = 0; i < NUM_PP*2; ++i)
 							POINT_POINT[l][i+1] = POINT_save[i];
 		}
+
+
+	printf("Grid constructed.\n");
+
 	
 	double rho_i[NUM_CELL];
 	double E[NUM_CELL];
@@ -297,7 +301,7 @@ int stop_step=0;
 				  EUCCLHYD(M_pc, gamma[k], P[i][k], RHO[i][k], posi_l_pc[k][j], posi_n_pc_x[k][j], posi_n_pc_y[k][j], nega_l_pc[k][j], nega_n_pc_x[k][j], nega_n_pc_y[k][j]);
                                 else
                                  {
-                                    printf("No Riemann solver!");
+                                    printf("No Riemann solver!\n");
                                     break;
                                  }
 

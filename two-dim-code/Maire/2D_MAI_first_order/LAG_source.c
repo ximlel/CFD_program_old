@@ -362,7 +362,7 @@ int main(int argc, char *argv[])
   else if(strcmp(argv[3],"Blunt_mesh")==0)
   NUM_BOUNDARY = Blunt_mesh(CELL_POINT, X[0], Y[0], BOUNDARY_POINT, NORMAL_VELOCITY, gamma, config, m, n);
   else
-  printf("No mesh setting!");
+  printf("No mesh setting!\n");
 
   int STEP;
 

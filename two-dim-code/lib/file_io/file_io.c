@@ -23,6 +23,7 @@ extern double * RHO0;
 extern double * U0;
 extern double * V0;
 extern double * P0;
+extern double * CC0;
 
 
 
@@ -392,6 +393,44 @@ void initialize(char * name, char * addrho, char * addu, char * addv, char * add
 
   printf("%s initialized, line=%d, column=%d.\n", name, line_rho, column_rho);
 }
+
+
+void initialize_CC(char * name, char * addcc)
+{
+  FILE * fp_data;
+  int num_cc = 0, line_cc, column_cc;    
+
+  int file_read_state;
+
+  if((fp_data = fopen(addcc, "r")) == 0)
+  {
+    printf("Cannot open initial data file cc!\n");
+    exit(1);
+  }
+  //read the initial data file, CC0 is the array of initial data
+  line_cc = file_pre_read_line(fp_data);
+  fseek(fp_data, 0L, SEEK_SET);
+  column_cc = file_pre_read_column(fp_data);
+  fseek(fp_data, 0L, SEEK_SET);
+  num_cc = line_cc * column_cc;
+  //read
+  CC0 = (double *)malloc((num_cc + 2) * sizeof(double));
+  CC0[0] = (double)line_cc;
+  CC0[1] = (double)column_cc;
+  file_read_state = file_read(fp_data, CC0+2, num_cc);
+  fclose(fp_data);
+  //check
+  if(file_read_state)
+  {
+    free(CC0);
+    if(file_read_state == num_cc)
+      printf("Error on file reading! cc\n");
+    else
+      printf("\nThe %dth entry in the file cc is not a number.\n", file_read_state);
+    exit(2);
+  }
+}
+
 
 
 /* This function read the configuration data file,
@@ -862,6 +901,238 @@ void file_write_TEC(int NUM_POINT, double * X, double * Y, int NUM_CELL, int * C
   for(k = 0; k < NUM_CELL; ++k)
   {
       fprintf(fp_write, "\t%.16lf\n", P[k]);
+  }
+  for(k = 0; k < NUM_CELL; ++k)
+  {
+    for(i = 1; i <= CELL_POINT[k][0]; ++i)
+    {
+      fprintf(fp_write, "\t%d", CELL_POINT[k][i]+1);
+    }
+    fprintf(fp_write, "\n");
+  }
+  fclose(fp_write);
+}
+
+
+
+void file_two_species_write_TEC(int NUM_POINT, double * X, double * Y, int NUM_CELL, int * CELL_POINT[], double * RHO, double * U, double * V, double * P, double * CC, double * cpu_time, double * config, char * example, char * problem)
+{
+
+  int i, j, k;
+  int SIZE=0;
+  for(k = 0; k < NUM_CELL; ++k)
+  {
+    SIZE=SIZE+CELL_POINT[k][0]+1;
+  }
+
+  FILE * fp_write;
+  char file_data[100] = "";
+
+//===================Write solution File=========================
+
+  strcat(file_data, "../../../data_out/two-dim/");
+  strcat(file_data, problem);
+
+  int stat_mkdir = 0;
+  DIR * dir_test = NULL;
+  strcat(file_data, example);
+  strcat(file_data, "\0");
+
+  dir_test = opendir(file_data);
+  if(dir_test != NULL)
+    printf("Output directory \"%s\" already exists.\n", file_data);
+  else
+  {
+    stat_mkdir = mkdir(file_data, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+    if(stat_mkdir)
+    {
+      printf("Output directory \"%s\" construction failed.\n", file_data);
+      exit(9);
+    }
+    else
+      printf("Output directory \"%s\" constructed.\n", file_data);
+  }
+  closedir(dir_test);
+
+ char rho_data[100] = "";
+  strcpy(rho_data, file_data);
+  strcat(rho_data, "/\0");
+  strcat(rho_data, "RHO.tec\0");
+ char uv_data[100] = "";
+  strcpy(uv_data, file_data);
+  strcat(uv_data, "/\0");
+  strcat(uv_data, "UV.tec\0");
+ char p_data[100] = "";
+  strcpy(p_data, file_data);
+  strcat(p_data, "/\0");
+  strcat(p_data, "P.tec\0");
+ char cc_data[100] = "";
+  strcpy(p_data, file_data);
+  strcat(p_data, "/\0");
+  strcat(p_data, "CC.tec\0");
+
+
+
+  if((fp_write = fopen(rho_data, "w")) == 0)
+  {
+    printf("Cannot open solution output file!\n");
+    exit(1);
+  }
+  fprintf(fp_write, "VARIABLES = \"X\", \"Y\", \"RHO\"\n");
+  fprintf(fp_write, "ZONE  N= %d , E= %d , ",NUM_POINT,NUM_CELL);
+  if(CELL_POINT[0][0]==4)
+	  fprintf(fp_write, "ZONETYPE=FEQUADRILATERAL\n");
+  else if(CELL_POINT[0][0]==3)
+	  fprintf(fp_write, "ZONETYPE=FETRIANGLE\n");
+  else
+  {
+	printf("NON ZONETYPE!");
+        exit(1);
+  }	
+  fprintf(fp_write, "DATAPACKING=BLOCK\n");
+  fprintf(fp_write, "VARLOCATION=([1-2]=NODAL, [3]=CELLCENTERED)\n");
+  for(k = 0; k < NUM_POINT; ++k)
+  {
+    fprintf(fp_write, "\t%.16lf\n", X[k]);
+  }
+  for(k = 0; k < NUM_POINT; ++k)
+  {
+    fprintf(fp_write, "\t%.16lf\n", Y[k]);
+  }
+  for(k = 0; k < NUM_CELL; ++k)
+  {
+      fprintf(fp_write, "\t%.16lf\n", RHO[k]);
+  }
+  for(k = 0; k < NUM_CELL; ++k)
+  {
+    for(i = 1; i <= CELL_POINT[k][0]; ++i)
+    {
+      fprintf(fp_write, "\t%d", CELL_POINT[k][i]+1);
+    }
+    fprintf(fp_write, "\n");
+  }
+
+
+  fclose(fp_write);
+
+
+
+  if((fp_write = fopen(uv_data, "w")) == 0)
+  {
+    printf("Cannot open solution output file!\n");
+    exit(1);
+  }
+  fprintf(fp_write, "VARIABLES = \"X\", \"Y\", \"U\", \"V\"\n");
+  fprintf(fp_write, "ZONE  N= %d , E= %d , ",NUM_POINT,NUM_CELL);
+  if(CELL_POINT[0][0]==4)
+	  fprintf(fp_write, "ZONETYPE=FEQUADRILATERAL\n");
+  else if(CELL_POINT[0][0]==3)
+	  fprintf(fp_write, "ZONETYPE=FETRIANGLE\n");
+  else
+  {
+	printf("NON ZONETYPE!");
+        exit(1);
+  }	
+  fprintf(fp_write, "DATAPACKING=BLOCK\n");
+  fprintf(fp_write, "VARLOCATION=([1-2]=NODAL, [3-4]=CELLCENTERED)\n");
+  for(k = 0; k < NUM_POINT; ++k)
+  {
+    fprintf(fp_write, "\t%.16lf\n", X[k]);
+  }
+  for(k = 0; k < NUM_POINT; ++k)
+  {
+    fprintf(fp_write, "\t%.16lf\n", Y[k]);
+  }
+  for(k = 0; k < NUM_CELL; ++k)
+  {
+      fprintf(fp_write, "\t%.16lf\n", U[k]);
+  }
+  for(k = 0; k < NUM_CELL; ++k)
+  {
+      fprintf(fp_write, "\t%.16lf\n", V[k]);
+  }
+  for(k = 0; k < NUM_CELL; ++k)
+  {
+    for(i = 1; i <= CELL_POINT[k][0]; ++i)
+    {
+      fprintf(fp_write, "\t%d", CELL_POINT[k][i]+1);
+    }
+    fprintf(fp_write, "\n");
+  }
+  fclose(fp_write);
+
+
+
+  if((fp_write = fopen(p_data, "w")) == 0)
+  {
+    printf("Cannot open solution output file!\n");
+    exit(1);
+  }
+  fprintf(fp_write, "VARIABLES = \"X\", \"Y\", \"P\"\n");
+  fprintf(fp_write, "ZONE  N= %d , E= %d , ",NUM_POINT,NUM_CELL);
+  if(CELL_POINT[0][0]==4)
+	  fprintf(fp_write, "ZONETYPE=FEQUADRILATERAL\n");
+  else if(CELL_POINT[0][0]==3)
+	  fprintf(fp_write, "ZONETYPE=FETRIANGLE\n");
+  else
+  {
+	printf("NON ZONETYPE!");
+        exit(1);
+  }	
+  fprintf(fp_write, "DATAPACKING=BLOCK\n");
+  fprintf(fp_write, "VARLOCATION=([1-2]=NODAL, [3]=CELLCENTERED)\n");
+  for(k = 0; k < NUM_POINT; ++k)
+  {
+    fprintf(fp_write, "\t%.16lf\n", X[k]);
+  }
+  for(k = 0; k < NUM_POINT; ++k)
+  {
+    fprintf(fp_write, "\t%.16lf\n", Y[k]);
+  }
+  for(k = 0; k < NUM_CELL; ++k)
+  {
+      fprintf(fp_write, "\t%.16lf\n", P[k]);
+  }
+  for(k = 0; k < NUM_CELL; ++k)
+  {
+    for(i = 1; i <= CELL_POINT[k][0]; ++i)
+    {
+      fprintf(fp_write, "\t%d", CELL_POINT[k][i]+1);
+    }
+    fprintf(fp_write, "\n");
+  }
+  fclose(fp_write);
+
+
+  if((fp_write = fopen(cc_data, "w")) == 0)
+  {
+    printf("Cannot open solution output file!\n");
+    exit(1);
+  }
+  fprintf(fp_write, "VARIABLES = \"X\", \"Y\", \"CC\"\n");
+  fprintf(fp_write, "ZONE  N= %d , E= %d , ",NUM_POINT,NUM_CELL);
+  if(CELL_POINT[0][0]==4)
+	  fprintf(fp_write, "ZONETYPE=FEQUADRILATERAL\n");
+  else if(CELL_POINT[0][0]==3)
+	  fprintf(fp_write, "ZONETYPE=FETRIANGLE\n");
+  else
+  {
+	printf("NON ZONETYPE!");
+        exit(1);
+  }	
+  fprintf(fp_write, "DATAPACKING=BLOCK\n");
+  fprintf(fp_write, "VARLOCATION=([1-2]=NODAL, [3]=CELLCENTERED)\n");
+  for(k = 0; k < NUM_POINT; ++k)
+  {
+    fprintf(fp_write, "\t%.16lf\n", X[k]);
+  }
+  for(k = 0; k < NUM_POINT; ++k)
+  {
+    fprintf(fp_write, "\t%.16lf\n", Y[k]);
+  }
+  for(k = 0; k < NUM_CELL; ++k)
+  {
+      fprintf(fp_write, "\t%.16lf\n", CC[k]);
   }
   for(k = 0; k < NUM_CELL; ++k)
   {

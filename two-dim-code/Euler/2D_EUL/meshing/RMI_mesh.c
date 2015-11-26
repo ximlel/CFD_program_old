@@ -3,7 +3,7 @@
 #include <stdlib.h>
 
 
-int odd_even_mesh
+int RMI_mesh
 (int * CELL_POINT[], double * X, double * Y, int * BOUNDARY_POINT[],
  double * gamma, double * config, int m, int n)
 {
@@ -47,10 +47,6 @@ int odd_even_mesh
 		X[k] = (k%(n+1))*config[2];
 		Y[k] = (k/(n+1))*config[3];
 	}
-	for(k = 0; k < (m+1); ++k)
-	{
-		Y[(n/2)*(m+1)+k] += ((k%2)-0.5)*0.002*config[3];
-	}
 	// BOUNDARY
 		for(k = 0; k < n+1; ++k)	
 		{
@@ -69,21 +65,22 @@ int odd_even_mesh
 			BOUNDARY_POINT[0][k] = BOUNDARY_POINT[0][k-1] - n - 1;
 		}
 
+
 		for(k = 0; k < n; ++k)	
 		{
-			BOUNDARY_POINT[1][k] = -2; //reflecting boundary condition.
+			BOUNDARY_POINT[1][k] = -3; //prescribed boundary condition.
 		}
 	for(k = n; k < n+m; ++k)	
 		{
-			BOUNDARY_POINT[1][k] = -1; //prescribed boundary condition.
+			BOUNDARY_POINT[1][k] = -4; //periodic boundary condition.
 		}
 	for(k = n+m; k < n*2 + m; ++k)	
 		{
-			BOUNDARY_POINT[1][k] = -2;
+			BOUNDARY_POINT[1][k] = -3;
 		}
 	for(k = n*2 + m; k < num_boundary; ++k)	
 		{
-			BOUNDARY_POINT[1][k] = -1;
+			BOUNDARY_POINT[1][k] = -4;
 		}
 
 

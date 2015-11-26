@@ -13,3 +13,6 @@ int Shear_mesh
 int Cylinder_mesh
 (int * CELL_POINT[], double * X, double * Y, int * BOUNDARY_POINT[],
  double * gamma, double * config, int m, int n);
+int RMI_mesh
+(int * CELL_POINT[], double * X, double * Y, int * BOUNDARY_POINT[],
+ double * gamma, double * config, int m, int n);

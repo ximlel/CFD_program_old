@@ -361,7 +361,7 @@ int main(int argc, char *argv[])
   else if(strcmp(argv[3],"Blunt_mesh")==0)
   NUM_BOUNDARY = Blunt_mesh(CELL_POINT, X[0], Y[0], BOUNDARY_POINT, NORMAL_VELOCITY, gamma, config, m, n);
   else
-  printf("No mesh setting!");
+  printf("No mesh setting!\n");
 
  int STEP;
 
@@ -372,7 +372,7 @@ int main(int argc, char *argv[])
   else if(strcmp(argv[4],"GLACE")==0)
   STEP=second_order_solver_GLACE(config, NUM_CELL, NUM_POINT, NUM_BOUNDARY, CELL_POINT, BOUNDARY_POINT, RHO, U, V, P, X, Y, NORMAL_VELOCITY, gamma, cpu_time, argv[5], atof(argv[7]));
   else
-  printf("No solver!");
+  printf("No solver!\n");
 
  
   if(atoi(argv[6])>=0)

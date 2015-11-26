@@ -169,13 +169,15 @@ int first_order_solver
 						}
 					if(CELL_record==0)
 						{
-							printf("Some errors happen when meshing.");
+							printf("Some errors happen when meshing.\n");
 							exit(6);
 						}
 					
 				}
 		} //Determine the normal direction and relationship between cells.
 
+
+	printf("Grid constructed.\n");
 	
 	double F_mk[4];
 
@@ -216,119 +218,58 @@ int first_order_solver
 									p_n=CELL_POINT[k][j+1];
 								}
 
-//============================================================the ROE scheme======================================================
 
-							if(strcmp(scheme,"ROE")==0)
-								{															
-									if (CELL_CELL[k][j]==-2)//reflecting boundary condition.
+															
+							if (CELL_CELL[k][j]==-2)//reflecting boundary condition.
+								{
+									F_mk[0] = 0;
+									F_mk[1] = P[i][k]*n_x[k][j];
+									F_mk[2] = P[i][k]*n_y[k][j];
+									F_mk[3] = 0;
+									lambda_max = 0;
+								}
+							else
+								{
+									if (CELL_CELL[k][j]>=0)
+										{											
+											STEP_RIGHT = i;							
+											CELL_RIGHT = CELL_CELL[k][j];
+										}
+									else if (CELL_CELL[k][j]==-1)//initial boundary condition.
 										{
-											F_mk[0] = 0;
-											F_mk[1] = P[i][k]*n_x[k][j];
-											F_mk[2] = P[i][k]*n_y[k][j];
-											F_mk[3] = 0;
-											lambda_max = 0;
+											STEP_RIGHT = 0;
+											CELL_RIGHT = k;
+										}
+									else if (CELL_CELL[k][j]==-3)//prescribed boundary condition.
+										{
+											STEP_RIGHT = i;
+											CELL_RIGHT = k;
 										}
 									else
 										{
-											if (CELL_CELL[k][j]>=0)
-												{											
-													STEP_RIGHT = i;							
-													CELL_RIGHT = CELL_CELL[k][j];
-												}
-											else if (CELL_CELL[k][j]==-1)//initial boundary condition.
-												{
-													STEP_RIGHT = 0;
-													CELL_RIGHT = k;
-												}
-											else if (CELL_CELL[k][j]==-3)//prescribed boundary condition.
-												{
-													STEP_RIGHT = i;
-													CELL_RIGHT = k;
-												}
-											else
-												{
-													printf("No suitable boundary!");
-													exit(7);
-												}
-											
+											printf("No suitable boundary!\n");
+											exit(7);
+										}
+
+						 
+//============================================================the ROE scheme======================================================
+
+									if(strcmp(scheme,"ROE")==0)
+										{																										
 											ROE_solver(F_mk, gamma[k], P[i][k],RHO[i][k],U[i][k],V[i][k],n_x[k][j],n_y[k][j],P[STEP_RIGHT][CELL_RIGHT],RHO[STEP_RIGHT][CELL_RIGHT],U[STEP_RIGHT][CELL_RIGHT],V[STEP_RIGHT][CELL_RIGHT],&lambda_max, delta);						
-										}										
-								}
+										}																		
 
 //============================================================the HLL scheme======================================================
 
-							else if(strcmp(scheme,"HLL")==0)
-								{															
-									if (CELL_CELL[k][j]==-2)//reflecting boundary condition.
-										{
-											F_mk[0] = 0;
-											F_mk[1] = P[i][k]*n_x[k][j];
-											F_mk[2] = P[i][k]*n_y[k][j];
-											F_mk[3] = 0;
-											lambda_max = 0;
-										}
-									else
-										{
-											if (CELL_CELL[k][j]>=0)
-												{											
-													STEP_RIGHT = i;							
-													CELL_RIGHT = CELL_CELL[k][j];
-												}
-											else if (CELL_CELL[k][j]==-1)//initial boundary condition.
-												{
-													STEP_RIGHT = 0;
-													CELL_RIGHT = k;
-												}
-											else if (CELL_CELL[k][j]==-3)//prescribed boundary condition.
-												{
-													STEP_RIGHT = i;
-													CELL_RIGHT = k;
-												}
-											else
-												{
-													printf("No suitable boundary!");
-													exit(7);
-												}
-											
+									else if(strcmp(scheme,"HLL")==0)
+										{																									
 											HLL_solver(F_mk, gamma[k], P[i][k],RHO[i][k],U[i][k],V[i][k],n_x[k][j],n_y[k][j],P[STEP_RIGHT][CELL_RIGHT],RHO[STEP_RIGHT][CELL_RIGHT],U[STEP_RIGHT][CELL_RIGHT],V[STEP_RIGHT][CELL_RIGHT],&lambda_max);						
 										}										
-								}
-
+								
 //============================================the Goundov scheme of exact Riemann solver==========================================
 
-							else if(strcmp(scheme,"Riemann_exact")==0)
-								{
-									if (CELL_CELL[k][j]==-2)//reflecting boundary condition.
-										{
-											F_mk[0] = 0;
-											F_mk[1] = P[i][k]*n_x[k][j];
-											F_mk[2] = P[i][k]*n_y[k][j];
-											F_mk[3] = 0;
-											lambda_max = 0;
-										}
-									else
-										{
-											if (CELL_CELL[k][j]>=0)
-												{											
-													STEP_RIGHT = i;							
-													CELL_RIGHT = CELL_CELL[k][j];
-												}
-											else if (CELL_CELL[k][j]==-1)//initial boundary condition.
-												{
-													STEP_RIGHT = 0;
-													CELL_RIGHT = k;
-												}
-											else if (CELL_CELL[k][j]==-3)//prescribed boundary condition.
-												{
-													STEP_RIGHT = i;
-													CELL_RIGHT = k;
-												}
-											else
-												{
-													printf("No suitable boundary!");
-													exit(7);
-												}
-											
+									else if(strcmp(scheme,"Riemann_exact")==0)
+										{																				
 											u_L = U[i][k]*n_x[k][j] + V[i][k]*n_y[k][j]; 
 											u_R = U[STEP_RIGHT][CELL_RIGHT]*n_x[k][j] + V[STEP_RIGHT][CELL_RIGHT]*n_y[k][j];
 											c_L = sqrt(gamma[k] * P[i][k] / RHO[i][k]);
@@ -338,8 +279,8 @@ int first_order_solver
 											p_mid = mid[2];
 
 											/*if(fabs(mid[1])<delta_God)
-												mid_qt = 0.5*(-U[i][k]*n_y[k][j] + V[i][k]*n_x[k][j])*(mid[1]/delta_God+1) + 0.5*(-U[STEP_RIGHT][CELL_RIGHT]*n_y[k][j] + V[STEP_RIGHT][CELL_RIGHT]*n_x[k][j])*(-mid[1]/delta_God+1);
-											else*/ if(mid[1]>0)
+											  mid_qt = 0.5*(-U[i][k]*n_y[k][j] + V[i][k]*n_x[k][j])*(mid[1]/delta_God+1) + 0.5*(-U[STEP_RIGHT][CELL_RIGHT]*n_y[k][j] + V[STEP_RIGHT][CELL_RIGHT]*n_x[k][j])*(-mid[1]/delta_God+1);
+											  else*/ if(mid[1]>0)
 												mid_qt = -U[i][k]*n_y[k][j] + V[i][k]*n_x[k][j];
 											else
 												mid_qt = -U[STEP_RIGHT][CELL_RIGHT]*n_y[k][j] + V[STEP_RIGHT][CELL_RIGHT]*n_x[k][j];
@@ -352,44 +293,12 @@ int first_order_solver
 											F_mk[3] = (gamma[k]/(gamma[k]-1.0))*p_mid/rho_mid + 0.5*u_mid*u_mid + 0.5*v_mid*v_mid;
 											F_mk[3] = F_mk[0]*F_mk[3];
 											lambda_max = max(c_L+fabs(u_L),c_R+fabs(u_R));					
-										}
-								}
+										}								
 
 //=================================================the Goundov scheme of Roe solver==============================================
 
-							else if(strcmp(scheme,"Roe_Goundov")==0)
-								{
-									if (CELL_CELL[k][j]==-2)//reflecting boundary condition.
-										{
-											F_mk[0] = 0;
-											F_mk[1] = P[i][k]*n_x[k][j];
-											F_mk[2] = P[i][k]*n_y[k][j];
-											F_mk[3] = 0;
-											lambda_max = 0;
-										}
-									else
-										{
-											if (CELL_CELL[k][j]>=0)
-												{											
-													STEP_RIGHT = i;							
-													CELL_RIGHT = CELL_CELL[k][j];
-												}
-											else if (CELL_CELL[k][j]==-1)//initial boundary condition.
-												{
-													STEP_RIGHT = 0;
-													CELL_RIGHT = k;
-												}
-											else if (CELL_CELL[k][j]==-3)//prescribed boundary condition.
-												{
-													STEP_RIGHT = i;
-													CELL_RIGHT = k;
-												}
-											else
-												{
-													printf("No suitable boundary!");
-													exit(7);
-												}
-											
+									else if(strcmp(scheme,"Roe_Goundov")==0)
+										{											
 											u_L = U[i][k]*n_x[k][j] + V[i][k]*n_y[k][j]; 
 											u_R = U[STEP_RIGHT][CELL_RIGHT]*n_x[k][j] + V[STEP_RIGHT][CELL_RIGHT]*n_y[k][j];
 											c_L = sqrt(gamma[k] * P[i][k] / RHO[i][k]);
@@ -399,8 +308,8 @@ int first_order_solver
 											p_mid = mid[2];
 
 											/*if(fabs(mid[1])<delta_God)
-												mid_qt = 0.5*(-U[i][k]*n_y[k][j] + V[i][k]*n_x[k][j])*(mid[1]/delta_God+1) + 0.5*(-U[STEP_RIGHT][CELL_RIGHT]*n_y[k][j] + V[STEP_RIGHT][CELL_RIGHT]*n_x[k][j])*(-mid[1]/delta_God+1);
-											else*/ if(mid[1]>0)
+											  mid_qt = 0.5*(-U[i][k]*n_y[k][j] + V[i][k]*n_x[k][j])*(mid[1]/delta_God+1) + 0.5*(-U[STEP_RIGHT][CELL_RIGHT]*n_y[k][j] + V[STEP_RIGHT][CELL_RIGHT]*n_x[k][j])*(-mid[1]/delta_God+1);
+											  else*/ if(mid[1]>0)
 												mid_qt = -U[i][k]*n_y[k][j] + V[i][k]*n_x[k][j];
 											else
 												mid_qt = -U[STEP_RIGHT][CELL_RIGHT]*n_y[k][j] + V[STEP_RIGHT][CELL_RIGHT]*n_x[k][j];
@@ -412,12 +321,12 @@ int first_order_solver
 											F_mk[2] = F_mk[0]*v_mid + p_mid*n_y[k][j];
 											F_mk[3] = (gamma[k]/(gamma[k]-1.0))*p_mid/rho_mid + 0.5*u_mid*u_mid + 0.5*v_mid*v_mid;
 											F_mk[3] = F_mk[0]*F_mk[3];				
+										}								
+									else
+										{
+											printf("No Riemann solver!\n");
+											exit(7);
 										}
-								}
-							else
-								{
-									printf("No Riemann solver!");
-									exit(7);
 								}
 							
 							F_mk_1[k][j] = F_mk[0];
@@ -482,7 +391,8 @@ int first_order_solver
 					printf ("P is smaller than 0, error firstly happens in cell %d and step %d, t_all=%lf.\n",k,i,t_all);
 					stop_step=1;
 				}
-
+			if(stop_step)
+				break;
 		}
 	
 

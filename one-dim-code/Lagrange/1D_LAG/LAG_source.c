@@ -271,14 +271,26 @@ int main(int argc, char *argv[])
 
   int STEP;
 
-STEP=first_order_solver(config, m, RHO, U, P, E, X, cpu_time, argv[3], atof(argv[5])); /* use first order scheme to solve it on Lagrange coordinate.
-											         */
-
+  if(strcmp(argv[argc-1],"second_order")==0)
+	  {
+		  printf("second order\n");
+		  STEP=second_order_solver(config, m, RHO, U, P, E, X, cpu_time, argv[3], atof(argv[5])); /* use first order scheme to solve it on Lagrange coordinate.*/
+	  }
+  else
+	  {
+		  printf("first order\n");
+		  STEP=first_order_solver(config, m, RHO, U, P, E, X, cpu_time, argv[3], atof(argv[5])); /* use second order scheme to solve it on Lagrange coordinate.*/ 
+	  }
+		  
   if(atoi(argv[4])>=0)
-  STEP = atoi(argv[4]);
+	  STEP = atoi(argv[4]);
 
-  _1D_file_write_TEC(m, STEP, RHO, U, P, X[STEP], cpu_time, config, argv[2], "1D_LAG_first_order/"); /*write the final data down.
- 								      */ 																								
+  //write the final data down
+
+  if(strcmp(argv[argc-1],"second_order")==0)
+	  _1D_file_write_TEC(m, STEP, RHO, U, P, X[STEP], cpu_time, config, argv[2], "1D_LAG_second_order/"); 
+  else
+	  _1D_file_write_TEC(m, STEP, RHO, U, P, X[STEP], cpu_time, config, argv[2], "1D_LAG_first_order/"); 																								
 
   for(k = 1; k < N; ++k)
   {

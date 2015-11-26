@@ -42,6 +42,8 @@ int file_pre_read_column(FILE * fp);
  */
 void initialize(char * name, char * addrho, char * addu, char * addv, char * addp);
 
+void initialize_CC(char * name, char * addcc);
+
 /* This function read the configuration data file,
  * and store the configuration data in the array
  * "config".
@@ -58,3 +60,5 @@ void configurate(double * config, char * name, char * add);
 void file_write_VTK(int NUM_POINT, double * X, double * Y, int NUM_CELL, int * CELL_POINT[], double * RHO, double * U, double * V, double * P, double * cpu_time, double * config, char * example, char * problem);
 
 void file_write_TEC(int NUM_POINT, double * X, double * Y, int NUM_CELL, int * CELL_POINT[], double * RHO, double * U, double * V, double * P, double * cpu_time, double * config, char * example, char * problem);
+
+void file_two_species_write_TEC(int NUM_POINT, double * X, double * Y, int NUM_CELL, int * CELL_POINT[], double * RHO, double * U, double * V, double * P, double * CC, double * cpu_time, double * config, char * example, char * problem);

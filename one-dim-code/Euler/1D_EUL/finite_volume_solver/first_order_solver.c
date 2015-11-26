@@ -180,7 +180,7 @@ int first_order_solver
 		}
 	else
 		{
-			printf("No Riemann solver!");
+			printf("No Riemann solver!\n");
 			exit(7);
 		}
 
