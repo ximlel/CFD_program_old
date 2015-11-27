@@ -37,7 +37,7 @@ gcc -c ./first_order_solver.c -I ../
 ar crv cell_centered_scheme.a first_order_solver.o
 
 cd ../
-gcc -c ./LAG_source.c -g
+gcc -c ./LAG_source.c
 gcc -o LAG_source.out ./LAG_source.o ../../lib/file_io/file_io.a ./meshing/meshing.a ./cell_centered_scheme/cell_centered_scheme.a ../../lib/Riemann_solver/Riemann_solver.a ../../lib/custom/custom.a -lm
 
 #Initilize

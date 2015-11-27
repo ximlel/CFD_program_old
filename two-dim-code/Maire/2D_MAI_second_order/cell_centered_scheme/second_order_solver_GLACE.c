@@ -303,7 +303,7 @@ int second_order_solver_GLACE
 		}
 
 
-	printf("Grid constructed.\n");
+	printf("Grid has been constructed.\n");
 
   
 //------------THE MAIN LOOP-------------

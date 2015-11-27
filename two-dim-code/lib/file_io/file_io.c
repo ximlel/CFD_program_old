@@ -967,9 +967,9 @@ void file_two_species_write_TEC(int NUM_POINT, double * X, double * Y, int NUM_C
   strcat(p_data, "/\0");
   strcat(p_data, "P.tec\0");
  char cc_data[100] = "";
-  strcpy(p_data, file_data);
-  strcat(p_data, "/\0");
-  strcat(p_data, "CC.tec\0");
+  strcpy(cc_data, file_data);
+  strcat(cc_data, "/\0");
+  strcat(cc_data, "CC.tec\0");
 
 
 

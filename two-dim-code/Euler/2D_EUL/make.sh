@@ -19,7 +19,7 @@ gcc -c ./rhd.c
 ar crv custom.a initialize_memory.o rinv.o rhd.o
 
 cd ../Riemann_solver/
-gcc -c ./Riemann_solver_exact.c -g
+gcc -c ./Riemann_solver_exact.c
 gcc -c ./ROE_solver.c -I ../
 gcc -c ./Roe_Goundov_solver.c -I ../
 gcc -c ./HLL_solver.c -I ../
@@ -35,14 +35,16 @@ gcc -c ./RMI_mesh.c
 ar crv meshing.a Sod_mesh.o Free_mesh.o odd_even_mesh.o Shear_mesh.o Cylinder_mesh.o RMI_mesh.o
 
 cd ../cell_centered_scheme/
-gcc -c ./linear_GRP_solver_Edir.c -I ../ -g
+gcc -c ./linear_GRP_solver_Edir.c -I ../
+gcc -c ./linear_GRP_solver_Edir_2D.c -I ../
 gcc -c ./first_order_solver.c -I ../
 gcc -c ./first_order_two_species_solver.c -I ../
-ar crv cell_centered_scheme.a linear_GRP_solver_Edir.o first_order_solver.o first_order_two_species_solver.o
+gcc -c ./second_order_solver.c -I ../
+ar crv cell_centered_scheme.a linear_GRP_solver_Edir.o linear_GRP_solver_Edir_2D.o first_order_solver.o first_order_two_species_solver.o second_order_solver.o
 ranlib cell_centered_scheme.a
 
 cd ../
-gcc -c ./EUL_source.c -g
+gcc -c ./EUL_source.c
 gcc -o EUL_source.out ./EUL_source.o ../../lib/file_io/file_io.a ./meshing/meshing.a ./cell_centered_scheme/cell_centered_scheme.a ../../lib/Riemann_solver/Riemann_solver.a ../../lib/custom/custom.a -lm
 
 
@@ -53,6 +55,8 @@ cd ../../../data_in/two-dim/
 cd $INITIAL_PATH
 
 #Run
+
+## first order
 
 #./EUL_source.out Sod_10 Sod_10_ROE Sod_mesh ROE -1 0.4
 #./EUL_source.out Sod_10 Sod_10 Sod_mesh Riemann_exact -1 0.4
@@ -96,8 +100,12 @@ cd $INITIAL_PATH
 #./EUL_source.out Riemann_2D3_Quad Riemann_2D3_Quad_ROE Free_mesh ROE -1 0.4
 #./EUL_source.out Riemann_2D3_Quad Riemann_2D3_Quad Free_mesh Riemann_exact -1 0.4
 
+### Two_species
 
-./EUL_source.out RMI RMI RMI_mesh Riemann_exact -1 0.4 Two_species
+./EUL_source.out RMI RMI RMI_mesh Riemann_exact -1 0.4
+# Two_species
 
+
+## second order
 
 exit 0

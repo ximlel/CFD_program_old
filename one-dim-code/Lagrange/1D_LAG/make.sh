@@ -35,11 +35,13 @@ cd $INITIAL_PATH
 
 #Run
 
-./LAG_source.out Sod Sod GRP -1 0.43 second_order
-./LAG_source.out Shock_Contact Shock_Contact GRP -1 0.49 second_order
-
+## first order
 ./LAG_source.out Sod Sod Riemann_exact -1 0.43
 ./LAG_source.out Shock_Contact Shock_Contact Riemann_exact -1 0.49
+
+## second order
+./LAG_source.out Sod Sod GRP -1 0.43 second_order
+./LAG_source.out Shock_Contact Shock_Contact GRP -1 0.49 second_order
 
 
 exit 0

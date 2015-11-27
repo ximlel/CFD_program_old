@@ -177,7 +177,7 @@ int first_order_two_species_solver
 		} //Determine the normal direction and relationship between cells.
 
 
-	printf("Grid constructed.\n");
+	printf("Grid has been constructed.\n");
 
 	
 	double F_mk[5];
@@ -250,7 +250,15 @@ int first_order_two_species_solver
 									else if (CELL_CELL[k][j]==-4)//periodic boundary condition.
 										{
 											STEP_RIGHT = i;
-											CELL_RIGHT = k-n+1;
+											if(!(k%n))
+												CELL_RIGHT = k+n-1;
+											else if(k%n==n-1)
+												CELL_RIGHT = k-n+1;
+											else
+												{																									
+													printf("Something wrong as we construct periodic boundary condition in x-direction.\n");
+													exit(8);
+												}
 										}
 									else
 										{
@@ -359,13 +367,11 @@ int first_order_two_species_solver
 			U[i+1][k] = u_con[k]/RHO[i+1][k];
 			V[i+1][k] = v_con[k]/RHO[i+1][k];
 			P[i+1][k] = (e_con[k] - 0.5*(U[i+1][k]*U[i+1][k]+V[i+1][k]*V[i+1][k])*RHO[i+1][k])*(gamma[k]-1.0);
-			if(P[i+1][k] < eps)
+			if((P[i+1][k] < eps) && (!stop_step))
 				{
 					printf ("P is smaller than 0, error firstly happens in cell %d and step %d, t_all=%lf.\n",k,i,t_all);
 					stop_step=1;
 				}
-			if(stop_step)
-				break;
 			Z[i+1][k] = z_con[k]/RHO[i+1][k];
 		}
 	

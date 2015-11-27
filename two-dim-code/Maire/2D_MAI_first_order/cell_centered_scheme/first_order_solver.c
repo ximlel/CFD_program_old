@@ -166,7 +166,7 @@ int stop_step=0;
 		}
 
 
-	printf("Grid constructed.\n");
+	printf("Grid has been constructed.\n");
 
 	
 	double rho_i[NUM_CELL];

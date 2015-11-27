@@ -302,7 +302,7 @@ int second_order_solver
 
 		}
  
-	printf("Grid constructed.\n");
+	printf("Grid has been constructed.\n");
 
  
 //------------THE MAIN LOOP-------------
