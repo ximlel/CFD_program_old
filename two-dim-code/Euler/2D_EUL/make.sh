@@ -102,9 +102,8 @@ cd $INITIAL_PATH
 
 ### Two_species
 
-./EUL_source.out RMI RMI RMI_mesh Riemann_exact -1 0.4
-# Two_species
-
+./EUL_source.out RMI RMI RMI_mesh Riemann_exact -1 0.4 Two_species
+./EUL_source.out RMI RMI_test RMI_mesh Riemann_exact -1 0.4
 
 ## second order
 

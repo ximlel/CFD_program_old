@@ -10,10 +10,11 @@
 
 #include "../../../lib/custom.h"
 #include "../../../lib/Riemann_solver.h"
+#include "../cell_centered_scheme.h"
 
 
 /* This function use first order scheme to solve 2-D
- * equations of motion by Eulerian method.
+ * Euler equations for two species by Eulerian method.
  *
  *config is the array of configuration data, the detail
  *         could be seen in the comments of the main function.
@@ -54,7 +55,8 @@ int first_order_two_species_solver
 		{			
 			u_con[k] = RHO[0][k]*U[0][k];
 			v_con[k] = RHO[0][k]*V[0][k];
-			e_con[k] = P[0][k]/(gamma[k]-1.0) + 0.5*(U[0][k]*U[0][k]+V[0][k]*V[0][k])*RHO[0][k];				
+			e_con[k] = P[0][k]/(gamma[k]-1.0) + 0.5*(U[0][k]*U[0][k]+V[0][k]*V[0][k])*RHO[0][k];
+			z_con[k] = RHO[0][k]*Z[0][k];				
 		}	//Initialize conserved variables.
 
 	
@@ -224,11 +226,11 @@ int first_order_two_species_solver
 							
 							if (CELL_CELL[k][j]==-2)//reflecting boundary condition.
 								{
-									F_mk[0] = 0;
+									F_mk[0] = 0.0;
 									F_mk[1] = P[i][k]*n_x[k][j];
 									F_mk[2] = P[i][k]*n_y[k][j];
-									F_mk[3] = 0;
-									lambda_max = 0;
+									F_mk[3] = 0.0;
+									lambda_max = 0.0;
 								}
 							else
 								{

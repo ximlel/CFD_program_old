@@ -19,7 +19,7 @@
  *NUM_CELL is the number of the grids.
  */
 
-//
+
 int second_order_solver
 (double * config, int NUM_CELL, int NUM_POINT, int NUM_BOUNDARY, int * CELL_POINT[], int * BOUNDARY_POINT[],
  double * RHO[], double * U[], double * V[], double * P[], double * X[], double * Y[],
@@ -336,12 +336,12 @@ int second_order_solver
 
 			for(k = 0; k < NUM_CELL; ++k)
 				{
-					M_c[0][0] = 0;
-					M_c[0][1] = 0;
-					M_c[1][0] = 0;
-					M_c[1][1] = 0;
-					grad_P_x[k] = 0;
-					grad_P_y[k] = 0;
+					M_c[0][0] = 0.0;
+					M_c[0][1] = 0.0;
+					M_c[1][0] = 0.0;
+					M_c[1][1] = 0.0;
+					grad_P_x[k] = 0.0;
+					grad_P_y[k] = 0.0;
 					
 					for(j = 0; j < CELL_CELL[k][0]; ++j)
 						{

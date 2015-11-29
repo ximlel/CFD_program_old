@@ -27,3 +27,10 @@ void linear_GRP_solver_Edir_2D
  double   v_L, double   v_R, double   d_v_L, double   d_v_R,
  double   p_L, double   p_R, double   d_p_L, double   d_p_R,
  double gamma, double eps);
+
+void slope_limiter_Ven
+(double * X_c, double * Y_c, double  * X, double * Y,
+ double * grad_W_x, double * grad_W_y, 
+ double *W[],  int NUM_CELL, double * config,
+ int * CELL_CELL[], int * CELL_POINT[],
+ int i, int m, int n);

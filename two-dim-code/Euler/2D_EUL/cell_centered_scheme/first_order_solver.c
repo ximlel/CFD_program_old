@@ -10,6 +10,7 @@
 
 #include "../../../lib/custom.h"
 #include "../../../lib/Riemann_solver.h"
+#include "../cell_centered_scheme.h"
 
 
 /* This function use first order scheme to solve 2-D
@@ -221,11 +222,11 @@ int first_order_solver
 															
 							if (CELL_CELL[k][j]==-2)//reflecting boundary condition.
 								{
-									F_mk[0] = 0;
+									F_mk[0] = 0.0;
 									F_mk[1] = P[i][k]*n_x[k][j];
 									F_mk[2] = P[i][k]*n_y[k][j];
-									F_mk[3] = 0;
-									lambda_max = 0;
+									F_mk[3] = 0.0;
+									lambda_max = 0.0;
 								}
 							else
 								{

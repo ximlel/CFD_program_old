@@ -3,16 +3,18 @@
 #include <stdlib.h>
 #include <string.h>
 #include <float.h>
-#define min(x,y)   ( x<y?x:y )
+#define min(x,y)  ( x<y?x:y )
 #define max(x,y)  ( x>y?x:y )
 
 #include <time.h>
 
-#include "../../../lib/custom.h"
+
 #include "../../../lib/Riemann_solver.h"
+#include "../../../lib/custom.h"
+#include "../cell_centered_scheme.h"
 
 
-/* This function use first order scheme to solve 2-D
+/* This function use second order scheme to solve 2-D
  * equations of motion by Eulerian method.
  *
  *config is the array of configuration data, the detail
@@ -192,17 +194,48 @@ int second_order_solver
 
 
 
+	double S, S_tri;
+	double X_c[NUM_CELL], Y_c[NUM_CELL];
+
+	double grad_RHO_x[NUM_CELL], grad_RHO_y[NUM_CELL];
+	double grad_P_x[NUM_CELL], grad_P_y[NUM_CELL];
+	double grad_U_x[NUM_CELL], grad_U_y[NUM_CELL];
+	double grad_V_x[NUM_CELL], grad_V_y[NUM_CELL];
+	double grad_CC_x[NUM_CELL], grad_CC_y[NUM_CELL];
+
+
 //------------THE MAIN LOOP-------------
 
 	for(i = 0; i < N; ++i)
 		{	
 
 			tic = clock();		
-			tau = DBL_MAX;   
+			tau = DBL_MAX; 
+
+			for(k = 0; k < NUM_CELL; ++k)
+				{
+					S = 0.0;
+					X_c[k] = 0.0;
+					Y_c[k] = 0.0;
+					for(j = 2; j < CELL_POINT[k][0]; ++j)
+						{
+							S_tri =X[CELL_POINT[k][1]]*Y[CELL_POINT[k][j]] + X[CELL_POINT[k][j+1]]*Y[CELL_POINT[k][1]] + X[CELL_POINT[k][j]]*Y[CELL_POINT[k][j+1]] - X[CELL_POINT[k][j+1]]*Y[CELL_POINT[k][j]] - X[CELL_POINT[k][1]]*Y[CELL_POINT[k][j+1]] - X[CELL_POINT[k][j]]*Y[CELL_POINT[k][1]];
+							X_c[k] = X_c[k] + (X[CELL_POINT[k][1]] + X[CELL_POINT[k][j]] + X[CELL_POINT[k][j+1]]) * S_tri;
+							Y_c[k] = Y_c[k] + (Y[CELL_POINT[k][1]] + Y[CELL_POINT[k][j]] + Y[CELL_POINT[k][j+1]]) * S_tri;
+							S = S + S_tri;
+						}			 
+					X_c[k] = X_c[k]/S/3;
+					Y_c[k] = Y_c[k]/S/3;
+				}
+
+			slop_limiter_Ven(X_c, Y_c, X, Y, grad_RHO_x, grad_RHO_y, RHO, NUM_CELL, config, CELL_CELL, CELL_POINT, i, m, n);
+			slop_limiter_Ven(X_c, Y_c, X, Y, grad_U_x, grad_U_y, U, NUM_CELL, config, CELL_CELL, CELL_POINT, i, m ,n);
+			slop_limiter_Ven(X_c, Y_c, X, Y, grad_V_x, grad_V_y,  V, NUM_CELL, config, CELL_CELL, CELL_POINT, i, m, n);
+			slop_limiter_Ven(X_c, Y_c, X, Y, grad_P_x, grad_P_y, P, NUM_CELL, config, CELL_CELL, CELL_POINT, i, m, n);
 			
 			for(k = 0; k < NUM_CELL; ++k)
 				{
-					cum = 0;
+					cum = 0.0;
 					
 					for(j = 0; j < CELL_POINT[k][0]; ++j)
 						{
@@ -221,11 +254,11 @@ int second_order_solver
 															
 							if (CELL_CELL[k][j]==-2)//reflecting boundary condition.
 								{
-									F_mk[0] = 0;
+									F_mk[0] = 0.0;
 									F_mk[1] = P[i][k]*n_x[k][j];
 									F_mk[2] = P[i][k]*n_y[k][j];
-									F_mk[3] = 0;
-									lambda_max = 0;
+									F_mk[3] = 0.0;
+									lambda_max = 0.0;
 								}
 							else
 								{
@@ -244,7 +277,7 @@ int second_order_solver
 											STEP_RIGHT = i;
 											CELL_RIGHT = k;
 										}
-									else if (CELL_CELL[k][j]==-4)//periodic boundary condition.
+									else if (CELL_CELL[k][j]==-4)//periodic boundary condition in x-direction.
 										{
 											STEP_RIGHT = i;
 											if(!(k%n))
@@ -261,26 +294,12 @@ int second_order_solver
 										{
 											printf("No suitable boundary!\n");
 											exit(7);
-										}
-
-						 
-//============================================================the ROE scheme======================================================
-
-									if(strcmp(scheme,"ROE")==0)
-										{																										
-											ROE_solver(F_mk, gamma[k], P[i][k],RHO[i][k],U[i][k],V[i][k],n_x[k][j],n_y[k][j],P[STEP_RIGHT][CELL_RIGHT],RHO[STEP_RIGHT][CELL_RIGHT],U[STEP_RIGHT][CELL_RIGHT],V[STEP_RIGHT][CELL_RIGHT],&lambda_max, delta);						
-										}																		
-
-//============================================================the HLL scheme======================================================
-
-									else if(strcmp(scheme,"HLL")==0)
-										{																									
-											HLL_solver(F_mk, gamma[k], P[i][k],RHO[i][k],U[i][k],V[i][k],n_x[k][j],n_y[k][j],P[STEP_RIGHT][CELL_RIGHT],RHO[STEP_RIGHT][CELL_RIGHT],U[STEP_RIGHT][CELL_RIGHT],V[STEP_RIGHT][CELL_RIGHT],&lambda_max);						
-										}										
+										}						 
+								
 								
 //============================================the Goundov scheme of exact Riemann solver==========================================
 
-									else if(strcmp(scheme,"Riemann_exact")==0)
+									if(strcmp(scheme,"GRP")==0)
 										{																				
 											u_L = U[i][k]*n_x[k][j] + V[i][k]*n_y[k][j]; 
 											u_R = U[STEP_RIGHT][CELL_RIGHT]*n_x[k][j] + V[STEP_RIGHT][CELL_RIGHT]*n_y[k][j];
@@ -305,34 +324,6 @@ int second_order_solver
 											F_mk[3] = (gamma[k]/(gamma[k]-1.0))*p_mid/rho_mid + 0.5*u_mid*u_mid + 0.5*v_mid*v_mid;
 											F_mk[3] = F_mk[0]*F_mk[3];
 											lambda_max = max(c_L+fabs(u_L),c_R+fabs(u_R));					
-										}								
-
-//=================================================the Goundov scheme of Roe solver==============================================
-
-									else if(strcmp(scheme,"Roe_Goundov")==0)
-										{											
-											u_L = U[i][k]*n_x[k][j] + V[i][k]*n_y[k][j]; 
-											u_R = U[STEP_RIGHT][CELL_RIGHT]*n_x[k][j] + V[STEP_RIGHT][CELL_RIGHT]*n_y[k][j];
-											c_L = sqrt(gamma[k] * P[i][k] / RHO[i][k]);
-											c_R = sqrt(gamma[k] * P[STEP_RIGHT][CELL_RIGHT] / RHO[STEP_RIGHT][CELL_RIGHT]);											
-											Roe_Goundov_solver(mid, gamma[k], P[i][k],RHO[i][k],u_L,P[STEP_RIGHT][CELL_RIGHT],RHO[STEP_RIGHT][CELL_RIGHT],u_R,&lambda_max, delta);		
-											rho_mid = mid[0];
-											p_mid = mid[2];
-
-											/*if(fabs(mid[1])<delta_God)
-											  mid_qt = 0.5*(-U[i][k]*n_y[k][j] + V[i][k]*n_x[k][j])*(mid[1]/delta_God+1) + 0.5*(-U[STEP_RIGHT][CELL_RIGHT]*n_y[k][j] + V[STEP_RIGHT][CELL_RIGHT]*n_x[k][j])*(-mid[1]/delta_God+1);
-											  else*/ if(mid[1]>0)
-												mid_qt = -U[i][k]*n_y[k][j] + V[i][k]*n_x[k][j];
-											else
-												mid_qt = -U[STEP_RIGHT][CELL_RIGHT]*n_y[k][j] + V[STEP_RIGHT][CELL_RIGHT]*n_x[k][j];
-											u_mid = mid[1]*n_x[k][j] - mid_qt*n_y[k][j];
-											v_mid = mid[1]*n_y[k][j] + mid_qt*n_x[k][j];
-											
-											F_mk[0] = rho_mid*u_mid*n_x[k][j] + rho_mid*v_mid*n_y[k][j];
-											F_mk[1] = F_mk[0]*u_mid + p_mid*n_x[k][j];
-											F_mk[2] = F_mk[0]*v_mid + p_mid*n_y[k][j];
-											F_mk[3] = (gamma[k]/(gamma[k]-1.0))*p_mid/rho_mid + 0.5*u_mid*u_mid + 0.5*v_mid*v_mid;
-											F_mk[3] = F_mk[0]*F_mk[3];				
 										}								
 									else
 										{

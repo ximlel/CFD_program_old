@@ -77,6 +77,8 @@ int main(int argc, char *argv[])
 
 
 
+	initialize_CC(argv[0], addCC);
+
 	initialize(argv[0], addRHO, addU, addV, addP);  /* Firstly we read the initial
 													 * data file. The function 
 													 * initialize return a point
@@ -89,8 +91,6 @@ int main(int argc, char *argv[])
 													 * following m*n variables
 													 * are the initial value.
 													 */
-	initialize_CC(argv[0], addCC);
-
 
 	int m = (int)RHO0[0], n = (int)RHO0[1];  
 	int NUM_CELL;
@@ -260,10 +260,9 @@ int main(int argc, char *argv[])
 		}
 
 
-
 	double * CC[N]; //Component Concentration
 	CC[0] = CC0 + 2;
-	for(k = 0; k < N; ++k)
+	for(k = 1; k < N; ++k)
 		{
 			CC[k] = (double *)malloc(NUM_CELL * sizeof(double));
 			if(CC[k] == NULL)
@@ -288,6 +287,7 @@ int main(int argc, char *argv[])
 					free(U0);
 					free(V0);
 					free(P0);
+					free(CC0);
 					RHO[0] = NULL;
 					U[0] = NULL;
 					V[0] = NULL;
@@ -297,6 +297,7 @@ int main(int argc, char *argv[])
 					U0 = NULL;
 					V0 = NULL;
 					P0 = NULL;
+					CC0 = NULL;
 					printf("NOT enough memory! CC[%d]\n", k);
 					exit(5);
 				}
@@ -334,14 +335,28 @@ int main(int argc, char *argv[])
 
 	int STEP;
 
-	if(strcmp(argv[argc-1],"Two_species")==0)
-		{
-			printf("Two species\n");		  
-			STEP = first_order_two_species_solver(config, NUM_CELL, NUM_POINT, NUM_BOUNDARY, CELL_POINT, BOUNDARY_POINT, m, n, RHO, U, V, P, CC, X, Y, gamma, cpu_time, argv[4], atof(argv[6]));
+	if(strcmp(argv[argc-1],"second_order")==0||strcmp(argv[argc-2],"second_order")==0)
+		{			
+			printf("second order\n");
+			/*			if(strcmp(argv[argc-1],"Two_species")==0)
+						{
+						printf("Two species\n");		  
+						STEP = second_order_two_species_solver(config, NUM_CELL, NUM_POINT, NUM_BOUNDARY, CELL_POINT, BOUNDARY_POINT, m, n, RHO, U, V, P, CC, X, Y, gamma, cpu_time, argv[4], atof(argv[6]));
+						}
+						else        */
+			STEP = second_order_solver(config, NUM_CELL, NUM_POINT, NUM_BOUNDARY, CELL_POINT, BOUNDARY_POINT, m, n, RHO, U, V, P, X, Y, gamma, cpu_time, argv[4], atof(argv[6]));
 		}
-	else
-		STEP = first_order_solver(config, NUM_CELL, NUM_POINT, NUM_BOUNDARY, CELL_POINT, BOUNDARY_POINT, m, n, RHO, U, V, P, X, Y, gamma, cpu_time, argv[4], atof(argv[6]));
-
+	else       
+		{
+			printf("first order\n");
+			if(strcmp(argv[argc-1],"Two_species")==0)
+				{
+					printf("Two species\n");		  
+					STEP = first_order_two_species_solver(config, NUM_CELL, NUM_POINT, NUM_BOUNDARY, CELL_POINT, BOUNDARY_POINT, m, n, RHO, U, V, P, CC, X, Y, gamma, cpu_time, argv[4], atof(argv[6]));
+				}
+			else
+				STEP = first_order_solver(config, NUM_CELL, NUM_POINT, NUM_BOUNDARY, CELL_POINT, BOUNDARY_POINT, m, n, RHO, U, V, P, X, Y, gamma, cpu_time, argv[4], atof(argv[6]));
+		}
 
 
 
@@ -349,15 +364,29 @@ int main(int argc, char *argv[])
 		STEP = atoi(argv[5]);
 
 
+	
 //write the final data down.
-	if(strcmp(argv[argc-1],"Two_species")==0)
-		file_two_species_write_TEC(NUM_POINT, X, Y, NUM_CELL, CELL_POINT, RHO[STEP], U[STEP], V[STEP], P[STEP], CC[STEP], cpu_time, config, argv[2], "2D_EUL_first_order/");
-	else
-		{		  
-			//  file_write_VTK(NUM_POINT, X, Y, NUM_CELL, CELL_POINT, RHO[STEP], U[STEP], V[STEP], P[STEP], cpu_time, config, argv[2], "2D_EUL_first_order/"); 
-			file_write_TEC(NUM_POINT, X, Y, NUM_CELL, CELL_POINT, RHO[STEP], U[STEP], V[STEP], P[STEP], cpu_time, config, argv[2], "2D_EUL_first_order/");  
+
+	if(strcmp(argv[argc-1],"second_order")==0||strcmp(argv[argc-2],"second_order")==0)
+		{
+			if(strcmp(argv[argc-1],"Two_species")==0)
+				file_two_species_write_TEC(NUM_POINT, X, Y, NUM_CELL, CELL_POINT, RHO[STEP], U[STEP], V[STEP], P[STEP], CC[STEP], cpu_time, config, argv[2], "2D_EUL_second_order/");
+			else
+				{		  
+					//  file_write_VTK(NUM_POINT, X, Y, NUM_CELL, CELL_POINT, RHO[STEP], U[STEP], V[STEP], P[STEP], cpu_time, config, argv[2], "2D_EUL_second_order/"); 
+					file_write_TEC(NUM_POINT, X, Y, NUM_CELL, CELL_POINT, RHO[STEP], U[STEP], V[STEP], P[STEP], cpu_time, config, argv[2], "2D_EUL_second_order/");  
+				}
 		}
-  
+	else
+		{							
+			if(strcmp(argv[argc-1],"Two_species")==0)
+				file_two_species_write_TEC(NUM_POINT, X, Y, NUM_CELL, CELL_POINT, RHO[STEP], U[STEP], V[STEP], P[STEP], CC[STEP], cpu_time, config, argv[2], "2D_EUL_first_order/");
+			else
+				{		  
+					//  file_write_VTK(NUM_POINT, X, Y, NUM_CELL, CELL_POINT, RHO[STEP], U[STEP], V[STEP], P[STEP], cpu_time, config, argv[2], "2D_EUL_first_order/"); 
+					file_write_TEC(NUM_POINT, X, Y, NUM_CELL, CELL_POINT, RHO[STEP], U[STEP], V[STEP], P[STEP], cpu_time, config, argv[2], "2D_EUL_first_order/");  
+				}
+		}
 
 
 	for(k = 1; k < N; ++k)
@@ -377,11 +406,12 @@ int main(int argc, char *argv[])
 	free(U0);
 	free(V0);
 	free(P0);
-	free(CC[0]);
+	free(CC0);
 	RHO0 = NULL;
 	U0 = NULL;
 	V0 = NULL;
 	P0 = NULL;
+	CC0 = NULL;
 	RHO[0] = NULL;
 	U[0] = NULL;
 	V[0] = NULL;
