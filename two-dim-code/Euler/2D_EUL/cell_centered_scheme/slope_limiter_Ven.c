@@ -4,7 +4,8 @@
 #include <string.h>
 #include <float.h>
 
-#include "../../../../lib/custom.h"
+#include "../../../lib/custom.h"
+#include "../cell_centered_scheme.h"
 
 void slope_limiter_Ven
 (double * X_c, double * Y_c, double  * X, double * Y,
@@ -57,12 +58,14 @@ void slope_limiter_Ven
 									CELL_RIGHT = k+n-1;
 									X_c_n = X_c[k]-h_x;	
 									Y_c_n = Y_c[k];
+									judge_x = 0;
 								}
 							else if(k%n==n-1)
 								{																					
 									CELL_RIGHT = k-n+1;
 									X_c_n = X_c[k]+h_x;	
 									Y_c_n = Y_c[k];
+									judge_x = 0;
 								}
 							else
 								{																									
@@ -111,7 +114,7 @@ void slope_limiter_Ven
 									CELL_RIGHT = k;
 								}
 							else if(CELL_CELL[k][j]==-2)//reflecting boundary condition.
-								break;
+								continue;
 							else
 								{
 									printf("No suitable boundary!\n");
@@ -172,7 +175,7 @@ void slope_limiter_Ven
 								}
 						}
 					else if (CELL_CELL[k][j]==-2)//reflecting boundary condition.
-						break;
+						continue;
 					else
 						{
 							printf("No suitable boundary!\n");
@@ -188,43 +191,7 @@ void slope_limiter_Ven
 			for(j = 0; j < CELL_POINT[k][0]; ++j)
 				{
 					for(j = 0; j < CELL_POINT[k][0]; ++j)
-						{
-							if (CELL_CELL[k][j]>=0)
-								{											
-									STEP_RIGHT = i;							
-									CELL_RIGHT = CELL_CELL[k][j];
-								}
-							else if (CELL_CELL[k][j]==-1)//initial boundary condition.
-								{
-									STEP_RIGHT = 0;
-									CELL_RIGHT = k;
-								}
-							else if (CELL_CELL[k][j]==-3)//prescribed boundary condition.
-								{
-									STEP_RIGHT = i;
-									CELL_RIGHT = k;
-								}
-							else if (CELL_CELL[k][j]==-4)//periodic boundary condition in x-direction.
-								{
-									STEP_RIGHT = i;
-									if(!(k%n))
-										CELL_RIGHT = k+n-1;
-									else if(k%n==n-1)
-										CELL_RIGHT = k-n+1;
-									else
-										{																									
-											printf("Something wrong as we construct periodic boundary condition in x-direction.\n");
-											exit(8);
-										}
-								}
-							else if (CELL_CELL[k][j]==-2)//reflecting boundary condition.
-								break;
-							else
-								{
-									printf("No suitable boundary!\n");
-									exit(7);
-								}
-							
+						{							
 							W_c_x_p = W[i][k] + grad_W_x[k] * (X[CELL_POINT[k][j+1]] - X_c[k]) + grad_W_y[k] * (Y[CELL_POINT[k][j+1]] - Y_c[k]);
 							if (fabs(W_c_x_p - W[i][k]) <eps)
 								FAI_W = (FAI_W < 1.0) ? FAI_W : 1.0;	

@@ -43,9 +43,9 @@ int second_order_solver
 	double t_all = 0.0;
 	int stop_step = 0;
 
-	double dire[3], mid[3];
-	double mid_qt;
-	double u_L, u_R, c_L, c_R;
+	double wave_speed[2], dire[4], mid[4];
+	double rho_L, rho_R, u_L, u_R, qn_L, qn_R, v_L, v_R, qt_L, qt_R, p_L, p_R, c_L, c_R;
+	double d_rho_L, d_rho_R, d_u_L, d_u_R, d_qn_L, d_qn_R, d_v_L, d_v_R, d_qt_L, d_qt_R, d_p_L, d_p_R;
 	double u_mid, v_mid, rho_mid, p_mid; // the Riemann solutions
 
 	int CELL_RIGHT, STEP_RIGHT; //For boundary condition
@@ -196,12 +196,15 @@ int second_order_solver
 
 	double S, S_tri;
 	double X_c[NUM_CELL], Y_c[NUM_CELL];
+	double delta_X, delta_Y;
 
 	double grad_RHO_x[NUM_CELL], grad_RHO_y[NUM_CELL];
 	double grad_P_x[NUM_CELL], grad_P_y[NUM_CELL];
 	double grad_U_x[NUM_CELL], grad_U_y[NUM_CELL];
 	double grad_V_x[NUM_CELL], grad_V_y[NUM_CELL];
 	double grad_CC_x[NUM_CELL], grad_CC_y[NUM_CELL];
+
+
 
 
 //------------THE MAIN LOOP-------------
@@ -228,10 +231,16 @@ int second_order_solver
 					Y_c[k] = Y_c[k]/S/3;
 				}
 
-			slop_limiter_Ven(X_c, Y_c, X, Y, grad_RHO_x, grad_RHO_y, RHO, NUM_CELL, config, CELL_CELL, CELL_POINT, i, m, n);
-			slop_limiter_Ven(X_c, Y_c, X, Y, grad_U_x, grad_U_y, U, NUM_CELL, config, CELL_CELL, CELL_POINT, i, m ,n);
-			slop_limiter_Ven(X_c, Y_c, X, Y, grad_V_x, grad_V_y,  V, NUM_CELL, config, CELL_CELL, CELL_POINT, i, m, n);
-			slop_limiter_Ven(X_c, Y_c, X, Y, grad_P_x, grad_P_y, P, NUM_CELL, config, CELL_CELL, CELL_POINT, i, m, n);
+			slope_limiter_Ven(X_c, Y_c, X, Y, grad_RHO_x, grad_RHO_y, RHO, NUM_CELL, config, CELL_CELL, CELL_POINT, i, m, n);
+			slope_limiter_Ven(X_c, Y_c, X, Y, grad_U_x, grad_U_y, U, NUM_CELL, config, CELL_CELL, CELL_POINT, i, m ,n);
+			slope_limiter_Ven(X_c, Y_c, X, Y, grad_V_x, grad_V_y,  V, NUM_CELL, config, CELL_CELL, CELL_POINT, i, m, n);
+			slope_limiter_Ven(X_c, Y_c, X, Y, grad_P_x, grad_P_y, P, NUM_CELL, config, CELL_CELL, CELL_POINT, i, m, n);
+
+/*			if(i==0)
+				for(k = 0; k < NUM_CELL; ++k)
+					printf("grad_RHO_x[%d] = %lf\n",k,grad_RHO_x[k]);
+*/
+
 			
 			for(k = 0; k < NUM_CELL; ++k)
 				{
@@ -249,8 +258,6 @@ int second_order_solver
 									p_p=CELL_POINT[k][j+2];
 									p_n=CELL_POINT[k][j+1];
 								}
-
-
 															
 							if (CELL_CELL[k][j]==-2)//reflecting boundary condition.
 								{
@@ -295,54 +302,19 @@ int second_order_solver
 											printf("No suitable boundary!\n");
 											exit(7);
 										}						 
-								
-								
-//============================================the Goundov scheme of exact Riemann solver==========================================
-
-									if(strcmp(scheme,"GRP")==0)
-										{																				
-											u_L = U[i][k]*n_x[k][j] + V[i][k]*n_y[k][j]; 
-											u_R = U[STEP_RIGHT][CELL_RIGHT]*n_x[k][j] + V[STEP_RIGHT][CELL_RIGHT]*n_y[k][j];
+							   																									
+											qn_L = U[i][k]*n_x[k][j] + V[i][k]*n_y[k][j]; 
+											qn_R = U[STEP_RIGHT][CELL_RIGHT]*n_x[k][j] + V[STEP_RIGHT][CELL_RIGHT]*n_y[k][j];
 											c_L = sqrt(gamma[k] * P[i][k] / RHO[i][k]);
 											c_R = sqrt(gamma[k] * P[STEP_RIGHT][CELL_RIGHT] / RHO[STEP_RIGHT][CELL_RIGHT]);
-											linear_GRP_solver_Edir(dire, mid, RHO[i][k],RHO[STEP_RIGHT][CELL_RIGHT], 0.0, 0.0, u_L, u_R, 0.0, 0.0, P[i][k], P[STEP_RIGHT][CELL_RIGHT], 0.0, 0.0, gamma[k], eps);
-											rho_mid = mid[0];
-											p_mid = mid[2];
-
-											/*if(fabs(mid[1])<delta_God)
-											  mid_qt = 0.5*(-U[i][k]*n_y[k][j] + V[i][k]*n_x[k][j])*(mid[1]/delta_God+1) + 0.5*(-U[STEP_RIGHT][CELL_RIGHT]*n_y[k][j] + V[STEP_RIGHT][CELL_RIGHT]*n_x[k][j])*(-mid[1]/delta_God+1);
-											  else*/ if(mid[1]>0)
-												mid_qt = -U[i][k]*n_y[k][j] + V[i][k]*n_x[k][j];
-											else
-												mid_qt = -U[STEP_RIGHT][CELL_RIGHT]*n_y[k][j] + V[STEP_RIGHT][CELL_RIGHT]*n_x[k][j];
-											u_mid = mid[1]*n_x[k][j] - mid_qt*n_y[k][j];
-											v_mid = mid[1]*n_y[k][j] + mid_qt*n_x[k][j];
-											
-											F_mk[0] = rho_mid*u_mid*n_x[k][j] + rho_mid*v_mid*n_y[k][j];
-											F_mk[1] = F_mk[0]*u_mid + p_mid*n_x[k][j];
-											F_mk[2] = F_mk[0]*v_mid + p_mid*n_y[k][j];
-											F_mk[3] = (gamma[k]/(gamma[k]-1.0))*p_mid/rho_mid + 0.5*u_mid*u_mid + 0.5*v_mid*v_mid;
-											F_mk[3] = F_mk[0]*F_mk[3];
-											lambda_max = max(c_L+fabs(u_L),c_R+fabs(u_R));					
-										}								
-									else
-										{
-											printf("No Riemann solver!\n");
-											exit(7);
-										}
-								}
+											lambda_max = max(c_L+fabs(qn_L),c_R+fabs(qn_R));					
+								}								
 							
-							F_mk_1[k][j] = F_mk[0];
-							F_mk_2[k][j] = F_mk[1];
-							F_mk_3[k][j] = F_mk[2];
-							F_mk_4[k][j] = F_mk[3];
-							
-							cum +=  lambda_max*sqrt((X[p_p]-X[p_n])*(X[p_p]-X[p_n])+(Y[p_p]-Y[p_n])*(Y[p_p]-Y[p_n]));
-							
+							cum +=  lambda_max*sqrt((X[p_p]-X[p_n])*(X[p_p]-X[p_n])+(Y[p_p]-Y[p_n])*(Y[p_p]-Y[p_n]));						
 						}
 					
 					tau = min(tau, 2.0*VOLUME[k]/cum*CFL);
-				}	//Solver
+				}	//To decide tau.
 			
 			if (CFL<0.0)
 				{
@@ -362,7 +334,161 @@ int second_order_solver
 					tau = tau - (t_all-config[1]);
 					stop_step=1;
 				} // Time
-	
+
+
+
+			for(k = 0; k < NUM_CELL; ++k)
+				{
+					for(j = 0; j < CELL_POINT[k][0]; ++j)
+						{
+							if(j == CELL_POINT[k][0]-1) 
+								{
+									p_p=CELL_POINT[k][1];
+									p_n=CELL_POINT[k][j+1];
+								}				  
+							else
+								{
+									p_p=CELL_POINT[k][j+2];
+									p_n=CELL_POINT[k][j+1];
+								}
+											delta_X = 0.5*(X[p_p]+X[p_n]) - X_c[k];
+											delta_Y = 0.5*(Y[p_p]+Y[p_n]) - Y_c[k];
+
+											
+							if (CELL_CELL[k][j]==-2)//reflecting boundary condition.
+								{
+									F_mk[0] = 0.0;
+									F_mk[1] = P[i][k]*n_x[k][j];
+									F_mk[2] = P[i][k]*n_y[k][j];
+									F_mk[3] = 0.0;
+								}
+							else
+								{
+									if (CELL_CELL[k][j]>=0)
+										{											
+											STEP_RIGHT = i;							
+											CELL_RIGHT = CELL_CELL[k][j];
+											
+											d_rho_R = grad_RHO_x[CELL_RIGHT]*n_x[k][j] + grad_RHO_y[CELL_RIGHT]*n_y[k][j];
+											d_u_R = grad_U_x[CELL_RIGHT]*n_x[k][j] + grad_U_y[CELL_RIGHT]*n_y[k][j];
+											d_v_R = grad_V_x[CELL_RIGHT]*n_x[k][j] + grad_V_y[CELL_RIGHT]*n_y[k][j];
+											d_p_R = grad_P_x[CELL_RIGHT]*n_x[k][j] + grad_P_y[CELL_RIGHT]*n_y[k][j];
+
+											rho_R = RHO[STEP_RIGHT][CELL_RIGHT] - grad_RHO_x[CELL_RIGHT] * delta_X - grad_RHO_y[CELL_RIGHT] * delta_Y;
+											u_R = U[STEP_RIGHT][CELL_RIGHT] - grad_U_x[CELL_RIGHT] * delta_X - grad_U_y[CELL_RIGHT] * delta_Y;
+											v_R = V[STEP_RIGHT][CELL_RIGHT] - grad_V_x[CELL_RIGHT] * delta_X - grad_V_y[CELL_RIGHT] * delta_Y;
+											p_R = P[STEP_RIGHT][CELL_RIGHT] - grad_P_x[CELL_RIGHT] * delta_X - grad_P_y[CELL_RIGHT] * delta_Y;
+										}
+									else if (CELL_CELL[k][j]==-1)//initial boundary condition.
+										{
+											STEP_RIGHT = 0;
+											CELL_RIGHT = k;
+											
+											d_rho_R = 0.0;
+											d_u_R = 0.0;
+											d_v_R = 0.0;
+											d_p_R = 0.0;
+
+											rho_R = RHO[STEP_RIGHT][CELL_RIGHT];
+											u_R = U[STEP_RIGHT][CELL_RIGHT];
+											v_R = V[STEP_RIGHT][CELL_RIGHT];
+											p_R = P[STEP_RIGHT][CELL_RIGHT];
+										}
+									else if (CELL_CELL[k][j]==-3)//prescribed boundary condition.
+										{
+											STEP_RIGHT = i;
+											CELL_RIGHT = k;
+
+											d_rho_R =  grad_RHO_x[CELL_RIGHT]*n_x[k][j] + grad_RHO_y[CELL_RIGHT]*n_y[k][j];
+											d_u_R =  grad_U_x[CELL_RIGHT]*n_x[k][j] + grad_U_y[CELL_RIGHT]*n_y[k][j];
+											d_v_R =  grad_V_x[CELL_RIGHT]*n_x[k][j] + grad_V_y[CELL_RIGHT]*n_y[k][j];
+											d_p_R =  grad_P_x[CELL_RIGHT]*n_x[k][j] + grad_P_y[CELL_RIGHT]*n_y[k][j];
+											
+											rho_R = RHO[STEP_RIGHT][CELL_RIGHT];
+											u_R = U[STEP_RIGHT][CELL_RIGHT];
+											v_R = V[STEP_RIGHT][CELL_RIGHT];
+											p_R = P[STEP_RIGHT][CELL_RIGHT];
+										}
+									else if (CELL_CELL[k][j]==-4)//periodic boundary condition in x-direction.
+										{
+											STEP_RIGHT = i;
+											if(!(k%n))
+												CELL_RIGHT = k+n-1;
+											else if(k%n==n-1)
+												CELL_RIGHT = k-n+1;
+											else
+												{																									
+													printf("Something wrong as we construct periodic boundary condition in x-direction.\n");
+													exit(8);
+												}
+
+											d_rho_R = grad_RHO_x[CELL_RIGHT]*n_x[k][j] + grad_RHO_y[CELL_RIGHT]*n_y[k][j];
+											d_u_R = grad_U_x[CELL_RIGHT]*n_x[k][j] + grad_U_y[CELL_RIGHT]*n_y[k][j];
+											d_v_R = grad_V_x[CELL_RIGHT]*n_x[k][j] + grad_V_y[CELL_RIGHT]*n_y[k][j];
+											d_p_R = grad_P_x[CELL_RIGHT]*n_x[k][j] + grad_P_y[CELL_RIGHT]*n_y[k][j];
+
+											rho_R = RHO[STEP_RIGHT][CELL_RIGHT] - grad_RHO_x[CELL_RIGHT] * delta_X - grad_RHO_y[CELL_RIGHT] * delta_Y;
+											u_R = U[STEP_RIGHT][CELL_RIGHT] - grad_U_x[CELL_RIGHT] * delta_X - grad_U_y[CELL_RIGHT] * delta_Y;
+											v_R = V[STEP_RIGHT][CELL_RIGHT] - grad_V_x[CELL_RIGHT] * delta_X - grad_V_y[CELL_RIGHT] * delta_Y;
+											p_R = P[STEP_RIGHT][CELL_RIGHT] - grad_P_x[CELL_RIGHT] * delta_X - grad_P_y[CELL_RIGHT] * delta_Y;											
+										}
+									else
+										{
+											printf("No suitable boundary!\n");
+											exit(7);
+										}						 								
+								
+									//============================================the GRP scheme with exact Riemann solver==========================================
+
+									if(strcmp(scheme,"GRP")==0)
+										{
+											d_rho_L =  grad_RHO_x[k]*n_x[k][j] + grad_RHO_y[k]*n_y[k][j];
+											d_u_L =  grad_U_x[k]*n_x[k][j] + grad_U_y[k]*n_y[k][j];
+											d_v_L =  grad_V_x[k]*n_x[k][j] + grad_V_y[k]*n_y[k][j];
+											d_p_L =  grad_P_x[k]*n_x[k][j] + grad_P_y[k]*n_y[k][j];
+
+											rho_L = RHO[i][k] + grad_RHO_x[k] * delta_X + grad_RHO_y[k] * delta_Y;
+											u_L = U[i][k] + grad_U_x[k] * delta_X + grad_U_y[k] * delta_Y;
+											v_L = V[i][k] + grad_V_x[k] * delta_X + grad_V_y[k] * delta_Y;
+											p_L = P[i][k] + grad_P_x[k] * delta_X + grad_P_y[k] * delta_Y;
+
+											qn_L = u_L*n_x[k][j] + v_L*n_y[k][j];
+											qt_L = -u_L*n_y[k][j] + v_L*n_x[k][j];
+											d_qn_L = d_u_L*n_x[k][j] + d_v_L*n_y[k][j];
+											d_qt_L = -d_u_L*n_y[k][j] + d_v_L*n_x[k][j];
+											qn_R = u_R*n_x[k][j] + v_R*n_y[k][j];
+											qt_R = -u_R*n_y[k][j] + v_R*n_x[k][j];
+											d_qn_R = d_u_R*n_x[k][j] + d_v_R*n_y[k][j];
+											d_qt_R = -d_u_R*n_y[k][j] + d_v_R*n_x[k][j];				   						
+
+											linear_GRP_solver_Edir_2D(wave_speed, dire, mid, 0.0, rho_L,rho_R, d_rho_L, d_rho_R, qn_L, qn_R, d_qn_L, d_qn_R, qt_L, qt_R, d_qt_L, d_qt_R, p_L, p_R, d_p_L, d_p_R, gamma[k], eps);
+
+											rho_mid = mid[0] + 0.5*tau*dire[0];
+											p_mid = mid[3] + 0.5*tau*dire[3];
+											u_mid = (mid[1] + 0.5*tau*dire[1])*n_x[k][j] - (mid[2] + 0.5*tau*dire[2])*n_y[k][j];
+											v_mid = (mid[1] + 0.5*tau*dire[1])*n_y[k][j] + (mid[2] + 0.5*tau*dire[2])*n_x[k][j];
+										   
+
+											F_mk[0] = rho_mid*u_mid*n_x[k][j] + rho_mid*v_mid*n_y[k][j];
+											F_mk[1] = F_mk[0]*u_mid + p_mid*n_x[k][j];
+											F_mk[2] = F_mk[0]*v_mid + p_mid*n_y[k][j];
+											F_mk[3] = (gamma[k]/(gamma[k]-1.0))*p_mid/rho_mid + 0.5*u_mid*u_mid + 0.5*v_mid*v_mid;
+											F_mk[3] = F_mk[0]*F_mk[3];	
+										}								
+									else
+										{
+											printf("No Riemann solver!\n");
+											exit(7);
+										}
+								}							
+							F_mk_1[k][j] = F_mk[0];
+							F_mk_2[k][j] = F_mk[1];
+							F_mk_3[k][j] = F_mk[2];
+							F_mk_4[k][j] = F_mk[3];													
+						}					
+				}	//Solver
+
+
 
 	for(k = 0; k < NUM_CELL; ++k)
 		{
@@ -413,7 +539,7 @@ int second_order_solver
 	printf("The cost of CPU time for 2D equations of motion by Eulerian method is %g seconds.\n", sum);
 
 	if(!stop_step)
-		printf("The maximum number of time steps is not enough for this calculation, t_tall=%lf.\n",t_all);
+		printf("The maximum number of time steps is not enough for this calculation, t_all=%lf.\n",t_all);
 
 //------------END OF THE MAIN LOOP-------------
 

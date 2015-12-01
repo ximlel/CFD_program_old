@@ -1039,7 +1039,7 @@ for(k = 0; k < NUM_CELL; ++k)
   printf("The cost of CPU time for 2D equations of motion by Lagrangian method is %g seconds.\n", sum);
 
 	if(!stop_step)
-		printf("The maximum number of time steps is not enough for this calculation, t_tall=%lf.\n",t_all);
+		printf("The maximum number of time steps is not enough for this calculation, t_all=%lf.\n",t_all);
 
 //------------END OF THE MAIN LOOP-------------
 

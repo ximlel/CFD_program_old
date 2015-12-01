@@ -37,10 +37,11 @@ ar crv meshing.a Sod_mesh.o Free_mesh.o odd_even_mesh.o Shear_mesh.o Cylinder_me
 cd ../cell_centered_scheme/
 gcc -c ./linear_GRP_solver_Edir.c -I ../
 gcc -c ./linear_GRP_solver_Edir_2D.c -I ../
+gcc -c ./slope_limiter_Ven.c -I ../
 gcc -c ./first_order_solver.c -I ../
 gcc -c ./first_order_two_species_solver.c -I ../
 gcc -c ./second_order_solver.c -I ../
-ar crv cell_centered_scheme.a linear_GRP_solver_Edir.o linear_GRP_solver_Edir_2D.o first_order_solver.o first_order_two_species_solver.o second_order_solver.o
+ar crv cell_centered_scheme.a linear_GRP_solver_Edir.o linear_GRP_solver_Edir_2D.o slope_limiter_Ven.o first_order_solver.o first_order_two_species_solver.o second_order_solver.o
 ranlib cell_centered_scheme.a
 
 cd ../
@@ -102,9 +103,12 @@ cd $INITIAL_PATH
 
 ### Two_species
 
-./EUL_source.out RMI RMI RMI_mesh Riemann_exact -1 0.4 Two_species
-./EUL_source.out RMI RMI_test RMI_mesh Riemann_exact -1 0.4
+#./EUL_source.out RMI RMI RMI_mesh Riemann_exact -1 0.4 Two_species
+#./EUL_source.out RMI RMI_test RMI_mesh Riemann_exact -1 0.4
 
 ## second order
+
+./EUL_source.out RMI RMI_test RMI_mesh GRP -1 0.4 second_order
+#./EUL_source.out Sod_10 Sod_10 Sod_mesh GRP -1 0.4 second_order
 
 exit 0

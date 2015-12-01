@@ -280,9 +280,7 @@ int first_order_two_species_solver
 											rho_mid = mid[0];
 											p_mid = mid[2];
 
-											/*if(fabs(mid[1])<delta_God)
-											  mid_qt = 0.5*(-U[i][k]*n_y[k][j] + V[i][k]*n_x[k][j])*(mid[1]/delta_God+1) + 0.5*(-U[STEP_RIGHT][CELL_RIGHT]*n_y[k][j] + V[STEP_RIGHT][CELL_RIGHT]*n_x[k][j])*(-mid[1]/delta_God+1);
-											  else*/ if(mid[1]>0)
+											if(mid[1]>0)
 												{  											   											
 													mid_qt = -U[i][k]*n_y[k][j] + V[i][k]*n_x[k][j];
 													mid_z = Z[i][k];
@@ -394,7 +392,7 @@ int first_order_two_species_solver
 	printf("The cost of CPU time for 2D equations of motion by Eulerian method is %g seconds.\n", sum);
 
 	if(!stop_step)
-		printf("The maximum number of time steps is not enough for this calculation, t_tall=%lf.\n",t_all);
+		printf("The maximum number of time steps is not enough for this calculation, t_all=%lf.\n",t_all);
 
 //------------END OF THE MAIN LOOP-------------
 

@@ -76,8 +76,8 @@ int main(int argc, char *argv[])
 	strcat(addconfig, "config.txt\0");
 
 
-
-	initialize_CC(argv[0], addCC);
+	if(strcmp(argv[argc-1],"Two_species")==0)
+		initialize_CC(argv[0], addCC);
 
 	initialize(argv[0], addRHO, addU, addV, addP);  /* Firstly we read the initial
 													 * data file. The function 
@@ -262,6 +262,7 @@ int main(int argc, char *argv[])
 
 	double * CC[N]; //Component Concentration
 	CC[0] = CC0 + 2;
+if(strcmp(argv[argc-1],"Two_species")==0)
 	for(k = 1; k < N; ++k)
 		{
 			CC[k] = (double *)malloc(NUM_CELL * sizeof(double));
@@ -395,6 +396,7 @@ int main(int argc, char *argv[])
 			free(U[k]);
 			free(V[k]);
 			free(P[k]);
+if(strcmp(argv[argc-1],"Two_species")==0)
 			free(CC[k]);
 			RHO[k] = NULL;
 			U[k] = NULL;
