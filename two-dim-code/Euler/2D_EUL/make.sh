@@ -41,7 +41,8 @@ gcc -c ./slope_limiter_Ven.c -I ../
 gcc -c ./first_order_solver.c -I ../
 gcc -c ./first_order_two_species_solver.c -I ../
 gcc -c ./second_order_solver.c -I ../
-ar crv cell_centered_scheme.a linear_GRP_solver_Edir.o linear_GRP_solver_Edir_2D.o slope_limiter_Ven.o first_order_solver.o first_order_two_species_solver.o second_order_solver.o
+gcc -c ./second_order_two_species_solver.c -I ../
+ar crv cell_centered_scheme.a linear_GRP_solver_Edir.o linear_GRP_solver_Edir_2D.o slope_limiter_Ven.o first_order_solver.o first_order_two_species_solver.o second_order_solver.o second_order_two_species_solver.o
 ranlib cell_centered_scheme.a
 
 cd ../
@@ -108,7 +109,8 @@ cd $INITIAL_PATH
 
 ## second order
 
-./EUL_source.out RMI RMI_test RMI_mesh GRP -1 0.4 second_order
-#./EUL_source.out Sod_10 Sod_10 Sod_mesh GRP -1 0.4 second_order
+./EUL_source.out RMI RMI_test RMI_mesh GRP -1 0.4 second_order Two_species
+#./EUL_source.out RMI RMI_test RMI_mesh GRP -1 0.4 second_order
+
 
 exit 0

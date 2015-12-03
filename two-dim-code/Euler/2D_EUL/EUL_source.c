@@ -339,12 +339,12 @@ if(strcmp(argv[argc-1],"Two_species")==0)
 	if(strcmp(argv[argc-1],"second_order")==0||strcmp(argv[argc-2],"second_order")==0)
 		{			
 			printf("second order\n");
-			/*			if(strcmp(argv[argc-1],"Two_species")==0)
-						{
-						printf("Two species\n");		  
-						STEP = second_order_two_species_solver(config, NUM_CELL, NUM_POINT, NUM_BOUNDARY, CELL_POINT, BOUNDARY_POINT, m, n, RHO, U, V, P, CC, X, Y, gamma, cpu_time, argv[4], atof(argv[6]));
-						}
-						else        */
+			if(strcmp(argv[argc-1],"Two_species")==0)
+				{
+					printf("Two species\n");		  
+					STEP = second_order_two_species_solver(config, NUM_CELL, NUM_POINT, NUM_BOUNDARY, CELL_POINT, BOUNDARY_POINT, m, n, RHO, U, V, P, CC, X, Y, gamma, cpu_time, argv[4], atof(argv[6]));
+				}
+			else        
 			STEP = second_order_solver(config, NUM_CELL, NUM_POINT, NUM_BOUNDARY, CELL_POINT, BOUNDARY_POINT, m, n, RHO, U, V, P, X, Y, gamma, cpu_time, argv[4], atof(argv[6]));
 		}
 	else       
