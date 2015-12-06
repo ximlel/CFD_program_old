@@ -5,6 +5,8 @@ run ./one_line_dp/value_start.m;
 run ./one_line_du/value_start.m;
 run ./Riemann_2D3_Quad/value_start.m;
 run ./Riemann_2D3_Tria/value_start.m;
+run ./RMI_321/value_start.m;
+run ./RMI_641/value_start.m;
 run ./steady_shear/value_start.m;
 run ./steady_shock/value_start.m;
 run ./Test1/value_start.m;

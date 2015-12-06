@@ -28,6 +28,7 @@ int second_order_two_species_solver
  int * BOUNDARY_POINT[], int m, int n, double * RHO[], double * U[], double * V[], double * P[], double * Z[],
  double * X, double * Y, double * gamma, double * cpu_time, char * scheme, double CFL/* the CFL number */)
 {	
+
 	int i, j, k, l; 
 
 	clock_t tic, toc;
@@ -48,10 +49,12 @@ int second_order_two_species_solver
 	double d_rho_L, d_rho_R, d_u_L, d_u_R, d_qn_L, d_qn_R, d_v_L, d_v_R, d_qt_L, d_qt_R, d_p_L, d_p_R, d_z_L, d_z_R;
 	double u_mid, v_mid, rho_mid, p_mid, z_mid; // the Riemann solutions
 
+
 	int CELL_RIGHT, STEP_RIGHT; //For boundary condition
 	double cum;
 	
 	double u_con[NUM_CELL],  v_con[NUM_CELL],  e_con[NUM_CELL], z_con[NUM_CELL];
+
 	for(k = 0; k < NUM_CELL; ++k)
 		{			
 			u_con[k] = RHO[0][k]*U[0][k];
@@ -497,7 +500,8 @@ int second_order_two_species_solver
 							F_mk_1[k][j] = F_mk[0];
 							F_mk_2[k][j] = F_mk[1];
 							F_mk_3[k][j] = F_mk[2];
-							F_mk_4[k][j] = F_mk[3];													
+							F_mk_4[k][j] = F_mk[3];
+							F_mk_5[k][j] = F_mk[4];
 						}					
 				}	//Solver
 
@@ -523,6 +527,7 @@ int second_order_two_species_solver
 					u_con[k] += - tau*F_mk_2[k][j] * sqrt((X[p_p]-X[p_n])*(X[p_p]-X[p_n])+(Y[p_p]-Y[p_n])*(Y[p_p]-Y[p_n])) / VOLUME[k];
 					v_con[k] += - tau*F_mk_3[k][j] * sqrt((X[p_p]-X[p_n])*(X[p_p]-X[p_n])+(Y[p_p]-Y[p_n])*(Y[p_p]-Y[p_n])) / VOLUME[k];
 					e_con[k] += - tau*F_mk_4[k][j] * sqrt((X[p_p]-X[p_n])*(X[p_p]-X[p_n])+(Y[p_p]-Y[p_n])*(Y[p_p]-Y[p_n])) / VOLUME[k];
+					z_con[k] += - tau*F_mk_5[k][j] * sqrt((X[p_p]-X[p_n])*(X[p_p]-X[p_n])+(Y[p_p]-Y[p_n])*(Y[p_p]-Y[p_n])) / VOLUME[k];
 				}
 			
 			U[i+1][k] = u_con[k]/RHO[i+1][k];
@@ -533,6 +538,7 @@ int second_order_two_species_solver
 					printf ("P is smaller than 0, error firstly happens in cell %d and step %d, t_all=%lf.\n",k,i,t_all);
 					stop_step=1;
 				}
+			Z[i+1][k] = z_con[k]/RHO[i+1][k];
 		}
 	
 
