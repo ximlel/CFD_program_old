@@ -230,6 +230,7 @@ int first_order_two_species_solver
 									F_mk[1] = P[i][k]*n_x[k][j];
 									F_mk[2] = P[i][k]*n_y[k][j];
 									F_mk[3] = 0.0;
+									F_mk[4] = 0.0;
 									lambda_max = 0.0;
 								}
 							else
@@ -405,6 +406,7 @@ int first_order_two_species_solver
 		  free(F_mk_2[k]);
 		  free(F_mk_3[k]);
 		  free(F_mk_4[k]);
+		  free(F_mk_5[k]);
 		  CELL_CELL[k] = NULL;
 		  n_x[k] = NULL;
 		  n_y[k] = NULL;
@@ -412,6 +414,7 @@ int first_order_two_species_solver
 		  F_mk_2[k] = NULL;
 		  F_mk_3[k] = NULL;
 		  F_mk_4[k] = NULL;
+		  F_mk_5[k] = NULL;
 	  }
 
   return i+1;

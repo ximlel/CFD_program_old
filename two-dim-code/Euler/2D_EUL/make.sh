@@ -109,9 +109,9 @@ cd $INITIAL_PATH
 
 ## second order
 
-#./EUL_source.out RMI RMI RMI_mesh GRP -1 0.4 second_order Two_species
+./EUL_source.out RMI RMI RMI_mesh GRP -1 0.4 second_order Two_species
 #./EUL_source.out RMI_321 RMI_321 RMI_mesh GRP -1 0.4 second_order Two_species
-./EUL_source.out RMI_641 RMI_641 RMI_mesh GRP -1 0.4 second_order Two_species
+#./EUL_source.out RMI_641 RMI_641 RMI_mesh GRP -1 0.4 second_order Two_species
 #./EUL_source.out RMI RMI_test RMI_mesh GRP -1 0.4 second_order
 
 
