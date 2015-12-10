@@ -22,8 +22,8 @@
  */
 
 
-int first_order_solver
-(double * config, int NUM_CELL, int NUM_POINT, int NUM_BOUNDARY, int * CELL_POINT[],
+void first_order_solver
+(int STEP, double * config, int NUM_CELL, int NUM_POINT, int NUM_BOUNDARY, int * CELL_POINT[],
  int * BOUNDARY_POINT[], int m, int n, double * RHO[], double * U[], double * V[], double * P[],
  double * X, double * Y, double * gamma, double * cpu_time, char * scheme, double CFL/* the CFL number */)
 {	
@@ -195,7 +195,7 @@ int first_order_solver
 
 //------------THE MAIN LOOP-------------
 
-	for(i = 0; i < N; ++i)
+	for(i = 0; i < STEP; ++i)
 		{	
 
 			tic = clock();		
@@ -223,8 +223,8 @@ int first_order_solver
 							if (CELL_CELL[k][j]==-2)//reflecting boundary condition.
 								{
 									F_mk[0] = 0.0;
-									F_mk[1] = P[i][k]*n_x[k][j];
-									F_mk[2] = P[i][k]*n_y[k][j];
+									F_mk[1] = P[1][k]*n_x[k][j];
+									F_mk[2] = P[1][k]*n_y[k][j];
 									F_mk[3] = 0.0;
 									lambda_max = 0.0;
 								}
@@ -232,7 +232,7 @@ int first_order_solver
 								{
 									if (CELL_CELL[k][j]>=0)
 										{											
-											STEP_RIGHT = i;							
+											STEP_RIGHT = 1;							
 											CELL_RIGHT = CELL_CELL[k][j];
 										}
 									else if (CELL_CELL[k][j]==-1)//initial boundary condition.
@@ -242,12 +242,12 @@ int first_order_solver
 										}
 									else if (CELL_CELL[k][j]==-3)//prescribed boundary condition.
 										{
-											STEP_RIGHT = i;
+											STEP_RIGHT = 1;
 											CELL_RIGHT = k;
 										}
 									else if (CELL_CELL[k][j]==-4)//periodic boundary condition.
 										{
-											STEP_RIGHT = i;
+											STEP_RIGHT = 1;
 											if(!(k%n))
 												CELL_RIGHT = k+n-1;
 											else if(k%n==n-1)
@@ -269,32 +269,32 @@ int first_order_solver
 
 									if(strcmp(scheme,"ROE")==0)
 										{																										
-											ROE_solver(F_mk, gamma[k], P[i][k],RHO[i][k],U[i][k],V[i][k],n_x[k][j],n_y[k][j],P[STEP_RIGHT][CELL_RIGHT],RHO[STEP_RIGHT][CELL_RIGHT],U[STEP_RIGHT][CELL_RIGHT],V[STEP_RIGHT][CELL_RIGHT],&lambda_max, delta);						
+											ROE_solver(F_mk, gamma[k], P[1][k],RHO[1][k],U[1][k],V[1][k],n_x[k][j],n_y[k][j],P[STEP_RIGHT][CELL_RIGHT],RHO[STEP_RIGHT][CELL_RIGHT],U[STEP_RIGHT][CELL_RIGHT],V[STEP_RIGHT][CELL_RIGHT],&lambda_max, delta);						
 										}																		
 
 //============================================================the HLL scheme======================================================
 
 									else if(strcmp(scheme,"HLL")==0)
 										{																									
-											HLL_solver(F_mk, gamma[k], P[i][k],RHO[i][k],U[i][k],V[i][k],n_x[k][j],n_y[k][j],P[STEP_RIGHT][CELL_RIGHT],RHO[STEP_RIGHT][CELL_RIGHT],U[STEP_RIGHT][CELL_RIGHT],V[STEP_RIGHT][CELL_RIGHT],&lambda_max);						
+											HLL_solver(F_mk, gamma[k], P[1][k],RHO[1][k],U[1][k],V[1][k],n_x[k][j],n_y[k][j],P[STEP_RIGHT][CELL_RIGHT],RHO[STEP_RIGHT][CELL_RIGHT],U[STEP_RIGHT][CELL_RIGHT],V[STEP_RIGHT][CELL_RIGHT],&lambda_max);						
 										}										
 								
 //============================================the Goundov scheme of exact Riemann solver==========================================
 
 									else if(strcmp(scheme,"Riemann_exact")==0)
 										{																				
-											u_L = U[i][k]*n_x[k][j] + V[i][k]*n_y[k][j]; 
+											u_L = U[1][k]*n_x[k][j] + V[1][k]*n_y[k][j]; 
 											u_R = U[STEP_RIGHT][CELL_RIGHT]*n_x[k][j] + V[STEP_RIGHT][CELL_RIGHT]*n_y[k][j];
-											c_L = sqrt(gamma[k] * P[i][k] / RHO[i][k]);
+											c_L = sqrt(gamma[k] * P[1][k] / RHO[1][k]);
 											c_R = sqrt(gamma[k] * P[STEP_RIGHT][CELL_RIGHT] / RHO[STEP_RIGHT][CELL_RIGHT]);
-											linear_GRP_solver_Edir(dire, mid, RHO[i][k],RHO[STEP_RIGHT][CELL_RIGHT], 0.0, 0.0, u_L, u_R, 0.0, 0.0, P[i][k], P[STEP_RIGHT][CELL_RIGHT], 0.0, 0.0, gamma[k], eps);
+											linear_GRP_solver_Edir(dire, mid, RHO[1][k],RHO[STEP_RIGHT][CELL_RIGHT], 0.0, 0.0, u_L, u_R, 0.0, 0.0, P[1][k], P[STEP_RIGHT][CELL_RIGHT], 0.0, 0.0, gamma[k], eps);
 											rho_mid = mid[0];
 											p_mid = mid[2];
 
 											/*if(fabs(mid[1])<delta_God)
-											  mid_qt = 0.5*(-U[i][k]*n_y[k][j] + V[i][k]*n_x[k][j])*(mid[1]/delta_God+1) + 0.5*(-U[STEP_RIGHT][CELL_RIGHT]*n_y[k][j] + V[STEP_RIGHT][CELL_RIGHT]*n_x[k][j])*(-mid[1]/delta_God+1);
+											  mid_qt = 0.5*(-U[1][k]*n_y[k][j] + V[1][k]*n_x[k][j])*(mid[1]/delta_God+1) + 0.5*(-U[STEP_RIGHT][CELL_RIGHT]*n_y[k][j] + V[STEP_RIGHT][CELL_RIGHT]*n_x[k][j])*(-mid[1]/delta_God+1);
 											  else*/ if(mid[1]>0)
-												mid_qt = -U[i][k]*n_y[k][j] + V[i][k]*n_x[k][j];
+												mid_qt = -U[1][k]*n_y[k][j] + V[1][k]*n_x[k][j];
 											else
 												mid_qt = -U[STEP_RIGHT][CELL_RIGHT]*n_y[k][j] + V[STEP_RIGHT][CELL_RIGHT]*n_x[k][j];
 											u_mid = mid[1]*n_x[k][j] - mid_qt*n_y[k][j];
@@ -312,18 +312,18 @@ int first_order_solver
 
 									else if(strcmp(scheme,"Roe_Goundov")==0)
 										{											
-											u_L = U[i][k]*n_x[k][j] + V[i][k]*n_y[k][j]; 
+											u_L = U[1][k]*n_x[k][j] + V[1][k]*n_y[k][j]; 
 											u_R = U[STEP_RIGHT][CELL_RIGHT]*n_x[k][j] + V[STEP_RIGHT][CELL_RIGHT]*n_y[k][j];
-											c_L = sqrt(gamma[k] * P[i][k] / RHO[i][k]);
+											c_L = sqrt(gamma[k] * P[1][k] / RHO[1][k]);
 											c_R = sqrt(gamma[k] * P[STEP_RIGHT][CELL_RIGHT] / RHO[STEP_RIGHT][CELL_RIGHT]);											
-											Roe_Goundov_solver(mid, gamma[k], P[i][k],RHO[i][k],u_L,P[STEP_RIGHT][CELL_RIGHT],RHO[STEP_RIGHT][CELL_RIGHT],u_R,&lambda_max, delta);		
+											Roe_Goundov_solver(mid, gamma[k], P[1][k],RHO[1][k],u_L,P[STEP_RIGHT][CELL_RIGHT],RHO[STEP_RIGHT][CELL_RIGHT],u_R,&lambda_max, delta);		
 											rho_mid = mid[0];
 											p_mid = mid[2];
 
 											/*if(fabs(mid[1])<delta_God)
-											  mid_qt = 0.5*(-U[i][k]*n_y[k][j] + V[i][k]*n_x[k][j])*(mid[1]/delta_God+1) + 0.5*(-U[STEP_RIGHT][CELL_RIGHT]*n_y[k][j] + V[STEP_RIGHT][CELL_RIGHT]*n_x[k][j])*(-mid[1]/delta_God+1);
+											  mid_qt = 0.5*(-U[1][k]*n_y[k][j] + V[1][k]*n_x[k][j])*(mid[1]/delta_God+1) + 0.5*(-U[STEP_RIGHT][CELL_RIGHT]*n_y[k][j] + V[STEP_RIGHT][CELL_RIGHT]*n_x[k][j])*(-mid[1]/delta_God+1);
 											  else*/ if(mid[1]>0)
-												mid_qt = -U[i][k]*n_y[k][j] + V[i][k]*n_x[k][j];
+												mid_qt = -U[1][k]*n_y[k][j] + V[1][k]*n_x[k][j];
 											else
 												mid_qt = -U[STEP_RIGHT][CELL_RIGHT]*n_y[k][j] + V[STEP_RIGHT][CELL_RIGHT]*n_x[k][j];
 											u_mid = mid[1]*n_x[k][j] - mid_qt*n_y[k][j];
@@ -376,7 +376,6 @@ int first_order_solver
 
 	for(k = 0; k < NUM_CELL; ++k)
 		{
-			RHO[i+1][k] = RHO[i][k];
 			for(j = 0; j < CELL_POINT[k][0]; ++j)
 				{
 					if(j == CELL_POINT[k][0]-1) 
@@ -390,19 +389,22 @@ int first_order_solver
 							p_n=CELL_POINT[k][j+1];
 						}
 												
-					RHO[i+1][k] += - tau*F_mk_1[k][j] * sqrt((X[p_p]-X[p_n])*(X[p_p]-X[p_n])+(Y[p_p]-Y[p_n])*(Y[p_p]-Y[p_n])) / VOLUME[k];
+					RHO[1][k] += - tau*F_mk_1[k][j] * sqrt((X[p_p]-X[p_n])*(X[p_p]-X[p_n])+(Y[p_p]-Y[p_n])*(Y[p_p]-Y[p_n])) / VOLUME[k];
 					u_con[k] += - tau*F_mk_2[k][j] * sqrt((X[p_p]-X[p_n])*(X[p_p]-X[p_n])+(Y[p_p]-Y[p_n])*(Y[p_p]-Y[p_n])) / VOLUME[k];
 					v_con[k] += - tau*F_mk_3[k][j] * sqrt((X[p_p]-X[p_n])*(X[p_p]-X[p_n])+(Y[p_p]-Y[p_n])*(Y[p_p]-Y[p_n])) / VOLUME[k];
 					e_con[k] += - tau*F_mk_4[k][j] * sqrt((X[p_p]-X[p_n])*(X[p_p]-X[p_n])+(Y[p_p]-Y[p_n])*(Y[p_p]-Y[p_n])) / VOLUME[k];
 				}
 			
-			U[i+1][k] = u_con[k]/RHO[i+1][k];
-			V[i+1][k] = v_con[k]/RHO[i+1][k];
-			P[i+1][k] = (e_con[k] - 0.5*(U[i+1][k]*U[i+1][k]+V[i+1][k]*V[i+1][k])*RHO[i+1][k])*(gamma[k]-1.0);
-			if(P[i+1][k] < eps)
+			U[1][k] = u_con[k]/RHO[1][k];
+			V[1][k] = v_con[k]/RHO[1][k];
+			P[1][k] = (e_con[k] - 0.5*(U[1][k]*U[1][k]+V[1][k]*V[1][k])*RHO[1][k])*(gamma[k]-1.0);
+
+
+			if((RHO[1][k] < eps) || (P[1][k] < eps) ||isnan(RHO[1][k])||isnan(U[1][k])||isnan(V[1][k])||isnan(P[1][k]))
 				{
-					printf ("P is smaller than 0, error firstly happens in cell %d and step %d, t_all=%lf.\n",k,i,t_all);
+					printf("Error firstly happens on step=%d, cell=%d.\n", i, k);
 					stop_step=1;
+					continue;
 				}
 		}
 	
@@ -444,8 +446,6 @@ int first_order_solver
 		  F_mk_3[k] = NULL;
 		  F_mk_4[k] = NULL;
 	  }
-
-  return i+1;
 
   
 }

@@ -12,7 +12,7 @@ void slope_limiter_Ven
  double * grad_W_x, double * grad_W_y, 
  double *W[],  int NUM_CELL, double * config,
  int * CELL_CELL[], int * CELL_POINT[],
- int i, int m, int n)
+ int m, int n)
 {
 	double const eps = config[4];
 
@@ -47,12 +47,12 @@ void slope_limiter_Ven
 						{											
 							X_c_n = X_c[CELL_CELL[k][j]];	
 							Y_c_n = Y_c[CELL_CELL[k][j]];
-							STEP_RIGHT = i;						
+							STEP_RIGHT = 1;						
 							CELL_RIGHT = CELL_CELL[k][j];
 						}
 					else if (CELL_CELL[k][j]==-4)//periodic boundary condition.
 						{
-							STEP_RIGHT = i;
+							STEP_RIGHT = 1;
 							if(!(k%n))
 								{  										   								
 									CELL_RIGHT = k+n-1;
@@ -110,7 +110,7 @@ void slope_limiter_Ven
 								}
 							else if (CELL_CELL[k][j]==-3)//prescribed boundary condition.
 								{
-									STEP_RIGHT = i;
+									STEP_RIGHT = 1;
 									CELL_RIGHT = k;
 								}
 							else if(CELL_CELL[k][j]==-2)//reflecting boundary condition.
@@ -126,8 +126,8 @@ void slope_limiter_Ven
 					M_c[0][1] = M_c[0][1] + (X_c_n - X_c[k]) * (Y_c_n - Y_c[k]);
 					M_c[1][0] = M_c[1][0] + (Y_c_n - Y_c[k]) * (X_c_n - X_c[k]);
 					M_c[1][1] = M_c[1][1] + (Y_c_n - Y_c[k]) * (Y_c_n - Y_c[k]);
-					grad_W_x[k] = grad_W_x[k] +  (W[STEP_RIGHT][CELL_RIGHT] - W[i][k]) * (X_c_n - X_c[k]);
-					grad_W_y[k] = grad_W_y[k] +  (W[STEP_RIGHT][CELL_RIGHT] - W[i][k]) * (Y_c_n - Y_c[k]);
+					grad_W_x[k] = grad_W_x[k] +  (W[STEP_RIGHT][CELL_RIGHT] - W[1][k]) * (X_c_n - X_c[k]);
+					grad_W_y[k] = grad_W_y[k] +  (W[STEP_RIGHT][CELL_RIGHT] - W[1][k]) * (Y_c_n - Y_c[k]);
 				}
 					
 			M_c_i[0][0] =   M_c[1][1]/(M_c[0][0]*M_c[1][1] - M_c[0][1]*M_c[1][0]);
@@ -142,13 +142,13 @@ void slope_limiter_Ven
 
 	for(k = 0; k < NUM_CELL; ++k)
 		{
-			W_c_min = W[i][k];
-			W_c_max = W[i][k];
+			W_c_min = W[1][k];
+			W_c_max = W[1][k];
 			for(j = 0; j < CELL_POINT[k][0]; ++j)
 				{
 					if (CELL_CELL[k][j]>=0)
 						{											
-							STEP_RIGHT = i;							
+							STEP_RIGHT = 1;							
 							CELL_RIGHT = CELL_CELL[k][j];
 						}
 					else if (CELL_CELL[k][j]==-1)//initial boundary condition.
@@ -158,12 +158,12 @@ void slope_limiter_Ven
 						}
 					else if (CELL_CELL[k][j]==-3)//prescribed boundary condition.
 						{
-							STEP_RIGHT = i;
+							STEP_RIGHT = 1;
 							CELL_RIGHT = k;
 						}
 					else if (CELL_CELL[k][j]==-4)//periodic boundary condition in x-direction.
 						{
-							STEP_RIGHT = i;
+							STEP_RIGHT = 1;
 							if(!(k%n))
 								CELL_RIGHT = k+n-1;
 							else if(k%n==n-1)
@@ -192,13 +192,13 @@ void slope_limiter_Ven
 				{
 					for(j = 0; j < CELL_POINT[k][0]; ++j)
 						{							
-							W_c_x_p = W[i][k] + grad_W_x[k] * (X[CELL_POINT[k][j+1]] - X_c[k]) + grad_W_y[k] * (Y[CELL_POINT[k][j+1]] - Y_c[k]);
-							if (fabs(W_c_x_p - W[i][k]) <eps)
+							W_c_x_p = W[1][k] + grad_W_x[k] * (X[CELL_POINT[k][j+1]] - X_c[k]) + grad_W_y[k] * (Y[CELL_POINT[k][j+1]] - Y_c[k]);
+							if (fabs(W_c_x_p - W[1][k]) <eps)
 								FAI_W = (FAI_W < 1.0) ? FAI_W : 1.0;	
-							else if((W_c_x_p - W[i][k]) > 0.0)
-								FAI_W = (FAI_W < miu_Ven((W_c_max - W[i][k])/(W_c_x_p - W[i][k]))) ? FAI_W : miu_Ven((W_c_max - W[i][k])/(W_c_x_p - W[i][k]));
+							else if((W_c_x_p - W[1][k]) > 0.0)
+								FAI_W = (FAI_W < miu_Ven((W_c_max - W[1][k])/(W_c_x_p - W[1][k]))) ? FAI_W : miu_Ven((W_c_max - W[1][k])/(W_c_x_p - W[1][k]));
 							else
-								FAI_W = (FAI_W < miu_Ven((W_c_min - W[i][k])/(W_c_x_p - W[i][k]))) ? FAI_W : miu_Ven((W_c_min - W[i][k])/(W_c_x_p - W[i][k]));
+								FAI_W = (FAI_W < miu_Ven((W_c_min - W[1][k])/(W_c_x_p - W[1][k]))) ? FAI_W : miu_Ven((W_c_min - W[1][k])/(W_c_x_p - W[1][k]));
 						}
 					grad_W_x[k] = grad_W_x[k] * FAI_W;
 					grad_W_y[k] = grad_W_y[k] * FAI_W;

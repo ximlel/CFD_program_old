@@ -122,194 +122,55 @@ int main(int argc, char *argv[])
 											  * definition of
 											  * array config.
 											  */
-	int i = 0, k = 0, N = (int)(config[5]) + 1;
+	int i = 0, k = 0, N = (int)(config[5]);
   
 	double cpu_time[N];
 	cpu_time[0] = 0.0;
 
 
-	double * RHO[N];
-	RHO[0] = RHO0 + 2;
-	for(k = 1; k < N; ++k)
-		{
-			RHO[k] = (double *)malloc(NUM_CELL * sizeof(double));
-			if(RHO[k] == NULL)
-				{
-					for(i = 1; i < k; ++i)
-						{
-							free(RHO[i]);
-							RHO[i] = NULL;
-						}
-					free(RHO0);
-					free(U0);
-					free(V0);
-					free(P0);
-					RHO[0] = NULL;
-					RHO0 = NULL;
-					U0 = NULL;
-					V0 = NULL;
-					P0 = NULL;
-					printf("NOT enough memory! RHO[%d]\n", k);
-					exit(5);
-				}
-		}
+	double RHO_t[NUM_CELL];
+	for(k=0; k<NUM_CELL; k++)
+		RHO_t[k] = (RHO0+2)[k]; 
 
-	double * U[N];
-	U[0] = U0 + 2;
-	for(k = 1; k < N; ++k)
-		{
-			U[k] = (double *)malloc(NUM_CELL * sizeof(double));
-			if(U[k] == NULL)
-				{
-					for(i = 1; i < k; ++i)
-						{
-							free(U[i]);
-							U[i] = NULL;
-						}
-					for(i = 1; i < N; ++i)
-						{
-							free(RHO[i]);
-							RHO[i] = NULL;
-						}
-					free(RHO0);
-					free(U0);
-					free(V0);
-					free(P0);
-					RHO[0] = NULL;
-					U[0] = NULL;
-					RHO0 = NULL;
-					U0 = NULL;
-					V0 = NULL;
-					P0 = NULL;
-					printf("NOT enough memory! U[%d]\n", k);
-					exit(5);
-				}
-		}
+	double U_t[NUM_CELL];
+	for(k=0; k<NUM_CELL; k++)
+		U_t[k] = (U0+2)[k];
+	
+	double V_t[NUM_CELL];
+	for(k=0; k<NUM_CELL; k++)
+		V_t[k] = (V0+2)[k];
+		
+  	double P_t[NUM_CELL];
+	for(k=0; k<NUM_CELL; k++)
+		P_t[k] = (P0+2)[k];
+		
+  	double CC_t[NUM_CELL];
+	if(strcmp(argv[argc-1],"Two_species")==0)
+		for(k=0; k<NUM_CELL; k++)
+			CC_t[k] = (CC0+2)[k];
 
-	double * V[N];
-	V[0] = V0 + 2;
-	for(k = 1; k < N; ++k)
-		{
-			V[k] = (double *)malloc(NUM_CELL * sizeof(double));
-			if(V[k] == NULL)
-				{
-					for(i = 1; i < k; ++i)
-						{
-							free(V[i]);
-							V[i] = NULL;
-						}
-					for(i = 1; i < N; ++i)
-						{		
-							free(RHO[i]);
-							RHO[i] = NULL;
-							free(U[i]);
-							U[i] = NULL;
-						}
-					free(RHO0);
-					free(U0);
-					free(V0);
-					free(P0);
-					RHO[0] = NULL;
-					U[0] = NULL;
-					V[0] = NULL;
-					RHO0 = NULL;
-					U0 = NULL;
-					V0 = NULL;
-					P0 = NULL;
-					printf("NOT enough memory! V[%d]\n", k);
-					exit(5);
-				}
-		}
-  
-	double * P[N];
-	P[0] = P0 + 2;
-	for(k = 1; k < N; ++k)
-		{
-			P[k] = (double *)malloc(NUM_CELL * sizeof(double));
-			if(P[k] == NULL)
-				{
-					for(i = 1; i < k; ++i)
-						{
-							free(P[i]);
-							P[i] = NULL;
-						}
-					for(i = 1; i < N; ++i)
-						{	
-							free(RHO[i]);
-							RHO[i] = NULL;
-							free(U[i]);
-							U[i] = NULL;
-							free(V[i]);
-							V[i] = NULL;
-						}
-					free(RHO0);
-					free(U0);
-					free(V0);
-					free(P0);
-					RHO[0] = NULL;
-					U[0] = NULL;
-					V[0] = NULL;
-					P[0] = NULL;
-					RHO0 = NULL;
-					U0 = NULL;
-					V0 = NULL;
-					P0 = NULL;
-					printf("NOT enough memory! P[%d]\n", k);
-					exit(5);
-				}
-		}
-
-
-	double * CC[N]; //Component Concentration
-	CC[0] = CC0 + 2;
-if(strcmp(argv[argc-1],"Two_species")==0)
-	for(k = 1; k < N; ++k)
-		{
-			CC[k] = (double *)malloc(NUM_CELL * sizeof(double));
-			if(CC[k] == NULL)
-				{
-					for(i = 1; i < k; ++i)
-						{
-							free(CC[i]);
-							CC[i] = NULL;
-						}
-					for(i = 1; i < N; ++i)
-						{	
-							free(RHO[i]);
-							RHO[i] = NULL;
-							free(U[i]);
-							U[i] = NULL;
-							free(V[i]);
-							V[i] = NULL;
-							free(P[i]);
-							P[i] = NULL;
-						}
-					free(RHO0);
-					free(U0);
-					free(V0);
-					free(P0);
-					free(CC0);
-					RHO[0] = NULL;
-					U[0] = NULL;
-					V[0] = NULL;
-					P[0] = NULL;
-					CC[0] = NULL;
-					RHO0 = NULL;
-					U0 = NULL;
-					V0 = NULL;
-					P0 = NULL;
-					CC0 = NULL;
-					printf("NOT enough memory! CC[%d]\n", k);
-					exit(5);
-				}
-		}
-
-
+	
+	double  *RHO[2];
+	double *U[2];
+	double *V[2];
+	double *P[2];
+	double *CC[2];
+	
+	RHO[0] = RHO0+2;
+	RHO[1] = RHO_t;
+	U[0] = U0+2;
+	U[1] = U_t;
+	V[0] = V0+2;
+	V[1] = V_t;
+	P[0] = P0+2;
+	P[1] = P_t;	
+	CC[0] = CC0+2;
+	CC[1] = CC_t;
+	
 
 	double X[NUM_POINT];
 	double Y[NUM_POINT];
   
-
                                             
 	int * CELL_POINT[NUM_CELL];
   
@@ -335,17 +196,23 @@ if(strcmp(argv[argc-1],"Two_species")==0)
 		printf("No mesh setting!\n");
 
 	int STEP;
+	
+	if(atoi(argv[5])>=0)
+		STEP = atoi(argv[5]);
+	else
+		STEP = N;
 
+	
 	if(strcmp(argv[argc-1],"second_order")==0||strcmp(argv[argc-2],"second_order")==0)
 		{			
 			printf("second order\n");
 			if(strcmp(argv[argc-1],"Two_species")==0)
 				{
 					printf("Two species\n");		  
-					STEP = second_order_two_species_solver(config, NUM_CELL, NUM_POINT, NUM_BOUNDARY, CELL_POINT, BOUNDARY_POINT, m, n, RHO, U, V, P, CC, X, Y, gamma, cpu_time, argv[4], atof(argv[6]));
+					second_order_two_species_solver(STEP, config, NUM_CELL, NUM_POINT, NUM_BOUNDARY, CELL_POINT, BOUNDARY_POINT, m, n, RHO, U, V, P, CC, X, Y, gamma, cpu_time, argv[4], atof(argv[6]));
 				}
 			else        
-			STEP = second_order_solver(config, NUM_CELL, NUM_POINT, NUM_BOUNDARY, CELL_POINT, BOUNDARY_POINT, m, n, RHO, U, V, P, X, Y, gamma, cpu_time, argv[4], atof(argv[6]));
+				second_order_solver(STEP, config, NUM_CELL, NUM_POINT, NUM_BOUNDARY, CELL_POINT, BOUNDARY_POINT, m, n, RHO, U, V, P, X, Y, gamma, cpu_time, argv[4], atof(argv[6]));
 		}
 	else       
 		{
@@ -353,16 +220,11 @@ if(strcmp(argv[argc-1],"Two_species")==0)
 			if(strcmp(argv[argc-1],"Two_species")==0)
 				{
 					printf("Two species\n");		  
-					STEP = first_order_two_species_solver(config, NUM_CELL, NUM_POINT, NUM_BOUNDARY, CELL_POINT, BOUNDARY_POINT, m, n, RHO, U, V, P, CC, X, Y, gamma, cpu_time, argv[4], atof(argv[6]));
+					first_order_two_species_solver(STEP, config, NUM_CELL, NUM_POINT, NUM_BOUNDARY, CELL_POINT, BOUNDARY_POINT, m, n, RHO, U, V, P, CC, X, Y, gamma, cpu_time, argv[4], atof(argv[6]));
 				}
 			else
-				STEP = first_order_solver(config, NUM_CELL, NUM_POINT, NUM_BOUNDARY, CELL_POINT, BOUNDARY_POINT, m, n, RHO, U, V, P, X, Y, gamma, cpu_time, argv[4], atof(argv[6]));
+				first_order_solver(STEP, config, NUM_CELL, NUM_POINT, NUM_BOUNDARY, CELL_POINT, BOUNDARY_POINT, m, n, RHO, U, V, P, X, Y, gamma, cpu_time, argv[4], atof(argv[6]));
 		}
-
-
-
-	if(atoi(argv[5])>=0)
-		STEP = atoi(argv[5]);
 
 
 	
@@ -371,39 +233,25 @@ if(strcmp(argv[argc-1],"Two_species")==0)
 	if(strcmp(argv[argc-1],"second_order")==0||strcmp(argv[argc-2],"second_order")==0)
 		{
 			if(strcmp(argv[argc-1],"Two_species")==0)
-				file_two_species_write_TEC(NUM_POINT, X, Y, NUM_CELL, CELL_POINT, RHO[STEP], U[STEP], V[STEP], P[STEP], CC[STEP], cpu_time, config, argv[2], "2D_EUL_second_order/");
+				file_two_species_write_TEC(NUM_POINT, X, Y, NUM_CELL, CELL_POINT, RHO_t, U_t, V_t, P_t, CC_t, cpu_time, config, argv[2], "2D_EUL_second_order/");
 			else
 				{		  
 					//  file_write_VTK(NUM_POINT, X, Y, NUM_CELL, CELL_POINT, RHO[STEP], U[STEP], V[STEP], P[STEP], cpu_time, config, argv[2], "2D_EUL_second_order/"); 
-					file_write_TEC(NUM_POINT, X, Y, NUM_CELL, CELL_POINT, RHO[STEP], U[STEP], V[STEP], P[STEP], cpu_time, config, argv[2], "2D_EUL_second_order/");  
+					file_write_TEC(NUM_POINT, X, Y, NUM_CELL, CELL_POINT, RHO_t, U_t, V_t, P_t, cpu_time, config, argv[2], "2D_EUL_second_order/");  
 				}
 		}
 	else
 		{							
 			if(strcmp(argv[argc-1],"Two_species")==0)
-				file_two_species_write_TEC(NUM_POINT, X, Y, NUM_CELL, CELL_POINT, RHO[STEP], U[STEP], V[STEP], P[STEP], CC[STEP], cpu_time, config, argv[2], "2D_EUL_first_order/");
+				file_two_species_write_TEC(NUM_POINT, X, Y, NUM_CELL, CELL_POINT, RHO_t, U_t, V_t, P_t, CC_t, cpu_time, config, argv[2], "2D_EUL_first_order/");
 			else
 				{		  
 					//  file_write_VTK(NUM_POINT, X, Y, NUM_CELL, CELL_POINT, RHO[STEP], U[STEP], V[STEP], P[STEP], cpu_time, config, argv[2], "2D_EUL_first_order/"); 
-					file_write_TEC(NUM_POINT, X, Y, NUM_CELL, CELL_POINT, RHO[STEP], U[STEP], V[STEP], P[STEP], cpu_time, config, argv[2], "2D_EUL_first_order/");  
+					file_write_TEC(NUM_POINT, X, Y, NUM_CELL, CELL_POINT, RHO_t, U_t, V_t, P_t, cpu_time, config, argv[2], "2D_EUL_first_order/");  
 				}
 		}
+	
 
-
-	for(k = 1; k < N; ++k)
-		{
-			free(RHO[k]);
-			free(U[k]);
-			free(V[k]);
-			free(P[k]);
-if(strcmp(argv[argc-1],"Two_species")==0)
-			free(CC[k]);
-			RHO[k] = NULL;
-			U[k] = NULL;
-			V[k] = NULL;
-			P[k] = NULL;
-			CC[k] = NULL;
-		}
 	free(RHO0);
 	free(U0);
 	free(V0);
@@ -414,11 +262,6 @@ if(strcmp(argv[argc-1],"Two_species")==0)
 	V0 = NULL;
 	P0 = NULL;
 	CC0 = NULL;
-	RHO[0] = NULL;
-	U[0] = NULL;
-	V[0] = NULL;
-	P[0] = NULL;  
-	CC[0] = NULL;
 
 
 	for(k = 0; k < NUM_CELL; ++k)

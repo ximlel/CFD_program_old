@@ -23,8 +23,8 @@
  */
 
 
-int second_order_solver
-(double * config, int NUM_CELL, int NUM_POINT, int NUM_BOUNDARY, int * CELL_POINT[],
+void second_order_solver
+(int STEP, double * config, int NUM_CELL, int NUM_POINT, int NUM_BOUNDARY, int * CELL_POINT[],
  int * BOUNDARY_POINT[], int m, int n, double * RHO[], double * U[], double * V[], double * P[],
  double * X, double * Y, double * gamma, double * cpu_time, char * scheme, double CFL/* the CFL number */)
 {	
@@ -209,7 +209,7 @@ int second_order_solver
 
 //------------THE MAIN LOOP-------------
 
-	for(i = 0; i < N; ++i)
+	for(i = 0; i < STEP; ++i)
 		{	
 
 			tic = clock();		
@@ -231,15 +231,11 @@ int second_order_solver
 					Y_c[k] = Y_c[k]/S/3;
 				}
 
-			slope_limiter_Ven(X_c, Y_c, X, Y, grad_RHO_x, grad_RHO_y, RHO, NUM_CELL, config, CELL_CELL, CELL_POINT, i, m, n);
-			slope_limiter_Ven(X_c, Y_c, X, Y, grad_U_x, grad_U_y, U, NUM_CELL, config, CELL_CELL, CELL_POINT, i, m ,n);
-			slope_limiter_Ven(X_c, Y_c, X, Y, grad_V_x, grad_V_y,  V, NUM_CELL, config, CELL_CELL, CELL_POINT, i, m, n);
-			slope_limiter_Ven(X_c, Y_c, X, Y, grad_P_x, grad_P_y, P, NUM_CELL, config, CELL_CELL, CELL_POINT, i, m, n);
+			slope_limiter_Ven(X_c, Y_c, X, Y, grad_RHO_x, grad_RHO_y, RHO, NUM_CELL, config, CELL_CELL, CELL_POINT, m, n);
+			slope_limiter_Ven(X_c, Y_c, X, Y, grad_U_x, grad_U_y, U, NUM_CELL, config, CELL_CELL, CELL_POINT, m ,n);
+			slope_limiter_Ven(X_c, Y_c, X, Y, grad_V_x, grad_V_y,  V, NUM_CELL, config, CELL_CELL, CELL_POINT, m, n);
+			slope_limiter_Ven(X_c, Y_c, X, Y, grad_P_x, grad_P_y, P, NUM_CELL, config, CELL_CELL, CELL_POINT, m, n);
 
-/*			if(i==0)
-				for(k = 0; k < NUM_CELL; ++k)
-					printf("grad_RHO_x[%d] = %lf\n",k,grad_RHO_x[k]);
-*/
 
 			
 			for(k = 0; k < NUM_CELL; ++k)
@@ -261,10 +257,6 @@ int second_order_solver
 															
 							if (CELL_CELL[k][j]==-2)//reflecting boundary condition.
 								{
-									F_mk[0] = 0.0;
-									F_mk[1] = P[i][k]*n_x[k][j];
-									F_mk[2] = P[i][k]*n_y[k][j];
-									F_mk[3] = 0.0;
 									lambda_max = 0.0;
 								}
 							else
@@ -303,9 +295,9 @@ int second_order_solver
 											exit(7);
 										}						 
 							   																									
-											qn_L = U[i][k]*n_x[k][j] + V[i][k]*n_y[k][j]; 
+											qn_L = U[1][k]*n_x[k][j] + V[1][k]*n_y[k][j]; 
 											qn_R = U[STEP_RIGHT][CELL_RIGHT]*n_x[k][j] + V[STEP_RIGHT][CELL_RIGHT]*n_y[k][j];
-											c_L = sqrt(gamma[k] * P[i][k] / RHO[i][k]);
+											c_L = sqrt(gamma[k] * P[1][k] / RHO[i][k]);
 											c_R = sqrt(gamma[k] * P[STEP_RIGHT][CELL_RIGHT] / RHO[STEP_RIGHT][CELL_RIGHT]);
 											lambda_max = max(c_L+fabs(qn_L),c_R+fabs(qn_R));					
 								}								
@@ -358,15 +350,15 @@ int second_order_solver
 							if (CELL_CELL[k][j]==-2)//reflecting boundary condition.
 								{
 									F_mk[0] = 0.0;
-									F_mk[1] = P[i][k]*n_x[k][j];
-									F_mk[2] = P[i][k]*n_y[k][j];
+									F_mk[1] = P[1][k]*n_x[k][j];
+									F_mk[2] = P[1][k]*n_y[k][j];
 									F_mk[3] = 0.0;
 								}
 							else
 								{
 									if (CELL_CELL[k][j]>=0)
 										{											
-											STEP_RIGHT = i;							
+											STEP_RIGHT = 1;							
 											CELL_RIGHT = CELL_CELL[k][j];
 											
 											d_rho_R = grad_RHO_x[CELL_RIGHT]*n_x[k][j] + grad_RHO_y[CELL_RIGHT]*n_y[k][j];
@@ -396,7 +388,7 @@ int second_order_solver
 										}
 									else if (CELL_CELL[k][j]==-3)//prescribed boundary condition.
 										{
-											STEP_RIGHT = i;
+											STEP_RIGHT = 1;
 											CELL_RIGHT = k;
 
 											d_rho_R =  grad_RHO_x[CELL_RIGHT]*n_x[k][j] + grad_RHO_y[CELL_RIGHT]*n_y[k][j];
@@ -411,7 +403,7 @@ int second_order_solver
 										}
 									else if (CELL_CELL[k][j]==-4)//periodic boundary condition in x-direction.
 										{
-											STEP_RIGHT = i;
+											STEP_RIGHT = 1;
 											if(!(k%n))
 												CELL_RIGHT = k+n-1;
 											else if(k%n==n-1)
@@ -447,10 +439,10 @@ int second_order_solver
 											d_v_L =  grad_V_x[k]*n_x[k][j] + grad_V_y[k]*n_y[k][j];
 											d_p_L =  grad_P_x[k]*n_x[k][j] + grad_P_y[k]*n_y[k][j];
 
-											rho_L = RHO[i][k] + grad_RHO_x[k] * delta_X + grad_RHO_y[k] * delta_Y;
-											u_L = U[i][k] + grad_U_x[k] * delta_X + grad_U_y[k] * delta_Y;
-											v_L = V[i][k] + grad_V_x[k] * delta_X + grad_V_y[k] * delta_Y;
-											p_L = P[i][k] + grad_P_x[k] * delta_X + grad_P_y[k] * delta_Y;
+											rho_L = RHO[1][k] + grad_RHO_x[k] * delta_X + grad_RHO_y[k] * delta_Y;
+											u_L = U[1][k] + grad_U_x[k] * delta_X + grad_U_y[k] * delta_Y;
+											v_L = V[1][k] + grad_V_x[k] * delta_X + grad_V_y[k] * delta_Y;
+											p_L = P[1][k] + grad_P_x[k] * delta_X + grad_P_y[k] * delta_Y;
 
 											qn_L = u_L*n_x[k][j] + v_L*n_y[k][j];
 											qt_L = -u_L*n_y[k][j] + v_L*n_x[k][j];
@@ -492,7 +484,6 @@ int second_order_solver
 
 	for(k = 0; k < NUM_CELL; ++k)
 		{
-			RHO[i+1][k] = RHO[i][k];
 			for(j = 0; j < CELL_POINT[k][0]; ++j)
 				{
 					if(j == CELL_POINT[k][0]-1) 
@@ -506,19 +497,20 @@ int second_order_solver
 							p_n=CELL_POINT[k][j+1];
 						}
 												
-					RHO[i+1][k] += - tau*F_mk_1[k][j] * sqrt((X[p_p]-X[p_n])*(X[p_p]-X[p_n])+(Y[p_p]-Y[p_n])*(Y[p_p]-Y[p_n])) / VOLUME[k];
+					RHO[1][k] += - tau*F_mk_1[k][j] * sqrt((X[p_p]-X[p_n])*(X[p_p]-X[p_n])+(Y[p_p]-Y[p_n])*(Y[p_p]-Y[p_n])) / VOLUME[k];
 					u_con[k] += - tau*F_mk_2[k][j] * sqrt((X[p_p]-X[p_n])*(X[p_p]-X[p_n])+(Y[p_p]-Y[p_n])*(Y[p_p]-Y[p_n])) / VOLUME[k];
 					v_con[k] += - tau*F_mk_3[k][j] * sqrt((X[p_p]-X[p_n])*(X[p_p]-X[p_n])+(Y[p_p]-Y[p_n])*(Y[p_p]-Y[p_n])) / VOLUME[k];
 					e_con[k] += - tau*F_mk_4[k][j] * sqrt((X[p_p]-X[p_n])*(X[p_p]-X[p_n])+(Y[p_p]-Y[p_n])*(Y[p_p]-Y[p_n])) / VOLUME[k];
 				}
 			
-			U[i+1][k] = u_con[k]/RHO[i+1][k];
-			V[i+1][k] = v_con[k]/RHO[i+1][k];
-			P[i+1][k] = (e_con[k] - 0.5*(U[i+1][k]*U[i+1][k]+V[i+1][k]*V[i+1][k])*RHO[i+1][k])*(gamma[k]-1.0);
-			if(P[i+1][k] < eps)
+			U[1][k] = u_con[k]/RHO[1][k];
+			V[1][k] = v_con[k]/RHO[1][k];
+			P[1][k] = (e_con[k] - 0.5*(U[1][k]*U[1][k]+V[1][k]*V[1][k])*RHO[1][k])*(gamma[k]-1.0);
+			if((RHO[1][k] < eps) || (P[1][k] < eps) ||isnan(RHO[1][k])||isnan(U[1][k])||isnan(V[1][k])||isnan(P[1][k]))
 				{
-					printf ("P is smaller than 0, error firstly happens in cell %d and step %d, t_all=%lf.\n",k,i,t_all);
+					printf("Error firstly happens on step=%d, cell=%d.\n", i, k);
 					stop_step=1;
+					continue;
 				}
 		}
 	
@@ -560,8 +552,6 @@ int second_order_solver
 		  F_mk_3[k] = NULL;
 		  F_mk_4[k] = NULL;
 	  }
-
-  return i+1;
 
   
 }
