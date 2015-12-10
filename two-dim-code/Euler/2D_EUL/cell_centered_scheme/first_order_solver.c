@@ -402,12 +402,15 @@ void first_order_solver
 
 			if((RHO[1][k] < eps) || (P[1][k] < eps) ||isnan(RHO[1][k])||isnan(U[1][k])||isnan(V[1][k])||isnan(P[1][k]))
 				{
-					printf("Error firstly happens on step=%d, cell=%d.\n", i, k);
-					stop_step=1;
-					continue;
+					if(!stop_step)
+						printf("Error firstly happens on step=%d, cell=%d", i, k);
+					else
+						printf (",%d",k);
+					stop_step=2;
 				}
 		}
-	
+	if(stop_step==2)
+		printf(".\n");
 
 
 	

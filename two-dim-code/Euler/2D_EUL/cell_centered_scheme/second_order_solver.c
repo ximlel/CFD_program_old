@@ -263,7 +263,7 @@ void second_order_solver
 								{
 									if (CELL_CELL[k][j]>=0)
 										{											
-											STEP_RIGHT = i;							
+											STEP_RIGHT = 1;							
 											CELL_RIGHT = CELL_CELL[k][j];
 										}
 									else if (CELL_CELL[k][j]==-1)//initial boundary condition.
@@ -273,12 +273,12 @@ void second_order_solver
 										}
 									else if (CELL_CELL[k][j]==-3)//prescribed boundary condition.
 										{
-											STEP_RIGHT = i;
+											STEP_RIGHT = 1;
 											CELL_RIGHT = k;
 										}
 									else if (CELL_CELL[k][j]==-4)//periodic boundary condition in x-direction.
 										{
-											STEP_RIGHT = i;
+											STEP_RIGHT = 1;
 											if(!(k%n))
 												CELL_RIGHT = k+n-1;
 											else if(k%n==n-1)
@@ -297,7 +297,7 @@ void second_order_solver
 							   																									
 											qn_L = U[1][k]*n_x[k][j] + V[1][k]*n_y[k][j]; 
 											qn_R = U[STEP_RIGHT][CELL_RIGHT]*n_x[k][j] + V[STEP_RIGHT][CELL_RIGHT]*n_y[k][j];
-											c_L = sqrt(gamma[k] * P[1][k] / RHO[i][k]);
+											c_L = sqrt(gamma[k] * P[1][k] / RHO[1][k]);
 											c_R = sqrt(gamma[k] * P[STEP_RIGHT][CELL_RIGHT] / RHO[STEP_RIGHT][CELL_RIGHT]);
 											lambda_max = max(c_L+fabs(qn_L),c_R+fabs(qn_R));					
 								}								
@@ -508,12 +508,15 @@ void second_order_solver
 			P[1][k] = (e_con[k] - 0.5*(U[1][k]*U[1][k]+V[1][k]*V[1][k])*RHO[1][k])*(gamma[k]-1.0);
 			if((RHO[1][k] < eps) || (P[1][k] < eps) ||isnan(RHO[1][k])||isnan(U[1][k])||isnan(V[1][k])||isnan(P[1][k]))
 				{
-					printf("Error firstly happens on step=%d, cell=%d.\n", i, k);
-					stop_step=1;
-					continue;
+					if(!stop_step)
+						printf("Error firstly happens on step=%d, cell=%d", i, k);
+					else
+						printf (",%d",k);
+					stop_step=2;
 				}
 		}
-	
+	if(stop_step==2)
+		printf(".\n");		
 
 
 	

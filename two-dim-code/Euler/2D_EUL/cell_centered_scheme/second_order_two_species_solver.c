@@ -458,7 +458,7 @@ void second_order_two_species_solver
 											u_L = U[1][k] + grad_U_x[k] * delta_X + grad_U_y[k] * delta_Y;
 											v_L = V[1][k] + grad_V_x[k] * delta_X + grad_V_y[k] * delta_Y;
 											p_L = P[1][k] + grad_P_x[k] * delta_X + grad_P_y[k] * delta_Y;
-											z_L = Z[i][k] + grad_Z_x[k] * delta_X + grad_Z_y[k] * delta_Y;
+											z_L = Z[1][k] + grad_Z_x[k] * delta_X + grad_Z_y[k] * delta_Y;
 
 											qn_L = u_L*n_x[k][j] + v_L*n_y[k][j];
 											qt_L = -u_L*n_y[k][j] + v_L*n_x[k][j];
@@ -519,7 +519,7 @@ void second_order_two_species_solver
 							p_n=CELL_POINT[k][j+1];
 						}
 												
-					RHO[i+1][k] += - tau*F_mk_1[k][j] * sqrt((X[p_p]-X[p_n])*(X[p_p]-X[p_n])+(Y[p_p]-Y[p_n])*(Y[p_p]-Y[p_n])) / VOLUME[k];
+					RHO[1][k] += - tau*F_mk_1[k][j] * sqrt((X[p_p]-X[p_n])*(X[p_p]-X[p_n])+(Y[p_p]-Y[p_n])*(Y[p_p]-Y[p_n])) / VOLUME[k];
 					u_con[k] += - tau*F_mk_2[k][j] * sqrt((X[p_p]-X[p_n])*(X[p_p]-X[p_n])+(Y[p_p]-Y[p_n])*(Y[p_p]-Y[p_n])) / VOLUME[k];
 					v_con[k] += - tau*F_mk_3[k][j] * sqrt((X[p_p]-X[p_n])*(X[p_p]-X[p_n])+(Y[p_p]-Y[p_n])*(Y[p_p]-Y[p_n])) / VOLUME[k];
 					e_con[k] += - tau*F_mk_4[k][j] * sqrt((X[p_p]-X[p_n])*(X[p_p]-X[p_n])+(Y[p_p]-Y[p_n])*(Y[p_p]-Y[p_n])) / VOLUME[k];
@@ -532,12 +532,15 @@ void second_order_two_species_solver
 			Z[1][k] = z_con[k]/RHO[1][k];			
 			if((RHO[1][k] < eps) || (P[1][k] < eps)|| (Z[1][k] < -1.0*eps)|| (Z[1][k] > 1.0+eps) ||isnan(RHO[1][k])||isnan(U[1][k])||isnan(V[1][k])||isnan(P[1][k])||isnan(Z[1][k]))
 				{
-					printf("Error firstly happens on step=%d, cell=%d.\n", i, k);
-					stop_step=1;
-					continue;
+					if(!stop_step)
+						printf("Error firstly happens on step=%d, cell=%d", i, k);
+					else
+						printf (",%d",k);
+					stop_step=2;
 				}
 		}
-	
+	if(stop_step==2)
+		printf(".\n");	
 
 
 	

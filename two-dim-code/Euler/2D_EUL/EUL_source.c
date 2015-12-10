@@ -262,6 +262,17 @@ int main(int argc, char *argv[])
 	V0 = NULL;
 	P0 = NULL;
 	CC0 = NULL;
+	RHO[0] = NULL;
+	RHO[1] = NULL;
+	U[0] = NULL;
+	U[1] = NULL;
+	V[0] = NULL;
+	V[1] = NULL;
+	P[0] = NULL;
+	P[1] = NULL;	
+	CC[0] = NULL;
+	CC[1] = NULL;
+
 
 
 	for(k = 0; k < NUM_CELL; ++k)

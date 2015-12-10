@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ulimit -s  1024000
+ulimit -s  102400
 
 
 INITIAL_PATH=$PWD
@@ -62,7 +62,7 @@ cd $INITIAL_PATH
 
 #./EUL_source.out Sod_10 Sod_10_ROE Sod_mesh ROE -1 0.4
 #./EUL_source.out Sod_10 Sod_10 Sod_mesh Riemann_exact -1 0.4
-#./EUL_source.out Sod_10 Sod_10_Roe_Goundov Sod_mesh Roe_Goundov -1 0.4
+./EUL_source.out Sod_10 Sod_10_Roe_Goundov Sod_mesh Roe_Goundov -1 0.4
 
 #./EUL_source.out Sod Sod_ROE Sod_mesh ROE -1 0.4
 #./EUL_source.out Sod Sod_HLL Sod_mesh HLL -1 0.4
@@ -97,7 +97,7 @@ cd $INITIAL_PATH
 
 #./EUL_source.out Cylinder Cylinder_ROE Cylinder_mesh ROE -1 0.4
 #./EUL_source.out Cylinder Cylinder Cylinder_mesh Riemann_exact -1 0.4
-#./EUL_source.out Cylinder Cylinder_Roe_Goundov Cylinder_mesh Roe_Goundov -1 0.4
+./EUL_source.out Cylinder Cylinder_Roe_Goundov Cylinder_mesh Roe_Goundov -1 0.4
 
 #./EUL_source.out Riemann_2D3_Quad Riemann_2D3_Quad_ROE Free_mesh ROE -1 0.4
 #./EUL_source.out Riemann_2D3_Quad Riemann_2D3_Quad Free_mesh Riemann_exact -1 0.4
@@ -106,13 +106,15 @@ cd $INITIAL_PATH
 
 #./EUL_source.out RMI RMI RMI_mesh Riemann_exact -1 0.4 Two_species
 #./EUL_source.out RMI RMI_test RMI_mesh Riemann_exact -1 0.4
+./EUL_source.out RMI RMI_Roe_Goundov RMI_mesh Roe_Goundov 100 0.4
 
 ## second order
 
 #./EUL_source.out RMI RMI RMI_mesh GRP -1 0.4 second_order Two_species
 #./EUL_source.out RMI_321 RMI_321 RMI_mesh GRP -1 0.4 second_order Two_species
 #./EUL_source.out RMI_641 RMI_641 RMI_mesh GRP -1 0.4 second_order Two_species
-./EUL_source.out RMI RMI_test RMI_mesh GRP -1 0.4 second_order
+#./EUL_source.out RMI RMI_test RMI_mesh GRP -1 0.4 second_order
+#nohup ./EUL_source.out Sod_10 Sod_10 Sod_mesh GRP -1 0.4 second_order &
 
 
 exit 0
