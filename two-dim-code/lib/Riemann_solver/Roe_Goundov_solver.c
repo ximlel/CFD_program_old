@@ -2,21 +2,69 @@
 #include <stdio.h>
 #include <stdlib.h>
 #define max(x,y)  ( x>y?x:y )
-
+#define min(x,y)  ( x<y?x:y )
 
 
 void Roe_Goundov_solver(double *F, double gamma, double P_L, double RHO_L, double U_L, double P_R, double RHO_R, double U_R, double *lambda_max, double delta)
-{	
+{
+	double const  Q_user = 2.0;
+	
+	
 	double C_L, C_R;
 	C_L = sqrt(gamma*P_L/RHO_L);
 	C_R = sqrt(gamma*P_R/RHO_R);
 	double z = 0.5 *  (gamma-1.0) / gamma;
-	double P_star, U_star_L, U_star_R, C_star_L, C_star_R, lambda_L_1, lambda_R_1, lambda_L_3, lambda_R_3;
-	P_star = pow((C_L + C_R - (gamma-1.0)/2.0*(U_R - U_L))/(C_L/pow(P_L,z) + C_R/pow(P_R,z)), 1.0/z);
-	C_star_L = C_L * pow(P_star/P_L, z);
-	U_star_L = U_L + 2.0/(gamma - 1.0)*(C_L - C_star_L);
-	C_star_R = C_R * pow(P_star/P_R, z);
-	U_star_R = U_R + 2.0/(gamma - 1.0)*(C_star_R - C_R);
+
+	double Q, P_pvrs, P_max, P_min, RHO_bar, C_bar;
+	P_min = min(P_L,P_R);
+	P_max = max(P_L,P_R);
+	Q = P_max/P_min;
+	RHO_bar = 0.5*(RHO_L+RHO_R);
+	C_bar = 0.5*(C_L+C_R);
+	P_pvrs = 0.5*(P_L+P_R)+0.5*(U_L-U_R)*RHO_bar*C_bar;
+
+	double A_L,A_R,B_L,B_R;
+	A_L = 2.0/(gamma+1.0)/RHO_L;
+	A_R = 2.0/(gamma+1.0)/RHO_R;
+	B_L = (gamma-1)/(gamma+1)*P_L;
+	B_R = (gamma-1)/(gamma+1)*P_R;
+
+	double P_star, U_star, U_star_L, U_star_R, RHO_star_L, RHO_star_R, C_star_L, C_star_R, P_0, g_L_0, g_R_0, lambda_L_1, lambda_R_1, lambda_L_3, lambda_R_3;
+
+	if(Q<Q_user&&P_min<P_pvrs&&P_pvrs<P_max) //PVRS
+		{
+			P_star = max(0,P_pvrs);
+			U_star = 0.5*(U_L+U_R)+0.5*(P_L-P_R)/(RHO_bar*C_bar);
+			RHO_star_L = RHO_L + (U_L-U_star)*RHO_bar/C_bar;
+			RHO_star_R = RHO_R + (U_star - U_R)*RHO_bar/C_bar;
+			C_star_L = sqrt(gamma*P_star/RHO_star_L);
+			C_star_R = sqrt(gamma*P_star/RHO_star_R);
+			U_star_L = U_star;
+			U_star_R = U_star;
+		}
+	else if(P_pvrs<P_min) //TRRS
+		{	   	
+			P_star = pow((C_L + C_R - (gamma-1.0)/2.0*(U_R - U_L))/(C_L/pow(P_L,z) + C_R/pow(P_R,z)), 1.0/z);
+			C_star_L = C_L * pow(P_star/P_L, z);
+			U_star_L = U_L + 2.0/(gamma - 1.0)*(C_L - C_star_L);
+			C_star_R = C_R * pow(P_star/P_R, z);
+			U_star_R = U_R + 2.0/(gamma - 1.0)*(C_star_R - C_R);
+		}
+	else //TSRS
+		{
+			P_0 = max(0,P_pvrs);
+			g_L_0 = sqrt(A_L/(P_0+B_L));
+			g_R_0 = sqrt(A_R/(P_0+B_R));
+			P_star = (g_L_0*P_L+g_R_0*P_R-(U_R-U_L))/(g_L_0+g_R_0);
+			U_star = 0.5*(U_R+U_L)+0.5*((P_star-P_R)*g_R_0-(P_star-P_L)*g_L_0);
+			RHO_star_L = RHO_L*(P_star/P_L+(gamma-1.0)/(gamma+1.0))/((gamma-1.0)*P_star/(gamma+1.0)/P_L+1.0);
+			RHO_star_R = RHO_R*(P_star/P_R+(gamma-1.0)/(gamma+1.0))/((gamma-1.0)*P_star/(gamma+1.0)/P_R+1.0);
+			C_star_L = sqrt(gamma*P_star/RHO_star_L);
+			C_star_R = sqrt(gamma*P_star/RHO_star_R);
+			U_star_L = U_star;
+			U_star_R = U_star;
+		}
+
 	lambda_L_1 = U_L - C_L;
 	lambda_R_1 = U_star_L - C_star_L;
 	lambda_L_3 = U_star_R + C_star_R;

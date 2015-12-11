@@ -399,11 +399,13 @@ void first_order_solver
 			V[1][k] = v_con[k]/RHO[1][k];
 			P[1][k] = (e_con[k] - 0.5*(U[1][k]*U[1][k]+V[1][k]*V[1][k])*RHO[1][k])*(gamma[k]-1.0);
 
+			if(P[1][k] < eps&&strcmp(scheme,"Roe_Goundov")==0) 
+				P[1][k] = eps;
 
 			if((RHO[1][k] < eps) || (P[1][k] < eps) ||isnan(RHO[1][k])||isnan(U[1][k])||isnan(V[1][k])||isnan(P[1][k]))
 				{
 					if(!stop_step)
-						printf("Error firstly happens on step=%d, cell=%d", i, k);
+						printf("Error firstly happens at t_all=%lf, step=%d, on cell=%d", t_all, i, k);
 					else
 						printf (",%d",k);
 					stop_step=2;
@@ -424,7 +426,6 @@ void first_order_solver
 		break;
 		
 				}
-
 	printf("The cost of CPU time for 2D equations of motion by Eulerian method is %g seconds.\n", sum);
 
 	if(!stop_step)
