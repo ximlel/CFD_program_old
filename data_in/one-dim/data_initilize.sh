@@ -10,3 +10,5 @@ fi
 done
 
 matlab -nojvm -nodisplay -nosplash -nodesktop <data_initilize.m
+
+rm data_initilize.m

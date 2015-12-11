@@ -190,6 +190,8 @@ pythontex-files-*/
 # Plot
 *.vtk
 *.tec
+*.png
+
 
 # Output file
 *.out

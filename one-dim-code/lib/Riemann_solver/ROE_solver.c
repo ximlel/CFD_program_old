@@ -7,6 +7,22 @@
 
 void ROE_solver(double *F, double gamma, double P_L, double RHO_L, double U_L, double P_R, double RHO_R, double U_R, double *lambda_max, double delta)
 {	
+	double C_L, C_R;
+	C_L = sqrt(gamma*P_L/RHO_L);
+	C_R = sqrt(gamma*P_R/RHO_R);
+	double z = 0.5 *  (gamma-1.0) / gamma;
+	double P_star, U_star_L, U_star_R, C_star_L, C_star_R, lambda_L_1, lambda_R_1, lambda_L_3, lambda_R_3;
+	P_star = pow((C_L + C_R - (gamma-1.0)/2.0*(U_R - U_L))/(C_L/pow(P_L,z) + C_R/pow(P_R,z)), 1.0/z);
+	C_star_L = C_L * pow(P_star/P_L, z);
+	U_star_L = U_L + 2.0/(gamma - 1.0)*(C_L - C_star_L);
+	C_star_R = C_R * pow(P_star/P_R, z);
+	U_star_R = U_R + 2.0/(gamma - 1.0)*(C_star_R - C_R);
+	lambda_L_1 = U_L - C_L;
+	lambda_R_1 = U_star_L - C_star_L;
+	lambda_L_3 = U_star_R + C_star_R;
+	lambda_R_3 = U_R + C_R;
+	
+
 	double H_L, H_R;
 	H_L = gamma/(gamma-1.0)*P_L/RHO_L + 0.5*(U_L*U_L);
 	H_R = gamma/(gamma-1.0)*P_R/RHO_R + 0.5*(U_R*U_R);
@@ -45,23 +61,40 @@ void ROE_solver(double *F, double gamma, double P_L, double RHO_L, double U_L, d
 	lambda[1] = fabs(U_S);
  	lambda[2] = fabs(U_S + C_S);
 	
-	if(lambda[0]<delta)
-			lambda[0] = 0.5/delta*(lambda[0]*lambda[0] + delta*delta);	
-//	if(lambda[1]<delta)
-//			lambda[1] = 0.5/delta*(lambda[1]*lambda[1] + delta*delta);		   
-	if(lambda[2]<delta)
-			lambda[2] = 0.5/delta*(lambda[2]*lambda[2] + delta*delta);		   
 
-	*lambda_max = 0;
-	for(i = 0; i < 3; i++)
+	*lambda_max = fabs(U_S) + C_S;
+	
+	if(lambda_L_1<0&&lambda_R_1>0)
 		{
-			*lambda_max = max(*lambda_max, lambda[i]);
-			for(j = 0; j < 3 ; j++)
-				{
-					F[i] += -0.5*lambda[j]*W[j]*R[i][j];				
+			F[0] = RHO_L*U_L;
+			F[1] = RHO_L*U_L*U_L+P_L;
+			F[2] = RHO_L*U_L*H_L;
+			lambda[0] = lambda_L_1*(lambda_R_1-(U_S-C_S))/(lambda_R_1-lambda_L_1);
+			for(i = 0; i < 3; i++)
+				{					
+					F[i] += lambda[0]*W[0]*R[i][0];				
 				}
 		}
-//	* lambda_max = 0.5*(fabs(U_S)+C_S);	  
+	else if(lambda_L_3<0&&lambda_R_3>0)
+		{
+			F[0] = RHO_R*U_R;
+			F[1] = RHO_R*U_R*U_R+P_R;
+			F[2] = RHO_R*U_R*H_R;
+			lambda[2] = lambda_R_3*((U_S+C_S)-lambda_L_3)/(lambda_R_3-lambda_L_3);
+			for(i = 0; i < 3; i++)
+				{
+					F[i] += -lambda[2]*W[2]*R[i][2];				
+				}
+		}
+	else
+		{			
+			for(i = 0; i < 3; i++)
+				{
+					for(j = 0; j < 3 ; j++)
+						{
+							F[i] += -0.5*lambda[j]*W[j]*R[i][j];				
+						}
+				}
+		}
+	
 }
-
-
