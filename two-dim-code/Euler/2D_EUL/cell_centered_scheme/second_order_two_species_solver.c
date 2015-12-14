@@ -24,7 +24,7 @@
 
 
 void second_order_two_species_solver
-(int * STEP, double * E_M_wave, double * h, double * config, int NUM_CELL, int NUM_POINT, int NUM_BOUNDARY, int * CELL_POINT[],
+(int * STEP, double * config, int NUM_CELL, int NUM_POINT, int NUM_BOUNDARY, int * CELL_POINT[],
  int * BOUNDARY_POINT[], int m, int n, double * RHO[], double * U[], double * V[], double * P[], double * Z[],
  double * X, double * Y, double * gamma, double * cpu_time, char * scheme, double CFL/* the CFL number */)
 {	
@@ -558,6 +558,9 @@ void second_order_two_species_solver
 
 
 //=======================kinetic energy of mixing region=====================
+
+	double h;  //mixing width
+	double E_M_wave[3];  //energy of mixing region
 	
 	double phi[n];
 	double const phi_0 = 1;
@@ -573,9 +576,9 @@ void second_order_two_species_solver
 			phi[k] = phi[k]/n;
 		}
 	
-	* h = 0.0;
+	h = 0.0;
 	for(k = 0; k < m; ++k)
-		* h += phi[k]*(phi_0-phi[k])/phi_m/phi_m*config[3];
+		h += phi[k]*(phi_0-phi[k])/phi_m/phi_m*config[3];
 
 	
 	double rho_bar, U_bar, V_bar, U_wave, V_wave, VOL_MIX;
@@ -636,6 +639,8 @@ void second_order_two_species_solver
 					}
 		}
 	E_M_wave[2] = E_M/rho_bar;
+
+	printf("h=%lf,\t E_M_wave=%lf,\t %lf, \t%lf. \n",h,E_M_wave[0],E_M_wave[1],E_M_wave[2]);
 
 //========================================================	
 

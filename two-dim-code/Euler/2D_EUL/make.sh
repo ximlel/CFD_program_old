@@ -107,16 +107,17 @@ cd $INITIAL_PATH
 
 ### Two_species
 
-#./EUL_source.out RMI RMI RMI_mesh Riemann_exact -1 0.4 Two_species
-./EUL_source.out RMI RMI_test RMI_mesh Riemann_exact -1 0.4
 #./EUL_source.out RMI RMI_Roe_Goundov RMI_mesh Roe_Goundov 1000 0.4
+#./EUL_source.out RMI RMI RMI_mesh Riemann_exact -1 0.4 Two_species
+#./EUL_source.out RMI RMI_test RMI_mesh Riemann_exact -1 0.4
+#./EUL_source.out RMI_321 RMI_321 RMI_mesh Riemann_exact -1 0.4 Two_species
 
 ## second order
 
 #./EUL_source.out Sod_10 Sod_10 Sod_mesh GRP -1 0.4 second_order
 #./EUL_source.out RMI RMI RMI_mesh GRP -1 0.4 second_order Two_species
 #./EUL_source.out RMI RMI_test RMI_mesh GRP -1 0.4 second_order
-#./EUL_source.out RMI_321 RMI_321 RMI_mesh GRP -1 0.4 second_order Two_species
+./EUL_source.out RMI_321 RMI_K1A20 RMI_mesh GRP -1 0.4 second_order Two_species
 #./EUL_source.out RMI_641 RMI_641 RMI_mesh GRP -1 0.4 second_order Two_species
 #./EUL_source.out RMI_641 RMI_641_test RMI_mesh GRP -1 0.4 second_order
 

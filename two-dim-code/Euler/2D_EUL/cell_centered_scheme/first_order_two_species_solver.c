@@ -11,6 +11,7 @@
 #include "../../../lib/custom.h"
 #include "../../../lib/Riemann_solver.h"
 #include "../cell_centered_scheme.h"
+#include "../../../lib/file_io.h"
 
 
 /* This function use first order scheme to solve 2-D
@@ -390,6 +391,24 @@ void first_order_two_species_solver
 
 	if(stop_step)
 		break;
+
+
+//===================================PLOT=================================
+
+	char PLOT_name[100];
+	char STEP_char[25];
+	int const interval = 100;
+
+	if(!(i%interval))
+		{
+			strcpy(PLOT_name, "RMI_2species_breakpoint_\0");			
+			sprintf(STEP_char, "%d", i);
+			strcat(PLOT_name, STEP_char);
+			printf("STEP = %d, t_all = %lf\n", i, t_all);		
+			file_two_species_write_TEC(NUM_POINT, X, Y, NUM_CELL, CELL_POINT, RHO[1], U[1], V[1], P[1], Z[1], cpu_time, config, PLOT_name, "2D_EUL_first_order/");  
+		}
+
+//==============================================================================
 		
 				}
 

@@ -200,10 +200,7 @@ int main(int argc, char *argv[])
 		STEP = atoi(argv[5]);
 	else
 		STEP = N;
-
-
-	double E_M_wave[3];
-	double h;
+	
 
 
 	if(strcmp(argv[argc-1],"second_order")==0||strcmp(argv[argc-2],"second_order")==0)
@@ -212,7 +209,7 @@ int main(int argc, char *argv[])
 			if(strcmp(argv[argc-1],"Two_species")==0)
 				{
 					printf("Two species\n");		  
-					second_order_two_species_solver(&STEP, E_M_wave, &h, config, NUM_CELL, NUM_POINT, NUM_BOUNDARY, CELL_POINT, BOUNDARY_POINT, m, n, RHO, U, V, P, CC, X, Y, gamma, cpu_time, argv[4], atof(argv[6]));
+					second_order_two_species_solver(&STEP, config, NUM_CELL, NUM_POINT, NUM_BOUNDARY, CELL_POINT, BOUNDARY_POINT, m, n, RHO, U, V, P, CC, X, Y, gamma, cpu_time, argv[4], atof(argv[6]));
 				}
 			else        
 				second_order_solver(&STEP, config, NUM_CELL, NUM_POINT, NUM_BOUNDARY, CELL_POINT, BOUNDARY_POINT, m, n, RHO, U, V, P, X, Y, gamma, cpu_time, argv[4], atof(argv[6]));
