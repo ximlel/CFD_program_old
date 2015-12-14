@@ -24,7 +24,7 @@
 
 
 void second_order_solver
-(int STEP, double * config, int NUM_CELL, int NUM_POINT, int NUM_BOUNDARY, int * CELL_POINT[],
+(int * STEP, double * config, int NUM_CELL, int NUM_POINT, int NUM_BOUNDARY, int * CELL_POINT[],
  int * BOUNDARY_POINT[], int m, int n, double * RHO[], double * U[], double * V[], double * P[],
  double * X, double * Y, double * gamma, double * cpu_time, char * scheme, double CFL/* the CFL number */)
 {	
@@ -209,7 +209,7 @@ void second_order_solver
 
 //------------THE MAIN LOOP-------------
 
-	for(i = 0; i < STEP; ++i)
+	for(i = 0; i < * STEP; ++i)
 		{	
 
 			tic = clock();		
@@ -556,5 +556,5 @@ void second_order_solver
 		  F_mk_4[k] = NULL;
 	  }
 
-  
+  * STEP = i;  
 }

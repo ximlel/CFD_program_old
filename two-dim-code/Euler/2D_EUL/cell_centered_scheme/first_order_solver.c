@@ -11,6 +11,8 @@
 #include "../../../lib/custom.h"
 #include "../../../lib/Riemann_solver.h"
 #include "../cell_centered_scheme.h"
+#include "../../../lib/file_io.h"
+
 
 
 /* This function use first order scheme to solve 2-D
@@ -23,7 +25,7 @@
 
 
 void first_order_solver
-(int STEP, double * config, int NUM_CELL, int NUM_POINT, int NUM_BOUNDARY, int * CELL_POINT[],
+(int * STEP, double * config, int NUM_CELL, int NUM_POINT, int NUM_BOUNDARY, int * CELL_POINT[],
  int * BOUNDARY_POINT[], int m, int n, double * RHO[], double * U[], double * V[], double * P[],
  double * X, double * Y, double * gamma, double * cpu_time, char * scheme, double CFL/* the CFL number */)
 {	
@@ -195,7 +197,7 @@ void first_order_solver
 
 //------------THE MAIN LOOP-------------
 
-	for(i = 0; i < STEP; ++i)
+	for(i = 0; i < * STEP; ++i)
 		{	
 
 			tic = clock();		
@@ -424,8 +426,27 @@ void first_order_solver
 
 	if(stop_step)
 		break;
-		
-				}
+
+//===================================PLOT=================================
+
+	char PLOT_name[100];
+	char STEP_char[25];
+	int const interval = 100;
+
+	if(!(i%interval))
+		{
+			strcpy(PLOT_name, "RMI_breakpoint_\0");			
+			sprintf(STEP_char, "%d", i);
+			strcat(PLOT_name, STEP_char);
+			printf("STEP = %d, t_all = %lf\n", i, t_all);		
+			file_write_TEC(NUM_POINT, X, Y, NUM_CELL, CELL_POINT, RHO[1], U[1], V[1], P[1], cpu_time, config, PLOT_name, "2D_EUL_first_order/");  
+		}
+
+//==============================================================================	
+
+
+
+		}
 	printf("The cost of CPU time for 2D equations of motion by Eulerian method is %g seconds.\n", sum);
 
 	if(!stop_step)
@@ -451,5 +472,5 @@ void first_order_solver
 		  F_mk_4[k] = NULL;
 	  }
 
-  
+  * STEP = i;  
 }

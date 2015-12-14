@@ -24,7 +24,7 @@
 
 
 void second_order_two_species_solver
-(int STEP, double * config, int NUM_CELL, int NUM_POINT, int NUM_BOUNDARY, int * CELL_POINT[],
+(int * STEP, double * E_M_wave, double * h, double * config, int NUM_CELL, int NUM_POINT, int NUM_BOUNDARY, int * CELL_POINT[],
  int * BOUNDARY_POINT[], int m, int n, double * RHO[], double * U[], double * V[], double * P[], double * Z[],
  double * X, double * Y, double * gamma, double * cpu_time, char * scheme, double CFL/* the CFL number */)
 {	
@@ -215,7 +215,7 @@ void second_order_two_species_solver
 
 //------------THE MAIN LOOP-------------
 
-	for(i = 0; i < STEP; ++i)
+	for(i = 0; i < * STEP; ++i)
 		{	
 
 			tic = clock();		
@@ -530,7 +530,7 @@ void second_order_two_species_solver
 			V[1][k] = v_con[k]/RHO[1][k];
 			P[1][k] = (e_con[k] - 0.5*(U[1][k]*U[1][k]+V[1][k]*V[1][k])*RHO[1][k])*(gamma[k]-1.0);
 			Z[1][k] = z_con[k]/RHO[1][k];			
-			if((RHO[1][k] < eps) || (P[1][k] < eps)|| (Z[1][k] < -1.0*eps)|| (Z[1][k] > 1.0+eps) ||isnan(RHO[1][k])||isnan(U[1][k])||isnan(V[1][k])||isnan(P[1][k])||isnan(Z[1][k]))
+			if((RHO[1][k] < eps) || (P[1][k] < eps)||/* (Z[1][k] < -1.0*eps)|| (Z[1][k] > 1.0+eps) ||*/ isnan(RHO[1][k])||isnan(U[1][k])||isnan(V[1][k])||isnan(P[1][k])||isnan(Z[1][k]))
 				{
 					if(!stop_step)
 						printf("Error firstly happens at t_all=%lf, step=%d, on cell=%d", t_all, i, k);
@@ -553,8 +553,94 @@ void second_order_two_species_solver
 	if(stop_step)
 		break;
 		
-				}
+		}
 
+
+
+//=======================kinetic energy of mixing region=====================
+	
+	double phi[n];
+	double const phi_0 = 1;
+	double const phi_m = 0.25;
+	
+	for(k = 0; k < m; ++k)
+		{
+			phi[k] = 0;
+			for(j = 0; j < n ;++j)
+				{									
+					phi[k] += Z[1][m*j + k];
+				}
+			phi[k] = phi[k]/n;
+		}
+	
+	* h = 0.0;
+	for(k = 0; k < m; ++k)
+		* h += phi[k]*(phi_0-phi[k])/phi_m/phi_m*config[3];
+
+	
+	double rho_bar, U_bar, V_bar, U_wave, V_wave, VOL_MIX;
+
+	for(k = 0; k < m; ++k)
+		{
+			if(phi[k]>0.05&&phi[k]<0.95) 							   
+				for(j = 0; j < n ;++j)
+					{
+						VOL_MIX += VOLUME[m*j+k];
+						rho_bar += RHO[1][m*j+k]*VOLUME[m*j+k];
+						U_bar += U[1][m*j+k]*VOLUME[m*j+k];
+						V_bar += V[1][m*j+k]*VOLUME[m*j+k];
+						U_wave += RHO[1][m*j+k]*U[1][m*j+k]*VOLUME[m*j+k];
+						V_wave += RHO[1][m*j+k]*V[1][m*j+k]*VOLUME[m*j+k];
+					}
+		}
+	U_bar = U_bar/VOL_MIX;
+	V_bar = V_bar/VOL_MIX;
+	U_wave = U_wave/rho_bar;
+	V_wave = V_wave/rho_bar;
+
+
+	double U_M, V_M, E_M;
+	
+	for(k = 0; k < m; ++k)
+		{
+			if(phi[k]>0.05&&phi[k]<0.95) 							   
+				for(j = 0; j < n ;++j)
+					{
+						U_M = U[1][m*j+k];
+						V_M = V[1][m*j+k];
+						E_M += 0.5*RHO[1][m*j+k]*(U_M*U_M+V_M*V_M);
+					}
+		}
+	E_M_wave[0] = E_M/rho_bar;
+
+	for(k = 0; k < m; ++k)
+		{
+			if(phi[k]>0.05&&phi[k]<0.95) 							   
+				for(j = 0; j < n ;++j)
+					{
+						U_M = U[1][m*j+k] - U_bar;
+						V_M = V[1][m*j+k] - V_bar;
+						E_M += 0.5*RHO[1][m*j+k]*(U_M*U_M+V_M*V_M);
+					}
+		}
+	E_M_wave[1] = E_M/rho_bar;
+
+	for(k = 0; k < m; ++k)
+		{
+			if(phi[k]>0.05&&phi[k]<0.95) 							   
+				for(j = 0; j < n ;++j)
+					{
+						U_M = U[1][m*j+k] - U_wave;
+						V_M = V[1][m*j+k] - V_wave;
+						E_M += 0.5*RHO[1][m*j+k]*(U_M*U_M+V_M*V_M);
+					}
+		}
+	E_M_wave[2] = E_M/rho_bar;
+
+//========================================================	
+
+
+	
 	printf("The cost of CPU time for 2D equations of motion by Eulerian method is %g seconds.\n", sum);
 
 	if(!stop_step)
@@ -582,5 +668,5 @@ void second_order_two_species_solver
 		  F_mk_5[k] = NULL;
 	  }
 
-  
+  * STEP = i;  
 }

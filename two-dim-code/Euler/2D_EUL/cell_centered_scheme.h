@@ -1,10 +1,10 @@
 void first_order_solver
-(int STEP, double * config, int NUM_CELL, int NUM_POINT, int NUM_BOUNDARY, int * CELL_POINT[],
+(int * STEP, double * config, int NUM_CELL, int NUM_POINT, int NUM_BOUNDARY, int * CELL_POINT[],
  int * BOUNDARY_POINT[], int m, int n, double * RHO[], double * U[], double * V[], double * P[],
  double * X, double * Y, double * gamma, double * cpu_time, char * scheme, double CFL);
 
 void first_order_two_species_solver
-(int STEP, double * config, int NUM_CELL, int NUM_POINT, int NUM_BOUNDARY, int * CELL_POINT[],
+(int * STEP, double * config, int NUM_CELL, int NUM_POINT, int NUM_BOUNDARY, int * CELL_POINT[],
  int * BOUNDARY_POINT[], int m, int n, double * RHO[], double * U[], double * V[], double * P[], double * Z[],
  double * X, double * Y, double * gamma, double * cpu_time, char * scheme, double CFL);
 
@@ -26,17 +26,17 @@ void linear_GRP_solver_Edir_2D
 void slope_limiter_Ven
 (double * X_c, double * Y_c, double  * X, double * Y,
  double * grad_W_x, double * grad_W_y, 
- double *W[],  int NUM_CELL, double * config,
+ double * W[],  int NUM_CELL, double * config,
  int * CELL_CELL[], int * CELL_POINT[],
  int m, int n);
 
 
 void second_order_solver
-(int STEP, double * config, int NUM_CELL, int NUM_POINT, int NUM_BOUNDARY, int * CELL_POINT[],
+(int * STEP, double * config, int NUM_CELL, int NUM_POINT, int NUM_BOUNDARY, int * CELL_POINT[],
  int * BOUNDARY_POINT[], int m, int n, double * RHO[], double * U[], double * V[], double * P[],
  double * X, double * Y, double * gamma, double * cpu_time, char * scheme, double CFL);
 
 void second_order_two_species_solver
-(int STEP, double * config, int NUM_CELL, int NUM_POINT, int NUM_BOUNDARY, int * CELL_POINT[],
+(int * STEP, double * E_M_wave, double * h, double * config, int NUM_CELL, int NUM_POINT, int NUM_BOUNDARY, int * CELL_POINT[],
  int * BOUNDARY_POINT[], int m, int n, double * RHO[], double * U[], double * V[], double * P[], double * Z[],
  double * X, double * Y, double * gamma, double * cpu_time, char * scheme, double CFL);

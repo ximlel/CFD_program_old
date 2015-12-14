@@ -23,7 +23,7 @@
 
 
 void first_order_two_species_solver
-(int STEP, double * config, int NUM_CELL, int NUM_POINT, int NUM_BOUNDARY, int * CELL_POINT[],
+(int * STEP, double * config, int NUM_CELL, int NUM_POINT, int NUM_BOUNDARY, int * CELL_POINT[],
  int * BOUNDARY_POINT[], int m, int n, double * RHO[], double * U[], double * V[], double * P[], double * Z[],
  double * X, double * Y, double * gamma, double * cpu_time, char * scheme, double CFL/* the CFL number */)
 {	
@@ -200,7 +200,7 @@ void first_order_two_species_solver
 
 //------------THE MAIN LOOP-------------
 
-	for(i = 0; i < STEP; ++i)
+	for(i = 0; i < * STEP; ++i)
 		{	
 
 			tic = clock();		
@@ -420,5 +420,5 @@ void first_order_two_species_solver
 		  F_mk_5[k] = NULL;
 	  }
 
-  
+  * STEP = i;
 }

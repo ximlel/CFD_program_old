@@ -10,7 +10,7 @@
 void slope_limiter_Ven
 (double * X_c, double * Y_c, double  * X, double * Y,
  double * grad_W_x, double * grad_W_y, 
- double *W[],  int NUM_CELL, double * config,
+ double * W[],  int NUM_CELL, double * config,
  int * CELL_CELL[], int * CELL_POINT[],
  int m, int n)
 {
