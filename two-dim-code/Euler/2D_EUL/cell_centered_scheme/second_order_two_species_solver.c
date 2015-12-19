@@ -212,6 +212,10 @@ void second_order_two_species_solver
 
 
 
+	char PLOT_name[200];
+	char STEP_char[25];
+	int const interval = 50;
+
 
 //------------THE MAIN LOOP-------------
 
@@ -552,19 +556,15 @@ void second_order_two_species_solver
 
 	if(stop_step)
 		break;
-
+printf("AAAAAAAAAAAAAAAAA\n");
 
 //===================================PLOT======================================
-
-	char PLOT_name[100];
-	char STEP_char[25];
-	int const interval = 50;
 
 	if(!(i%interval))
 		{
 			strcpy(PLOT_name, example);
 			strcat(PLOT_name, "/breakpoint_\0");			
-			sprintf(STEP_char, "%d\0", i);
+			sprintf(STEP_char, "%d", i);
 			strcat(PLOT_name, STEP_char);
 			printf("STEP = %d, t_all = %lf\n", i, t_all);		
 			file_two_species_write_TEC(NUM_POINT, X, Y, NUM_CELL, CELL_POINT, RHO[1], U[1], V[1], P[1], Z[1], cpu_time, config, PLOT_name, "2D_EUL_second_order");  

@@ -146,6 +146,6 @@ nohup ./EUL_source.out RMI/RMI_K16A40 RMI_bp/RMI_K16A40 RMI_mesh GRP -1 0.4 seco
 nohup ./EUL_source.out RMI/RMI_K16A80 RMI_bp/RMI_K16A80 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K16A80.out 2>&1 &
 KA
 #=============================RMI KA test=========================
-
+./EUL_source.out RMI/RMI_81 RMI_bp/RMI_81 RMI_mesh GRP -1 0.4 second_order Two_species
 
 exit 0
