@@ -123,6 +123,7 @@ cd $INITIAL_PATH
 #./EUL_source.out RMI/RMI_641 RMI/RMI_641_single RMI_mesh GRP -1 0.4 second_order
 
 #=============================RMI KA test=========================
+:<<KA
 nohup ./EUL_source.out RMI/RMI_K1A10 RMI_bp/RMI_K1A10 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K1A10.out 2>&1 &
 nohup ./EUL_source.out RMI/RMI_K1A20 RMI_bp/RMI_K1A20 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K1A20.out 2>&1 &
 nohup ./EUL_source.out RMI/RMI_K1A40 RMI_bp/RMI_K1A40 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K1A40.out 2>&1 &
@@ -143,6 +144,7 @@ nohup ./EUL_source.out RMI/RMI_K16A10 RMI_bp/RMI_K16A10 RMI_mesh GRP -1 0.4 seco
 nohup ./EUL_source.out RMI/RMI_K16A20 RMI_bp/RMI_K16A20 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K16A20.out 2>&1 &
 nohup ./EUL_source.out RMI/RMI_K16A40 RMI_bp/RMI_K16A40 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K16A40.out 2>&1 &
 nohup ./EUL_source.out RMI/RMI_K16A80 RMI_bp/RMI_K16A80 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K16A80.out 2>&1 &
+KA
 #=============================RMI KA test=========================
 
 
