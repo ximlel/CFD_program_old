@@ -379,8 +379,8 @@ int main(int argc, char *argv[])
   STEP = atoi(argv[6]);
 
 
-  file_write_VTK(NUM_POINT, X[STEP], Y[STEP], NUM_CELL, CELL_POINT, RHO[STEP], U[STEP], V[STEP], P[STEP], cpu_time, config, argv[2], "2D_MAI_second_order/"); 
-  file_write_TEC(NUM_POINT, X[STEP], Y[STEP], NUM_CELL, CELL_POINT, RHO[STEP], U[STEP], V[STEP], P[STEP], cpu_time, config, argv[2], "2D_MAI_second_order/"); /*write the final data down.*/ 
+  file_write_VTK(NUM_POINT, X[STEP], Y[STEP], NUM_CELL, CELL_POINT, RHO[STEP], U[STEP], V[STEP], P[STEP], cpu_time, config, argv[2], "2D_MAI_second_order"); 
+  file_write_TEC(NUM_POINT, X[STEP], Y[STEP], NUM_CELL, CELL_POINT, RHO[STEP], U[STEP], V[STEP], P[STEP], cpu_time, config, argv[2], "2D_MAI_second_order"); /*write the final data down.*/ 
 
 
   for(k = 1; k < N; ++k)

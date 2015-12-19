@@ -23,10 +23,10 @@
  */
 
 
-int second_order_two_species_solver
-(double * config, int NUM_CELL, int NUM_POINT, int NUM_BOUNDARY, int * CELL_POINT[],
+void second_order_two_species_solver
+(int * STEP, double * config, int NUM_CELL, int NUM_POINT, int NUM_BOUNDARY, int * CELL_POINT[],
  int * BOUNDARY_POINT[], int m, int n, double * RHO[], double * U[], double * V[], double * P[], double * Z[],
- double * X, double * Y, double * gamma, double * cpu_time, char * scheme, double CFL/* the CFL number */)
+ double * X, double * Y, double * gamma, double * cpu_time, char * scheme, double CFL/* the CFL number */, char * example)
 {	
 
 	int i, j, k, l; 
@@ -215,7 +215,7 @@ int second_order_two_species_solver
 
 //------------THE MAIN LOOP-------------
 
-	for(i = 0; i < N; ++i)
+	for(i = 0; i < * STEP; ++i)
 		{	
 
 			tic = clock();		
@@ -237,11 +237,11 @@ int second_order_two_species_solver
 					Y_c[k] = Y_c[k]/S/3;
 				}
 
-			slope_limiter_Ven(X_c, Y_c, X, Y, grad_RHO_x, grad_RHO_y, RHO, NUM_CELL, config, CELL_CELL, CELL_POINT, i, m, n);
-			slope_limiter_Ven(X_c, Y_c, X, Y, grad_U_x, grad_U_y, U, NUM_CELL, config, CELL_CELL, CELL_POINT, i, m ,n);
-			slope_limiter_Ven(X_c, Y_c, X, Y, grad_V_x, grad_V_y,  V, NUM_CELL, config, CELL_CELL, CELL_POINT, i, m, n);
-			slope_limiter_Ven(X_c, Y_c, X, Y, grad_P_x, grad_P_y, P, NUM_CELL, config, CELL_CELL, CELL_POINT, i, m, n);
-			slope_limiter_Ven(X_c, Y_c, X, Y, grad_Z_x, grad_Z_y, Z, NUM_CELL, config, CELL_CELL, CELL_POINT, i, m, n);
+			slope_limiter_Ven(X_c, Y_c, X, Y, grad_RHO_x, grad_RHO_y, RHO, NUM_CELL, config, CELL_CELL, CELL_POINT, m, n);
+			slope_limiter_Ven(X_c, Y_c, X, Y, grad_U_x, grad_U_y, U, NUM_CELL, config, CELL_CELL, CELL_POINT, m ,n);
+			slope_limiter_Ven(X_c, Y_c, X, Y, grad_V_x, grad_V_y,  V, NUM_CELL, config, CELL_CELL, CELL_POINT, m, n);
+			slope_limiter_Ven(X_c, Y_c, X, Y, grad_P_x, grad_P_y, P, NUM_CELL, config, CELL_CELL, CELL_POINT, m, n);
+			slope_limiter_Ven(X_c, Y_c, X, Y, grad_Z_x, grad_Z_y, Z, NUM_CELL, config, CELL_CELL, CELL_POINT, m, n);
 
 			
 			for(k = 0; k < NUM_CELL; ++k)
@@ -263,18 +263,13 @@ int second_order_two_species_solver
 															
 							if (CELL_CELL[k][j]==-2)//reflecting boundary condition.
 								{
-									F_mk[0] = 0.0;
-									F_mk[1] = P[i][k]*n_x[k][j];
-									F_mk[2] = P[i][k]*n_y[k][j];
-									F_mk[3] = 0.0;
-									F_mk[4] = 0.0;
 									lambda_max = 0.0;
 								}
 							else
 								{
 									if (CELL_CELL[k][j]>=0)
 										{											
-											STEP_RIGHT = i;							
+											STEP_RIGHT = 1;							
 											CELL_RIGHT = CELL_CELL[k][j];
 										}
 									else if (CELL_CELL[k][j]==-1)//initial boundary condition.
@@ -284,12 +279,12 @@ int second_order_two_species_solver
 										}
 									else if (CELL_CELL[k][j]==-3)//prescribed boundary condition.
 										{
-											STEP_RIGHT = i;
+											STEP_RIGHT = 1;
 											CELL_RIGHT = k;
 										}
 									else if (CELL_CELL[k][j]==-4)//periodic boundary condition in x-direction.
 										{
-											STEP_RIGHT = i;
+											STEP_RIGHT = 1;
 											if(!(k%n))
 												CELL_RIGHT = k+n-1;
 											else if(k%n==n-1)
@@ -306,9 +301,9 @@ int second_order_two_species_solver
 											exit(7);
 										}						 
 							   																									
-											qn_L = U[i][k]*n_x[k][j] + V[i][k]*n_y[k][j]; 
+											qn_L = U[1][k]*n_x[k][j] + V[1][k]*n_y[k][j]; 
 											qn_R = U[STEP_RIGHT][CELL_RIGHT]*n_x[k][j] + V[STEP_RIGHT][CELL_RIGHT]*n_y[k][j];
-											c_L = sqrt(gamma[k] * P[i][k] / RHO[i][k]);
+											c_L = sqrt(gamma[k] * P[1][k] / RHO[1][k]);
 											c_R = sqrt(gamma[k] * P[STEP_RIGHT][CELL_RIGHT] / RHO[STEP_RIGHT][CELL_RIGHT]);
 											lambda_max = max(c_L+fabs(qn_L),c_R+fabs(qn_R));					
 								}								
@@ -360,8 +355,8 @@ int second_order_two_species_solver
 							if (CELL_CELL[k][j]==-2)//reflecting boundary condition.
 								{
 									F_mk[0] = 0.0;
-									F_mk[1] = P[i][k]*n_x[k][j];
-									F_mk[2] = P[i][k]*n_y[k][j];
+									F_mk[1] = P[1][k]*n_x[k][j];
+									F_mk[2] = P[1][k]*n_y[k][j];
 									F_mk[3] = 0.0;
 									F_mk[4] = 0.0;
 								}
@@ -369,7 +364,7 @@ int second_order_two_species_solver
 								{
 									if (CELL_CELL[k][j]>=0)
 										{											
-											STEP_RIGHT = i;							
+											STEP_RIGHT = 1;							
 											CELL_RIGHT = CELL_CELL[k][j];
 											
 											d_rho_R = grad_RHO_x[CELL_RIGHT]*n_x[k][j] + grad_RHO_y[CELL_RIGHT]*n_y[k][j];
@@ -403,7 +398,7 @@ int second_order_two_species_solver
 										}
 									else if (CELL_CELL[k][j]==-3)//prescribed boundary condition.
 										{
-											STEP_RIGHT = i;
+											STEP_RIGHT = 1;
 											CELL_RIGHT = k;
 
 											d_rho_R = grad_RHO_x[CELL_RIGHT]*n_x[k][j] + grad_RHO_y[CELL_RIGHT]*n_y[k][j];
@@ -420,7 +415,7 @@ int second_order_two_species_solver
 										}
 									else if (CELL_CELL[k][j]==-4)//periodic boundary condition in x-direction.
 										{
-											STEP_RIGHT = i;
+											STEP_RIGHT = 1;
 											if(!(k%n))
 												CELL_RIGHT = k+n-1;
 											else if(k%n==n-1)
@@ -459,11 +454,11 @@ int second_order_two_species_solver
 											d_p_L =  grad_P_x[k]*n_x[k][j] + grad_P_y[k]*n_y[k][j];
 											d_z_L =  grad_Z_x[k]*n_x[k][j] + grad_Z_y[k]*n_y[k][j];
 
-											rho_L = RHO[i][k] + grad_RHO_x[k] * delta_X + grad_RHO_y[k] * delta_Y;
-											u_L = U[i][k] + grad_U_x[k] * delta_X + grad_U_y[k] * delta_Y;
-											v_L = V[i][k] + grad_V_x[k] * delta_X + grad_V_y[k] * delta_Y;
-											p_L = P[i][k] + grad_P_x[k] * delta_X + grad_P_y[k] * delta_Y;
-											z_L = Z[i][k] + grad_Z_x[k] * delta_X + grad_Z_y[k] * delta_Y;
+											rho_L = RHO[1][k] + grad_RHO_x[k] * delta_X + grad_RHO_y[k] * delta_Y;
+											u_L = U[1][k] + grad_U_x[k] * delta_X + grad_U_y[k] * delta_Y;
+											v_L = V[1][k] + grad_V_x[k] * delta_X + grad_V_y[k] * delta_Y;
+											p_L = P[1][k] + grad_P_x[k] * delta_X + grad_P_y[k] * delta_Y;
+											z_L = Z[1][k] + grad_Z_x[k] * delta_X + grad_Z_y[k] * delta_Y;
 
 											qn_L = u_L*n_x[k][j] + v_L*n_y[k][j];
 											qt_L = -u_L*n_y[k][j] + v_L*n_x[k][j];
@@ -511,7 +506,6 @@ int second_order_two_species_solver
 
 	for(k = 0; k < NUM_CELL; ++k)
 		{
-			RHO[i+1][k] = RHO[i][k];
 			for(j = 0; j < CELL_POINT[k][0]; ++j)
 				{
 					if(j == CELL_POINT[k][0]-1) 
@@ -525,24 +519,28 @@ int second_order_two_species_solver
 							p_n=CELL_POINT[k][j+1];
 						}
 												
-					RHO[i+1][k] += - tau*F_mk_1[k][j] * sqrt((X[p_p]-X[p_n])*(X[p_p]-X[p_n])+(Y[p_p]-Y[p_n])*(Y[p_p]-Y[p_n])) / VOLUME[k];
+					RHO[1][k] += - tau*F_mk_1[k][j] * sqrt((X[p_p]-X[p_n])*(X[p_p]-X[p_n])+(Y[p_p]-Y[p_n])*(Y[p_p]-Y[p_n])) / VOLUME[k];
 					u_con[k] += - tau*F_mk_2[k][j] * sqrt((X[p_p]-X[p_n])*(X[p_p]-X[p_n])+(Y[p_p]-Y[p_n])*(Y[p_p]-Y[p_n])) / VOLUME[k];
 					v_con[k] += - tau*F_mk_3[k][j] * sqrt((X[p_p]-X[p_n])*(X[p_p]-X[p_n])+(Y[p_p]-Y[p_n])*(Y[p_p]-Y[p_n])) / VOLUME[k];
 					e_con[k] += - tau*F_mk_4[k][j] * sqrt((X[p_p]-X[p_n])*(X[p_p]-X[p_n])+(Y[p_p]-Y[p_n])*(Y[p_p]-Y[p_n])) / VOLUME[k];
 					z_con[k] += - tau*F_mk_5[k][j] * sqrt((X[p_p]-X[p_n])*(X[p_p]-X[p_n])+(Y[p_p]-Y[p_n])*(Y[p_p]-Y[p_n])) / VOLUME[k];
-				}
-			
-			U[i+1][k] = u_con[k]/RHO[i+1][k];
-			V[i+1][k] = v_con[k]/RHO[i+1][k];
-			P[i+1][k] = (e_con[k] - 0.5*(U[i+1][k]*U[i+1][k]+V[i+1][k]*V[i+1][k])*RHO[i+1][k])*(gamma[k]-1.0);
-			if(P[i+1][k] < eps)
-				{
-					printf ("P is smaller than 0, error firstly happens in cell %d and step %d, t_all=%lf.\n",k,i,t_all);
-					stop_step=1;
-				}
-			Z[i+1][k] = z_con[k]/RHO[i+1][k];
-		}
+				}	
 	
+			U[1][k] = u_con[k]/RHO[1][k];
+			V[1][k] = v_con[k]/RHO[1][k];
+			P[1][k] = (e_con[k] - 0.5*(U[1][k]*U[1][k]+V[1][k]*V[1][k])*RHO[1][k])*(gamma[k]-1.0);
+			Z[1][k] = z_con[k]/RHO[1][k];			
+			if((RHO[1][k] < eps) || (P[1][k] < eps)||/* (Z[1][k] < -1.0*eps)|| (Z[1][k] > 1.0+eps) ||*/ isnan(RHO[1][k])||isnan(U[1][k])||isnan(V[1][k])||isnan(P[1][k])||isnan(Z[1][k]))
+				{
+					if(!stop_step)
+						printf("Error firstly happens at t_all=%lf, step=%d, on cell=%d", t_all, i, k);
+					else
+						printf (",%d",k);
+					stop_step=2;
+				}
+		}
+	if(stop_step==2)
+		printf(".\n");	
 
 
 	
@@ -554,9 +552,129 @@ int second_order_two_species_solver
 
 	if(stop_step)
 		break;
-		
-				}
 
+
+//===================================PLOT======================================
+
+	char PLOT_name[100];
+	char STEP_char[25];
+	int const interval = 50;
+
+	if(!(i%interval))
+		{
+			strcpy(PLOT_name, example);
+			strcat(PLOT_name, "/breakpoint_\0");			
+			sprintf(STEP_char, "%d\0", i);
+			strcat(PLOT_name, STEP_char);
+			printf("STEP = %d, t_all = %lf\n", i, t_all);		
+			file_two_species_write_TEC(NUM_POINT, X, Y, NUM_CELL, CELL_POINT, RHO[1], U[1], V[1], P[1], Z[1], cpu_time, config, PLOT_name, "2D_EUL_second_order");  
+		}
+
+//==============================================================================
+
+		
+		}
+
+
+
+//=======================kinetic energy of mixing region========================
+
+	double h;  //mixing width
+	double E_M_wave[3];  //energy of mixing region
+	
+	double phi[n];
+	double const phi_0 = 1;
+	double const phi_m = 0.25;
+	
+	for(k = 0; k < m; ++k)
+		{
+			phi[k] = 0;
+			for(j = 0; j < n ;++j)
+				{									
+					phi[k] += Z[1][m*j + k];
+				}
+			phi[k] = phi[k]/n;
+		}
+	
+	h = 0.0;
+	for(k = 0; k < m; ++k)
+		h += phi[k]*(phi_0-phi[k])/phi_m/phi_m*config[3];
+
+	
+	double rho_bar = 0.0, U_bar = 0.0, V_bar = 0.0, U_wave = 0.0, V_wave = 0.0, VOL_MIX = 0.0;
+
+	for(k = 0; k < m; ++k)
+		{
+			if(phi[k]>0.05&&phi[k]<0.95) 							   
+				for(j = 0; j < n ;++j)
+					{
+						VOL_MIX += VOLUME[m*j+k];
+						rho_bar += RHO[1][m*j+k]*VOLUME[m*j+k];
+						U_bar += U[1][m*j+k]*VOLUME[m*j+k];
+						V_bar += V[1][m*j+k]*VOLUME[m*j+k];
+						U_wave += RHO[1][m*j+k]*U[1][m*j+k]*VOLUME[m*j+k];
+						V_wave += RHO[1][m*j+k]*V[1][m*j+k]*VOLUME[m*j+k];
+					}
+		}
+	U_bar = U_bar/VOL_MIX;
+	V_bar = V_bar/VOL_MIX;
+	U_wave = U_wave/rho_bar;
+	V_wave = V_wave/rho_bar;
+
+
+	double U_M, V_M, E_M = 0.0;
+	
+	for(k = 0; k < m; ++k)
+		{
+			if(phi[k]>0.05&&phi[k]<0.95) 							   
+				for(j = 0; j < n ;++j)
+					{
+						U_M = U[1][m*j+k];
+						V_M = V[1][m*j+k];
+						E_M += 0.5*RHO[1][m*j+k]*(U_M*U_M+V_M*V_M);
+					}
+		}
+	E_M_wave[0] = E_M/rho_bar;
+
+	for(k = 0; k < m; ++k)
+		{
+			if(phi[k]>0.05&&phi[k]<0.95) 							   
+				for(j = 0; j < n ;++j)
+					{
+						U_M = U[1][m*j+k] - U_bar;
+						V_M = V[1][m*j+k] - V_bar;
+						E_M += 0.5*RHO[1][m*j+k]*(U_M*U_M+V_M*V_M);
+					}
+		}
+	E_M_wave[1] = E_M/rho_bar;
+
+	for(k = 0; k < m; ++k)
+		{
+			if(phi[k]>0.05&&phi[k]<0.95) 							   
+				for(j = 0; j < n ;++j)
+					{
+						U_M = U[1][m*j+k] - U_wave;
+						V_M = V[1][m*j+k] - V_wave;
+						E_M += 0.5*RHO[1][m*j+k]*(U_M*U_M+V_M*V_M);
+					}
+		}
+	E_M_wave[2] = E_M/rho_bar;
+
+	printf("h=%lf,\t E_M_wave=%lf,\t %lf, \t%lf. \n", h, E_M_wave[0], E_M_wave[1], E_M_wave[2]);
+
+	
+//==============================================================================
+
+//===================================PLOT=======================================
+
+	
+
+
+
+//==============================================================================	
+
+
+	
 	printf("The cost of CPU time for 2D equations of motion by Eulerian method is %g seconds.\n", sum);
 
 	if(!stop_step)
@@ -584,7 +702,5 @@ int second_order_two_species_solver
 		  F_mk_5[k] = NULL;
 	  }
 
-  return i+1;
-
-  
+  * STEP = i;  
 }

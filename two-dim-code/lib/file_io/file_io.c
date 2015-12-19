@@ -11,6 +11,7 @@
 
 
 #include "../file_io.h"
+#include "../custom.h"
 
 
 
@@ -745,18 +746,19 @@ void file_write_TEC(int NUM_POINT, double * X, double * Y, int NUM_CELL, int * C
 
   strcat(file_data, "../../../data_out/two-dim/");
   strcat(file_data, problem);
+  strcat(file_data, "/\0");
 
   int stat_mkdir = 0;
   DIR * dir_test = NULL;
   strcat(file_data, example);
-  strcat(file_data, "\0");
+
 
   dir_test = opendir(file_data);
   if(dir_test != NULL)
     printf("Output directory \"%s\" already exists.\n", file_data);
   else
   {
-    stat_mkdir = mkdir(file_data, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+    stat_mkdir = CreateDir(file_data);
     if(stat_mkdir)
     {
       printf("Output directory \"%s\" construction failed.\n", file_data);
@@ -769,16 +771,13 @@ void file_write_TEC(int NUM_POINT, double * X, double * Y, int NUM_CELL, int * C
 
  char rho_data[100] = "";
   strcpy(rho_data, file_data);
-  strcat(rho_data, "/\0");
-  strcat(rho_data, "RHO.tec\0");
+  strcat(rho_data, "/RHO.tec\0");
  char uv_data[100] = "";
   strcpy(uv_data, file_data);
-  strcat(uv_data, "/\0");
-  strcat(uv_data, "UV.tec\0");
+  strcat(uv_data, "/UV.tec\0");
  char p_data[100] = "";
   strcpy(p_data, file_data);
-  strcat(p_data, "/\0");
-  strcat(p_data, "P.tec\0");
+  strcat(p_data, "/P.tec\0");
 
 
 
@@ -820,8 +819,6 @@ void file_write_TEC(int NUM_POINT, double * X, double * Y, int NUM_CELL, int * C
     }
     fprintf(fp_write, "\n");
   }
-
-
   fclose(fp_write);
 
 
@@ -930,20 +927,21 @@ void file_two_species_write_TEC(int NUM_POINT, double * X, double * Y, int NUM_C
 
 //===================Write solution File=========================
 
-  strcat(file_data, "../../../data_out/two-dim/");
+  strcat(file_data, "../../../data_out/two-dim/\0");
   strcat(file_data, problem);
+  strcat(file_data, "/\0");
 
   int stat_mkdir = 0;
   DIR * dir_test = NULL;
   strcat(file_data, example);
-  strcat(file_data, "\0");
+
 
   dir_test = opendir(file_data);
   if(dir_test != NULL)
     printf("Output directory \"%s\" already exists.\n", file_data);
   else
   {
-    stat_mkdir = mkdir(file_data, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+    stat_mkdir = CreateDir(file_data);
     if(stat_mkdir)
     {
       printf("Output directory \"%s\" construction failed.\n", file_data);
@@ -956,20 +954,16 @@ void file_two_species_write_TEC(int NUM_POINT, double * X, double * Y, int NUM_C
 
  char rho_data[100] = "";
   strcpy(rho_data, file_data);
-  strcat(rho_data, "/\0");
-  strcat(rho_data, "RHO.tec\0");
+  strcat(rho_data, "/RHO.tec\0");
  char uv_data[100] = "";
   strcpy(uv_data, file_data);
-  strcat(uv_data, "/\0");
-  strcat(uv_data, "UV.tec\0");
+  strcat(uv_data, "/UV.tec\0");
  char p_data[100] = "";
   strcpy(p_data, file_data);
-  strcat(p_data, "/\0");
-  strcat(p_data, "P.tec\0");
+  strcat(p_data, "/P.tec\0");
  char cc_data[100] = "";
   strcpy(cc_data, file_data);
-  strcat(cc_data, "/\0");
-  strcat(cc_data, "CC.tec\0");
+  strcat(cc_data, "/CC.tec\0");
 
 
 
@@ -1011,8 +1005,6 @@ void file_two_species_write_TEC(int NUM_POINT, double * X, double * Y, int NUM_C
     }
     fprintf(fp_write, "\n");
   }
-
-
   fclose(fp_write);
 
 

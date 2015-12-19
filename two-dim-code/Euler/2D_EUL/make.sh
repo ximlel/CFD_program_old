@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ulimit -s  1024000
+ulimit -s  10240
 
 
 INITIAL_PATH=$PWD
@@ -16,7 +16,8 @@ cd ../custom/
 gcc -c ./initialize_memory.c
 gcc -c ./rinv.c
 gcc -c ./rhd.c
-ar crv custom.a initialize_memory.o rinv.o rhd.o
+gcc -c ./CreateDir.c
+ar crv custom.a initialize_memory.o rinv.o rhd.o CreateDir.o
 
 cd ../Riemann_solver/
 gcc -c ./Riemann_solver_exact.c
@@ -60,59 +61,89 @@ cd $INITIAL_PATH
 
 ## first order
 
-#./EUL_source.out Sod_10 Sod_10_ROE Sod_mesh ROE -1 0.4
-#./EUL_source.out Sod_10 Sod_10 Sod_mesh Riemann_exact -1 0.4
-#./EUL_source.out Sod_10 Sod_10_Roe_Goundov Sod_mesh Roe_Goundov -1 0.4
+#./EUL_source.out Sod_10 Sod_10/Sod_10_ROE Sod_mesh ROE -1 0.4
+#./EUL_source.out Sod_10 Sod_10/Sod_10 Sod_mesh Riemann_exact -1 0.4
+#./EUL_source.out Sod_10 Sod_10/Sod_10_Roe_Goundov Sod_mesh Roe_Goundov -1 0.4
 
-#./EUL_source.out Sod Sod_ROE Sod_mesh ROE -1 0.4
-#./EUL_source.out Sod Sod_HLL Sod_mesh HLL -1 0.4
-#./EUL_source.out Sod Sod Sod_mesh Riemann_exact -1 0.4
+#./EUL_source.out Sod Sod/Sod_ROE Sod_mesh ROE -1 0.4
+#./EUL_source.out Sod Sod/Sod_HLL Sod_mesh HLL -1 0.4
+#./EUL_source.out Sod Sod/Sod Sod_mesh Riemann_exact -1 0.4
 
-#./EUL_source.out Test1 Test1_ROE Sod_mesh ROE -1 0.4
-#./EUL_source.out Test1 Test1 Sod_mesh Riemann_exact -1 0.4
-#./EUL_source.out Test1 Test1_Roe_Goundov Sod_mesh Roe_Goundov -1 0.4
+#./EUL_source.out Test1 Test1/Test1_ROE Sod_mesh ROE -1 0.4
+#./EUL_source.out Test1 Test1/Test1 Sod_mesh Riemann_exact -1 0.4
+#./EUL_source.out Test1 Test1/Test1_Roe_Goundov Sod_mesh Roe_Goundov -1 0.4
 
-#./EUL_source.out steady_shock steady_shock_ROE Sod_mesh ROE -1 0.4
-#./EUL_source.out steady_shock steady_shock Sod_mesh Riemann_exact -1 0.4
-#./EUL_source.out steady_shock steady_shock_Roe_Goundov Sod_mesh Roe_Goundov -1 0.4
+#./EUL_source.out steady_shock steady_shock/steady_shock_ROE Sod_mesh ROE -1 0.4
+#./EUL_source.out steady_shock steady_shock/steady_shock Sod_mesh Riemann_exact -1 0.4
+#./EUL_source.out steady_shock steady_shock/steady_shock_Roe_Goundov Sod_mesh Roe_Goundov -1 0.4
 
-#./EUL_source.out steady_shear steady_shear_ROE Shear_mesh ROE -1 0.5
-#./EUL_source.out steady_shear steady_shear Shear_mesh Riemann_exact -1 0.5
-#./EUL_source.out steady_shear steady_shear_Roe_Goundov Shear_mesh Roe_Goundov -1 0.5
+#./EUL_source.out steady_shear steady_shear/steady_shear_ROE Shear_mesh ROE -1 0.5
+#./EUL_source.out steady_shear steady_shear/steady_shear Shear_mesh Riemann_exact -1 0.5
+#./EUL_source.out steady_shear steady_shear/steady_shear_Roe_Goundov Shear_mesh Roe_Goundov -1 0.5
 
-#./EUL_source.out contact_only contact_only_ROE Sod_mesh ROE -1 0.4
-#./EUL_source.out contact_only contact_only Sod_mesh Riemann_exact -1 0.4
+#./EUL_source.out contact_only contact_only/contact_only_ROE Sod_mesh ROE -1 0.4
+#./EUL_source.out contact_only contact_only/contact_only Sod_mesh Riemann_exact -1 0.4
+#./EUL_source.out contact_only contact_only/contact_only_Roe_Goundov Sod_mesh Roe_Goundov -1 0.4
 
-#./EUL_source.out odd_even odd_even_ROE odd_even_mesh ROE -1 0.4
-#./EUL_source.out odd_even odd_even_HLL odd_even_mesh HLL -1 0.4
-#./EUL_source.out odd_even odd_even odd_even_mesh Riemann_exact -1 0.4
-#./EUL_source.out odd_even odd_even_Roe_Goundov odd_even_mesh Roe_Goundov -1 0.4
+#./EUL_source.out odd_even odd_even/odd_even_ROE odd_even_mesh ROE -1 0.4
+#./EUL_source.out odd_even odd_even/odd_even_HLL odd_even_mesh HLL -1 0.4
+#./EUL_source.out odd_even odd_even/odd_even odd_even_mesh Riemann_exact -1 0.4
+#./EUL_source.out odd_even odd_even/odd_even_Roe_Goundov odd_even_mesh Roe_Goundov -1 0.4
 
-#./EUL_source.out one_line_du one_line_du_ROE Free_mesh ROE -1 0.4
-#./EUL_source.out one_line_du one_line_du_HLL Free_mesh HLL -1 0.4
-#./EUL_source.out one_line_du one_line_du Free_mesh Riemann_exact -1 0.4
+#./EUL_source.out one_line_du one_line_du/one_line_du_ROE Free_mesh ROE -1 0.4
+#./EUL_source.out one_line_du one_line_du/one_line_du_HLL Free_mesh HLL -1 0.4
+#./EUL_source.out one_line_du one_line_du/one_line_du Free_mesh Riemann_exact -1 0.4
+#./EUL_source.out one_line_du one_line_du/one_line_du_Roe_Goundov Free_mesh Roe_Goundov -1 0.4
 
-#./EUL_source.out one_line_dp one_line_dp_ROE Free_mesh ROE -1 0.4
-#./EUL_source.out one_line_dp one_line_dp Free_mesh Riemann_exact -1 0.4
+#./EUL_source.out one_line_dp one_line_dp/one_line_dp_ROE Free_mesh ROE -1 0.4
+#./EUL_source.out one_line_dp one_line_dp/one_line_dp Free_mesh Riemann_exact -1 0.4
+#./EUL_source.out one_line_dp one_line_dp/one_line_dp_Roe_Goundov Free_mesh Roe_Goundov -1 0.4
 
-#./EUL_source.out Cylinder Cylinder_ROE Cylinder_mesh ROE -1 0.4
-#./EUL_source.out Cylinder Cylinder Cylinder_mesh Riemann_exact -1 0.4
-#./EUL_source.out Cylinder Cylinder_Roe_Goundov Cylinder_mesh Roe_Goundov -1 0.4
+#./EUL_source.out Cylinder Cylinder/Cylinder_ROE Cylinder_mesh ROE -1 0.4
+#./EUL_source.out Cylinder Cylinder/Cylinder Cylinder_mesh Riemann_exact -1 0.4
+#./EUL_source.out Cylinder Cylinder/Cylinder_Roe_Goundov Cylinder_mesh Roe_Goundov -1 0.4
 
-#./EUL_source.out Riemann_2D3_Quad Riemann_2D3_Quad_ROE Free_mesh ROE -1 0.4
-#./EUL_source.out Riemann_2D3_Quad Riemann_2D3_Quad Free_mesh Riemann_exact -1 0.4
+#./EUL_source.out Riemann_2D3_Quad Riemann_2D3_Quad/Riemann_2D3_Quad_ROE Free_mesh ROE -1 0.4
+#./EUL_source.out Riemann_2D3_Quad Riemann_2D3_Quad/Riemann_2D3_Quad Free_mesh Riemann_exact -1 0.4
 
 ### Two_species
 
-#./EUL_source.out RMI RMI RMI_mesh Riemann_exact -1 0.4 Two_species
-#./EUL_source.out RMI RMI_test RMI_mesh Riemann_exact -1 0.4
+#./EUL_source.out RMI/RMI_origin RMI/RMI_Roe_Goundov RMI_mesh Roe_Goundov 1000 0.4
+#./EUL_source.out RMI/RMI_origin RMI/RMI RMI_mesh Riemann_exact -1 0.4 Two_species
+#./EUL_source.out RMI/RMI_origin RMI/RMI_single RMI_mesh Riemann_exact -1 0.4
+#./EUL_source.out RMI/RMI_321 RMI/RMI_321 RMI_mesh Riemann_exact -1 0.4 Two_species
 
 ## second order
 
-#./EUL_source.out RMI RMI RMI_mesh GRP -1 0.4 second_order Two_species
-#./EUL_source.out RMI_321 RMI_321 RMI_mesh GRP -1 0.4 second_order Two_species
-./EUL_source.out RMI_641 RMI_641 RMI_mesh GRP -1 0.4 second_order Two_species
-#./EUL_source.out RMI RMI_test RMI_mesh GRP -1 0.4 second_order
+#./EUL_source.out Sod_10 Sod_10 Sod_mesh GRP -1 0.4 second_order
+
+#./EUL_source.out RMI/RMI_origin RMI/RMI RMI_mesh GRP -1 0.4 second_order Two_species
+#./EUL_source.out RMI/RMI_origin RMI/RMI_single RMI_mesh GRP -1 0.4 second_order
+#./EUL_source.out RMI/RMI_641 RMI/RMI_641 RMI_mesh GRP -1 0.4 second_order Two_species
+#./EUL_source.out RMI/RMI_641 RMI/RMI_641_single RMI_mesh GRP -1 0.4 second_order
+
+#=============================RMI KA test=========================
+nohup ./EUL_source.out RMI/RMI_K1A10 RMI_bp/RMI_K1A10 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K1A10.out 2>&1 &
+nohup ./EUL_source.out RMI/RMI_K1A20 RMI_bp/RMI_K1A20 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K1A20.out 2>&1 &
+nohup ./EUL_source.out RMI/RMI_K1A40 RMI_bp/RMI_K1A40 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K1A40.out 2>&1 &
+nohup ./EUL_source.out RMI/RMI_K1A80 RMI_bp/RMI_K1A80 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K1A80.out 2>&1 &
+nohup ./EUL_source.out RMI/RMI_K2A10 RMI_bp/RMI_K2A10 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K2A10.out 2>&1 &
+nohup ./EUL_source.out RMI/RMI_K2A20 RMI_bp/RMI_K2A20 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K2A20.out 2>&1 &
+nohup ./EUL_source.out RMI/RMI_K2A40 RMI_bp/RMI_K2A40 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K2A40.out 2>&1 &
+nohup ./EUL_source.out RMI/RMI_K2A80 RMI_bp/RMI_K2A80 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K2A80.out 2>&1 &
+nohup ./EUL_source.out RMI/RMI_K4A10 RMI_bp/RMI_K4A10 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K4A10.out 2>&1 &
+nohup ./EUL_source.out RMI/RMI_K4A20 RMI_bp/RMI_K4A20 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K4A20.out 2>&1 &
+nohup ./EUL_source.out RMI/RMI_K4A40 RMI_bp/RMI_K4A40 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K4A40.out 2>&1 &
+nohup ./EUL_source.out RMI/RMI_K4A80 RMI_bp/RMI_K4A80 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K4A80.out 2>&1 &
+nohup ./EUL_source.out RMI/RMI_K8A10 RMI_bp/RMI_K8A10 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K8A10.out 2>&1 &
+nohup ./EUL_source.out RMI/RMI_K8A20 RMI_bp/RMI_K8A20 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K8A20.out 2>&1 &
+nohup ./EUL_source.out RMI/RMI_K8A40 RMI_bp/RMI_K8A40 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K8A40.out 2>&1 &
+nohup ./EUL_source.out RMI/RMI_K8A80 RMI_bp/RMI_K8A80 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K8A80.out 2>&1 &
+nohup ./EUL_source.out RMI/RMI_K16A10 RMI_bp/RMI_K16A10 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K16A10.out 2>&1 &
+nohup ./EUL_source.out RMI/RMI_K16A20 RMI_bp/RMI_K16A20 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K16A20.out 2>&1 &
+nohup ./EUL_source.out RMI/RMI_K16A40 RMI_bp/RMI_K16A40 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K16A40.out 2>&1 &
+nohup ./EUL_source.out RMI/RMI_K16A80 RMI_bp/RMI_K16A80 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K16A80.out 2>&1 &
+#=============================RMI KA test=========================
 
 
 exit 0

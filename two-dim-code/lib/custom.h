@@ -12,3 +12,4 @@ double miu_Ven(double x);
 
 void Gauss_elimination(int n, double (*a)[n+1], double *x);
 
+int CreateDir(const char* pPath);

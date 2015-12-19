@@ -253,19 +253,20 @@ void _1D_file_write_TEC(int m, int N, double * RHO[], double * U[], double * P[]
 //===================Write solution File=========================
   strcat(file_data, "../../../data_out/one-dim/");
   strcat(file_data, problem);
+  strcat(file_data, "/\0");
 
   int stat_mkdir = 0;
   DIR * dir_test = NULL;
 
   strcat(file_data, example);
-  strcat(file_data, "\0");
+
 
   dir_test = opendir(file_data);
   if(dir_test != NULL)
     printf("Output directory \"%s\" already exists.\n", file_data);
   else
   {
-    stat_mkdir = mkdir(file_data, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+    stat_mkdir = CreateDir(file_data);
     if(stat_mkdir)
     {
       printf("Output directory \"%s\" construction failed.\n", file_data);
