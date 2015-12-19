@@ -15,11 +15,6 @@
 #include "../../lib/Riemann_solver.h"
 
 
-#ifndef DATA_LOCATION
-#define DATA_LOCATION "../../../data_in/one-dim/\0"
-#endif /* DATA_LOCATION */
-
-
 
 #ifndef N_CONF
 #define N_CONF 5
@@ -34,7 +29,7 @@ double * RHO0 = NULL;
 int main(int argc, char *argv[])
 {
   int stat_mkdir = 0, len;
-  char add_mkdir[100] = DATA_LOCATION;
+  char add_mkdir[100] = "../../../data_in/one-dim/\0";
   DIR * dir_test = NULL;
   strcat(add_mkdir, argv[1]);
   strcat(add_mkdir, "\0");
@@ -47,22 +42,18 @@ int main(int argc, char *argv[])
     }
   closedir(dir_test);
 
-  char addRHO[100] = DATA_LOCATION;
-  strcat(addRHO, argv[1]);
-  strcat(addRHO, "/\0");
-  strcat(addRHO, "RHO.txt\0");
-  char addU[100] = DATA_LOCATION;
-  strcat(addU, argv[1]);
-  strcat(addU, "/\0");
-  strcat(addU, "U.txt\0");
-  char addP[100] = DATA_LOCATION;
-  strcat(addP, argv[1]);
-  strcat(addP, "/\0");
-  strcat(addP, "P.txt\0");
-  char addconfig[100] = DATA_LOCATION;
-  strcat(addconfig, argv[1]);
-  strcat(addconfig, "/\0");
-  strcat(addconfig, "config.txt\0");
+  char addRHO[200];
+  strcpy(addRHO, add_mkdir);
+  strcat(addRHO, "/RHO.txt\0");
+  char addU[200];
+  strcpy(addU, add_mkdir);
+  strcat(addU, "/U.txt\0");
+  char addP[200];
+  strcpy(addP, add_mkdir);
+  strcat(addP, "/P.txt\0");
+  char addconfig[200];
+  strcpy(addconfig, add_mkdir);
+  strcat(addconfig, "/config.txt\0");
 
 
   _1D_initialize(argv[0], addRHO, addU, addP);  /* Firstly we read the initial
@@ -243,7 +234,7 @@ STEP=first_order_solver(config, m, RHO, U, P, E, X, cpu_time, argv[3], atof(argv
   if(atoi(argv[4])>=0)
   STEP = atoi(argv[4]);
 
-  _1D_file_write_TEC(m, STEP, RHO, U, P, X, cpu_time, config, argv[2], "1D_EUL_first_order/"); /*write the final data down.
+  _1D_file_write_TEC(m, STEP, RHO, U, P, X, cpu_time, config, argv[2], "1D_EUL_first_order"); /*write the final data down.
  								      */ 																								
 
   for(k = 1; k < N; ++k)

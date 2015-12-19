@@ -26,7 +26,7 @@
 void second_order_two_species_solver
 (int * STEP, double * config, int NUM_CELL, int NUM_POINT, int NUM_BOUNDARY, int * CELL_POINT[],
  int * BOUNDARY_POINT[], int m, int n, double * RHO[], double * U[], double * V[], double * P[], double * Z[],
- double * X, double * Y, double * gamma, double * cpu_time, char * scheme, double CFL/* the CFL number */)
+ double * X, double * Y, double * gamma, double * cpu_time, char * scheme, double CFL/* the CFL number */, char * example)
 {	
 
 	int i, j, k, l; 
@@ -552,12 +552,32 @@ void second_order_two_species_solver
 
 	if(stop_step)
 		break;
+
+
+//===================================PLOT======================================
+
+	char PLOT_name[100];
+	char STEP_char[25];
+	int const interval = 50;
+
+	if(!(i%interval))
+		{
+			strcpy(PLOT_name, example);
+			strcat(PLOT_name, "/breakpoint_\0");			
+			sprintf(STEP_char, "%d\0", i);
+			strcat(PLOT_name, STEP_char);
+			printf("STEP = %d, t_all = %lf\n", i, t_all);		
+			file_two_species_write_TEC(NUM_POINT, X, Y, NUM_CELL, CELL_POINT, RHO[1], U[1], V[1], P[1], Z[1], cpu_time, config, PLOT_name, "2D_EUL_second_order");  
+		}
+
+//==============================================================================
+
 		
 		}
 
 
 
-//=======================kinetic energy of mixing region=====================
+//=======================kinetic energy of mixing region========================
 
 	double h;  //mixing width
 	double E_M_wave[3];  //energy of mixing region
@@ -581,7 +601,7 @@ void second_order_two_species_solver
 		h += phi[k]*(phi_0-phi[k])/phi_m/phi_m*config[3];
 
 	
-	double rho_bar, U_bar, V_bar, U_wave, V_wave, VOL_MIX;
+	double rho_bar = 0.0, U_bar = 0.0, V_bar = 0.0, U_wave = 0.0, V_wave = 0.0, VOL_MIX = 0.0;
 
 	for(k = 0; k < m; ++k)
 		{
@@ -602,7 +622,7 @@ void second_order_two_species_solver
 	V_wave = V_wave/rho_bar;
 
 
-	double U_M, V_M, E_M;
+	double U_M, V_M, E_M = 0.0;
 	
 	for(k = 0; k < m; ++k)
 		{
@@ -640,9 +660,18 @@ void second_order_two_species_solver
 		}
 	E_M_wave[2] = E_M/rho_bar;
 
-	printf("h=%lf,\t E_M_wave=%lf,\t %lf, \t%lf. \n",h,E_M_wave[0],E_M_wave[1],E_M_wave[2]);
+	printf("h=%lf,\t E_M_wave=%lf,\t %lf, \t%lf. \n", h, E_M_wave[0], E_M_wave[1], E_M_wave[2]);
 
-//========================================================	
+	
+//==============================================================================
+
+//===================================PLOT=======================================
+
+	
+
+
+
+//==============================================================================	
 
 
 	

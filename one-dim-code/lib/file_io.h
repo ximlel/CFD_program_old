@@ -22,6 +22,9 @@ int format_string(char * str);
 int file_read(FILE * fp, double * U, int num);
 
 
+int CreateDir(const char* pPath);
+
+
 
 
 /* this function counts how many numbers are there

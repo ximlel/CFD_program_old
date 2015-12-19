@@ -405,7 +405,7 @@ void first_order_two_species_solver
 			sprintf(STEP_char, "%d", i);
 			strcat(PLOT_name, STEP_char);
 			printf("STEP = %d, t_all = %lf\n", i, t_all);		
-			file_two_species_write_TEC(NUM_POINT, X, Y, NUM_CELL, CELL_POINT, RHO[1], U[1], V[1], P[1], Z[1], cpu_time, config, PLOT_name, "2D_EUL_first_order/");  
+			file_two_species_write_TEC(NUM_POINT, X, Y, NUM_CELL, CELL_POINT, RHO[1], U[1], V[1], P[1], Z[1], cpu_time, config, PLOT_name, "2D_EUL_first_order");  
 		}
 
 //==============================================================================

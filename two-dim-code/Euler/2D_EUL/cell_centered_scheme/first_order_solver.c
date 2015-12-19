@@ -427,6 +427,8 @@ void first_order_solver
 	if(stop_step)
 		break;
 
+
+/*
 //===================================PLOT=================================
 
 	char PLOT_name[100];
@@ -443,7 +445,7 @@ void first_order_solver
 		}
 
 //==============================================================================	
-
+*/
 
 
 		}
@@ -453,6 +455,7 @@ void first_order_solver
 		printf("The maximum number of time steps is not enough for this calculation, t_all=%lf.\n",t_all);
 
 //------------END OF THE MAIN LOOP-------------
+
 
   for(k = 0; k < NUM_CELL; ++k)
 	  { 	

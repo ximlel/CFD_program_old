@@ -39,4 +39,4 @@ void second_order_solver
 void second_order_two_species_solver
 (int * STEP, double * config, int NUM_CELL, int NUM_POINT, int NUM_BOUNDARY, int * CELL_POINT[],
  int * BOUNDARY_POINT[], int m, int n, double * RHO[], double * U[], double * V[], double * P[], double * Z[],
- double * X, double * Y, double * gamma, double * cpu_time, char * scheme, double CFL);
+ double * X, double * Y, double * gamma, double * cpu_time, char * scheme, double CFL, char * example);
