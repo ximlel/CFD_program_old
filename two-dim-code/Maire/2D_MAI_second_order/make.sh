@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ulimit -s  10240
+ulimit -s  102400
 
 
 INITIAL_PATH=$PWD

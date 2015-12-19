@@ -1,9 +1,9 @@
 #!/bin/bash
 
-for i in `ls -l | awk '/^d/{print $9}'`
+for i in `find ./ -name '*' -type d`
 do
-if [ -f "./$i/value_start.m" ]; then
-echo "run ./$i/value_start.m;" >> data_initilize.m 
+if [ -f "$i/value_start.m" ]; then
+echo "run $i/value_start.m;" >> data_initilize.m 
 fi
 done
 

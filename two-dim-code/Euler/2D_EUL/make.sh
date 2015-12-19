@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ulimit -s  10240
+ulimit -s  102400
 
 
 INITIAL_PATH=$PWD
@@ -53,8 +53,8 @@ gcc -o EUL_source.out ./EUL_source.o ../../lib/file_io/file_io.a ./meshing/meshi
 
 #Initilize
 
-cd ../../../data_in/two-dim/
-./data_initilize.sh
+# cd ../../../data_in/two-dim/
+# ./data_initilize.sh
 cd $INITIAL_PATH
 
 #Run
@@ -123,7 +123,7 @@ cd $INITIAL_PATH
 #./EUL_source.out RMI/RMI_641 RMI/RMI_641_single RMI_mesh GRP -1 0.4 second_order
 
 #=============================RMI KA test=========================
-:<<KA
+#:<<KA
 nohup ./EUL_source.out RMI/RMI_K1A10 RMI_bp/RMI_K1A10 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K1A10.out 2>&1 &
 nohup ./EUL_source.out RMI/RMI_K1A20 RMI_bp/RMI_K1A20 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K1A20.out 2>&1 &
 nohup ./EUL_source.out RMI/RMI_K1A40 RMI_bp/RMI_K1A40 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K1A40.out 2>&1 &
@@ -144,8 +144,9 @@ nohup ./EUL_source.out RMI/RMI_K16A10 RMI_bp/RMI_K16A10 RMI_mesh GRP -1 0.4 seco
 nohup ./EUL_source.out RMI/RMI_K16A20 RMI_bp/RMI_K16A20 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K16A20.out 2>&1 &
 nohup ./EUL_source.out RMI/RMI_K16A40 RMI_bp/RMI_K16A40 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K16A40.out 2>&1 &
 nohup ./EUL_source.out RMI/RMI_K16A80 RMI_bp/RMI_K16A80 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K16A80.out 2>&1 &
-KA
+#KA
 #=============================RMI KA test=========================
-./EUL_source.out RMI/RMI_81 RMI_bp/RMI_81 RMI_mesh GRP -1 0.4 second_order Two_species
+#./EUL_source.out RMI/RMI_161 RMI_bp/RMI_161 RMI_mesh GRP -1 0.4 second_order Two_species
+#./EUL_source.out RMI/RMI_K1A10 RMI_bp/RMI_K1A10 RMI_mesh GRP -1 0.4 second_order Two_species
 
 exit 0

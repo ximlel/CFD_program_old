@@ -210,7 +210,7 @@ void second_order_two_species_solver
 	double grad_V_x[NUM_CELL], grad_V_y[NUM_CELL];
 	double grad_Z_x[NUM_CELL], grad_Z_y[NUM_CELL];
 
-
+printf("AAAAAAAAAAAAAAAAA\n");
 
 	char PLOT_name[200];
 	char STEP_char[25];
@@ -556,7 +556,7 @@ void second_order_two_species_solver
 
 	if(stop_step)
 		break;
-printf("AAAAAAAAAAAAAAAAA\n");
+
 
 //===================================PLOT======================================
 
