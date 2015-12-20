@@ -103,7 +103,7 @@ fclose(fid);
 
 
 eps=1e-9;
-t_all=4;
+t_all=0.77;
 step=25000;
 
 fid = fopen('config.txt','wt');

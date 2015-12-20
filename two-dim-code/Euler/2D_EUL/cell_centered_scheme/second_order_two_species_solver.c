@@ -210,7 +210,6 @@ void second_order_two_species_solver
 	double grad_V_x[NUM_CELL], grad_V_y[NUM_CELL];
 	double grad_Z_x[NUM_CELL], grad_Z_y[NUM_CELL];
 
-printf("AAAAAAAAAAAAAAAAA\n");
 
 	char PLOT_name[200];
 	char STEP_char[25];
@@ -559,7 +558,7 @@ printf("AAAAAAAAAAAAAAAAA\n");
 
 
 //===================================PLOT======================================
-
+/*
 	if(!(i%interval))
 		{
 			strcpy(PLOT_name, example);
@@ -569,7 +568,7 @@ printf("AAAAAAAAAAAAAAAAA\n");
 			printf("STEP = %d, t_all = %lf\n", i, t_all);		
 			file_two_species_write_TEC(NUM_POINT, X, Y, NUM_CELL, CELL_POINT, RHO[1], U[1], V[1], P[1], Z[1], cpu_time, config, PLOT_name, "2D_EUL_second_order");  
 		}
-
+*/
 //==============================================================================
 
 		
@@ -579,24 +578,24 @@ printf("AAAAAAAAAAAAAAAAA\n");
 
 //=======================kinetic energy of mixing region========================
 
-	double h;  //mixing width
+	double h = 0.0;  //mixing width
 	double E_M_wave[3];  //energy of mixing region
 	
-	double phi[n];
-	double const phi_0 = 1;
+	double phi[m];
+	double const phi_0 = 1.0;
 	double const phi_m = 0.25;
 	
 	for(k = 0; k < m; ++k)
 		{
-			phi[k] = 0;
-			for(j = 0; j < n ;++j)
+			phi[k] = 0.0;
+			for(j = 0; j < n; ++j)
 				{									
-					phi[k] += Z[1][m*j + k];
+					phi[k] += Z[1][n*k + j];
 				}
 			phi[k] = phi[k]/n;
 		}
 	
-	h = 0.0;
+
 	for(k = 0; k < m; ++k)
 		h += phi[k]*(phi_0-phi[k])/phi_m/phi_m*config[3];
 
@@ -605,15 +604,15 @@ printf("AAAAAAAAAAAAAAAAA\n");
 
 	for(k = 0; k < m; ++k)
 		{
-			if(phi[k]>0.05&&phi[k]<0.95) 							   
+			if(phi[k]>0.05&&phi[k]<0.95)							   
 				for(j = 0; j < n ;++j)
 					{
-						VOL_MIX += VOLUME[m*j+k];
-						rho_bar += RHO[1][m*j+k]*VOLUME[m*j+k];
-						U_bar += U[1][m*j+k]*VOLUME[m*j+k];
-						V_bar += V[1][m*j+k]*VOLUME[m*j+k];
-						U_wave += RHO[1][m*j+k]*U[1][m*j+k]*VOLUME[m*j+k];
-						V_wave += RHO[1][m*j+k]*V[1][m*j+k]*VOLUME[m*j+k];
+						VOL_MIX += VOLUME[n*k + j];
+						rho_bar += RHO[1][n*k + j]*VOLUME[n*k + j];
+						U_bar += U[1][n*k + j]*VOLUME[n*k + j];
+						V_bar += V[1][n*k + j]*VOLUME[n*k + j];
+						U_wave += RHO[1][n*k + j]*U[1][n*k + j]*VOLUME[n*k + j];
+						V_wave += RHO[1][n*k + j]*V[1][n*k + j]*VOLUME[n*k + j];
 					}
 		}
 	U_bar = U_bar/VOL_MIX;
@@ -622,56 +621,51 @@ printf("AAAAAAAAAAAAAAAAA\n");
 	V_wave = V_wave/rho_bar;
 
 
-	double U_M, V_M, E_M = 0.0;
-	
+	double U_M, V_M, E_M;
+
+	E_M = 0.0;	
 	for(k = 0; k < m; ++k)
 		{
 			if(phi[k]>0.05&&phi[k]<0.95) 							   
 				for(j = 0; j < n ;++j)
 					{
-						U_M = U[1][m*j+k];
-						V_M = V[1][m*j+k];
-						E_M += 0.5*RHO[1][m*j+k]*(U_M*U_M+V_M*V_M);
+						U_M = U[1][n*k + j];
+						V_M = V[1][n*k + j];
+						E_M += 0.5*RHO[1][n*k + j]*(U_M*U_M+V_M*V_M);
 					}
 		}
 	E_M_wave[0] = E_M/rho_bar;
 
+	E_M = 0.0;
 	for(k = 0; k < m; ++k)
 		{
 			if(phi[k]>0.05&&phi[k]<0.95) 							   
 				for(j = 0; j < n ;++j)
 					{
-						U_M = U[1][m*j+k] - U_bar;
-						V_M = V[1][m*j+k] - V_bar;
-						E_M += 0.5*RHO[1][m*j+k]*(U_M*U_M+V_M*V_M);
+						U_M = U[1][n*k + j] - U_bar;
+						V_M = V[1][n*k + j] - V_bar;
+						E_M += 0.5*RHO[1][n*k + j]*(U_M*U_M+V_M*V_M);
 					}
 		}
 	E_M_wave[1] = E_M/rho_bar;
 
+	E_M = 0.0;
 	for(k = 0; k < m; ++k)
 		{
 			if(phi[k]>0.05&&phi[k]<0.95) 							   
 				for(j = 0; j < n ;++j)
 					{
-						U_M = U[1][m*j+k] - U_wave;
-						V_M = V[1][m*j+k] - V_wave;
-						E_M += 0.5*RHO[1][m*j+k]*(U_M*U_M+V_M*V_M);
+						U_M = U[1][n*k + j] - U_wave;
+						V_M = V[1][n*k + j] - V_wave;
+						E_M += 0.5*RHO[1][n*k + j]*(U_M*U_M+V_M*V_M);
 					}
 		}
 	E_M_wave[2] = E_M/rho_bar;
 
-	printf("h=%lf,\t E_M_wave=%lf,\t %lf, \t%lf. \n", h, E_M_wave[0], E_M_wave[1], E_M_wave[2]);
+	printf("h=%lf, E_M_wave=%lf, %lf and %lf.\n", h, E_M_wave[0], E_M_wave[1], E_M_wave[2]);
 
 	
 //==============================================================================
-
-//===================================PLOT=======================================
-
-	
-
-
-
-//==============================================================================	
 
 
 	

@@ -124,26 +124,26 @@ cd $INITIAL_PATH
 
 #=============================RMI KA test=========================
 #:<<KA
-nohup ./EUL_source.out RMI/RMI_K1A10 RMI_bp/RMI_K1A10 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K1A10.out 2>&1 &
-nohup ./EUL_source.out RMI/RMI_K1A20 RMI_bp/RMI_K1A20 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K1A20.out 2>&1 &
-nohup ./EUL_source.out RMI/RMI_K1A40 RMI_bp/RMI_K1A40 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K1A40.out 2>&1 &
-nohup ./EUL_source.out RMI/RMI_K1A80 RMI_bp/RMI_K1A80 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K1A80.out 2>&1 &
-nohup ./EUL_source.out RMI/RMI_K2A10 RMI_bp/RMI_K2A10 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K2A10.out 2>&1 &
-nohup ./EUL_source.out RMI/RMI_K2A20 RMI_bp/RMI_K2A20 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K2A20.out 2>&1 &
-nohup ./EUL_source.out RMI/RMI_K2A40 RMI_bp/RMI_K2A40 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K2A40.out 2>&1 &
-nohup ./EUL_source.out RMI/RMI_K2A80 RMI_bp/RMI_K2A80 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K2A80.out 2>&1 &
-nohup ./EUL_source.out RMI/RMI_K4A10 RMI_bp/RMI_K4A10 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K4A10.out 2>&1 &
-nohup ./EUL_source.out RMI/RMI_K4A20 RMI_bp/RMI_K4A20 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K4A20.out 2>&1 &
-nohup ./EUL_source.out RMI/RMI_K4A40 RMI_bp/RMI_K4A40 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K4A40.out 2>&1 &
-nohup ./EUL_source.out RMI/RMI_K4A80 RMI_bp/RMI_K4A80 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K4A80.out 2>&1 &
-nohup ./EUL_source.out RMI/RMI_K8A10 RMI_bp/RMI_K8A10 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K8A10.out 2>&1 &
-nohup ./EUL_source.out RMI/RMI_K8A20 RMI_bp/RMI_K8A20 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K8A20.out 2>&1 &
-nohup ./EUL_source.out RMI/RMI_K8A40 RMI_bp/RMI_K8A40 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K8A40.out 2>&1 &
-nohup ./EUL_source.out RMI/RMI_K8A80 RMI_bp/RMI_K8A80 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K8A80.out 2>&1 &
-nohup ./EUL_source.out RMI/RMI_K16A10 RMI_bp/RMI_K16A10 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K16A10.out 2>&1 &
-nohup ./EUL_source.out RMI/RMI_K16A20 RMI_bp/RMI_K16A20 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K16A20.out 2>&1 &
-nohup ./EUL_source.out RMI/RMI_K16A40 RMI_bp/RMI_K16A40 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K16A40.out 2>&1 &
-nohup ./EUL_source.out RMI/RMI_K16A80 RMI_bp/RMI_K16A80 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K16A80.out 2>&1 &
+nohup ./EUL_source.out RMI/RMI_K1A10 RMI/RMI_K1A10 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K1A10.out 2>&1 &
+nohup ./EUL_source.out RMI/RMI_K1A20 RMI/RMI_K1A20 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K1A20.out 2>&1 &
+nohup ./EUL_source.out RMI/RMI_K1A40 RMI/RMI_K1A40 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K1A40.out 2>&1 &
+nohup ./EUL_source.out RMI/RMI_K1A80 RMI/RMI_K1A80 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K1A80.out 2>&1 &
+nohup ./EUL_source.out RMI/RMI_K2A10 RMI/RMI_K2A10 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K2A10.out 2>&1 &
+nohup ./EUL_source.out RMI/RMI_K2A20 RMI/RMI_K2A20 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K2A20.out 2>&1 &
+nohup ./EUL_source.out RMI/RMI_K2A40 RMI/RMI_K2A40 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K2A40.out 2>&1 &
+nohup ./EUL_source.out RMI/RMI_K2A80 RMI/RMI_K2A80 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K2A80.out 2>&1 &
+nohup ./EUL_source.out RMI/RMI_K4A10 RMI/RMI_K4A10 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K4A10.out 2>&1 &
+nohup ./EUL_source.out RMI/RMI_K4A20 RMI/RMI_K4A20 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K4A20.out 2>&1 &
+nohup ./EUL_source.out RMI/RMI_K4A40 RMI/RMI_K4A40 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K4A40.out 2>&1 &
+nohup ./EUL_source.out RMI/RMI_K4A80 RMI/RMI_K4A80 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K4A80.out 2>&1 &
+nohup ./EUL_source.out RMI/RMI_K8A10 RMI/RMI_K8A10 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K8A10.out 2>&1 &
+nohup ./EUL_source.out RMI/RMI_K8A20 RMI/RMI_K8A20 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K8A20.out 2>&1 &
+nohup ./EUL_source.out RMI/RMI_K8A40 RMI/RMI_K8A40 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K8A40.out 2>&1 &
+nohup ./EUL_source.out RMI/RMI_K8A80 RMI/RMI_K8A80 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K8A80.out 2>&1 &
+nohup ./EUL_source.out RMI/RMI_K16A10 RMI/RMI_K16A10 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K16A10.out 2>&1 &
+nohup ./EUL_source.out RMI/RMI_K16A20 RMI/RMI_K16A20 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K16A20.out 2>&1 &
+nohup ./EUL_source.out RMI/RMI_K16A40 RMI/RMI_K16A40 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K16A40.out 2>&1 &
+nohup ./EUL_source.out RMI/RMI_K16A80 RMI/RMI_K16A80 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K16A80.out 2>&1 &
 #KA
 #=============================RMI KA test=========================
 #./EUL_source.out RMI/RMI_161 RMI_bp/RMI_161 RMI_mesh GRP -1 0.4 second_order Two_species
