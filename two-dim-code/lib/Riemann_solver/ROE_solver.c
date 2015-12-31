@@ -2,14 +2,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #define max(x,y)  ( x>y?x:y )
-#define min(x,y)  (x<y?x:y)
 
 
 
 void ROE_solver(double *F, double gamma, double P_L, double RHO_L, double U_L, double V_L,double n_x, double n_y, double P_R, double RHO_R, double U_R,double V_R,double *lambda_max, double delta)
-{
-	double const  Q_user = 2.0;
-		
+{	
 	double H_L, H_R;
 	H_L = gamma/(gamma-1.0)*P_L/RHO_L + 0.5*(U_L*U_L+V_L*V_L);
 	H_R = gamma/(gamma-1.0)*P_R/RHO_R + 0.5*(U_R*U_R+V_R*V_R);
@@ -35,69 +32,6 @@ void ROE_solver(double *F, double gamma, double P_L, double RHO_L, double U_L, d
 	double qn_L, qt_L;
 	qn_L = U_L*n_x + V_L*n_y;
 	qt_L = -U_L*n_y + V_L*n_x;
-
-
-	double C_L, C_R;
-	C_L = sqrt(gamma*P_L/RHO_L);
-	C_R = sqrt(gamma*P_R/RHO_R);
-	double z = 0.5 *  (gamma-1.0) / gamma;
-
-	double Q, P_pvrs, P_max, P_min, RHO_bar, C_bar;
-	P_min = min(P_L,P_R);
-	P_max = max(P_L,P_R);
-	Q = P_max/P_min;
-	RHO_bar = 0.5*(RHO_L+RHO_R);
-	C_bar = 0.5*(C_L+C_R);
-	P_pvrs = 0.5*(P_L+P_R)+0.5*(qn_L-qn_R)*RHO_bar*C_bar;
-
-	double A_L,A_R,B_L,B_R;
-	A_L = 2.0/(gamma+1.0)/RHO_L;
-	A_R = 2.0/(gamma+1.0)/RHO_R;
-	B_L = (gamma-1)/(gamma+1)*P_L;
-	B_R = (gamma-1)/(gamma+1)*P_R;
-
-	double P_star, U_star, U_star_L, U_star_R, RHO_star_L, RHO_star_R, C_star_L, C_star_R, P_0, g_L_0, g_R_0, lambda_L_1, lambda_R_1, lambda_L_4, lambda_R_4;
-
-	if(Q<Q_user&&P_min<P_pvrs&&P_pvrs<P_max) //PVRS
-		{
-			P_star = max(0,P_pvrs);
-			U_star = 0.5*(qn_L+qn_R)+0.5*(P_L-P_R)/(RHO_bar*C_bar);
-			RHO_star_L = RHO_L + (qn_L-U_star)*RHO_bar/C_bar;
-			RHO_star_R = RHO_R + (U_star - qn_R)*RHO_bar/C_bar;
-			C_star_L = sqrt(gamma*P_star/RHO_star_L);
-			C_star_R = sqrt(gamma*P_star/RHO_star_R);
-			U_star_L = U_star;
-			U_star_R = U_star;
-		}
-	else if(P_pvrs<P_min) //TRRS
-		{	   	
-			P_star = pow((C_L + C_R - (gamma-1.0)/2.0*(qn_R - qn_L))/(C_L/pow(P_L,z) + C_R/pow(P_R,z)), 1.0/z);	
-			C_star_L = C_L * pow(P_star/P_L, z);
-			U_star_L = qn_L + 2.0/(gamma - 1.0)*(C_L - C_star_L);
-			C_star_R = C_R * pow(P_star/P_R, z);
-			U_star_R = qn_R + 2.0/(gamma - 1.0)*(C_star_R - C_R);
-		}
-	else //TSRS
-		{
-			P_0 = max(0,P_pvrs);
-			g_L_0 = sqrt(A_L/(P_0+B_L));
-			g_R_0 = sqrt(A_R/(P_0+B_R));
-			P_star = (g_L_0*P_L+g_R_0*P_R-(qn_R-qn_L))/(g_L_0+g_R_0);
-			U_star = 0.5*(qn_R+qn_L)+0.5*((P_star-P_R)*g_R_0-(P_star-P_L)*g_L_0);
-			RHO_star_L = RHO_L*(P_star/P_L+(gamma-1.0)/(gamma+1.0))/((gamma-1.0)*P_star/(gamma+1.0)/P_L+1.0);
-			RHO_star_R = RHO_R*(P_star/P_R+(gamma-1.0)/(gamma+1.0))/((gamma-1.0)*P_star/(gamma+1.0)/P_R+1.0);
-			C_star_L = sqrt(gamma*P_star/RHO_star_L);
-			C_star_R = sqrt(gamma*P_star/RHO_star_R);
-			U_star_L = U_star;
-			U_star_R = U_star;
-		}
-	
-	
-	lambda_L_1 = qn_L - C_L;
-	lambda_R_1 = U_star_L - C_star_L;
-	lambda_L_4 = U_star_R + C_star_R;
-	lambda_R_4 = qn_R + C_R;
-
 	
 	double R[4][4];
 	double lambda[4], W[4];
@@ -130,45 +64,30 @@ void ROE_solver(double *F, double gamma, double P_L, double RHO_L, double U_L, d
 	lambda[1] = fabs(qn_S);
  	lambda[2] = fabs(qn_S + C_S);
 	lambda[3] = fabs(qn_S);
-	
 
-	*lambda_max = fabs(U_S) + C_S;
 	
-	if(lambda_L_1<0&&lambda_R_1>0)
-		{
-			F[0] = RHO_L*U_L*n_x+RHO_L*V_L*n_y;
-			F[1] = (RHO_L*U_L*U_L+P_L)*n_x+RHO_L*U_L*V_L*n_y;
-			F[2] = RHO_L*U_L*V_L*n_x+(RHO_L*V_L*V_L+P_L)*n_y;
- 			F[3] = RHO_L*U_L*H_L*n_x+RHO_L*V_L*H_L*n_y;
-			lambda[0] = lambda_L_1*(lambda_R_1-(qn_S-C_S))/(lambda_R_1-lambda_L_1);
-			for(i = 0; i < 4; i++)
-				{					
-					F[i] += lambda[0]*W[0]*R[i][0];				
-				}
-		}
-	else if(lambda_L_4<0&&lambda_R_4>0)
-		{
-			F[0] = RHO_R*U_R*n_x+RHO_R*V_R*n_y;
-			F[1] = (RHO_R*U_R*U_R+P_R)*n_x+RHO_R*U_R*V_R*n_y;
-			F[2] = RHO_R*U_R*V_R*n_x+(RHO_R*V_R*V_R+P_R)*n_y;
- 			F[3] = RHO_R*U_R*H_R*n_x+RHO_R*V_R*H_R*n_y;
-			lambda[2] = lambda_R_4*((qn_S+C_S)-lambda_L_4)/(lambda_R_4-lambda_L_4);
-			for(i = 0; i < 4; i++)
-				{
-					F[i] += -lambda[2]*W[2]*R[i][2];				
-				}
-		}
-	else
-		{
-			for(i = 0; i < 4; i++)
-				{
-					for(j = 0; j<4; j++)
-						{
-							F[i] += -0.5*lambda[j]*W[j]*R[i][j];				
-						}
-				}
-		}
+double delta_1=0.02;
+double delta_2=0.3;
+	
+	if(lambda[0]<delta)
+			lambda[0] = 0.5/delta*(lambda[0]*lambda[0] + delta*delta);	
+//	if(lambda[1]<delta_1)
+//			lambda[1] = 0.5/delta_1*(lambda[1]*lambda[1] + delta_1*delta_1);		   
+	if(lambda[2]<delta)
+			lambda[2] = 0.5/delta*(lambda[2]*lambda[2] + delta*delta);
+	if(lambda[3]<delta_2)
+			lambda[3] = 0.5/delta_2*(lambda[3]*lambda[3] + delta_2*delta_2);	   
 
+	*lambda_max = 0;
+	for(i = 0; i < 4; i++)
+		{
+			*lambda_max = max(*lambda_max, lambda[i]);
+			for(j = 0; j<4; j++)
+				{
+					F[i] += -0.5*lambda[j]*W[j]*R[i][j];				
+				}
+		}
+//	* lambda_max = fabs(qn_S)+C_S;	  
 }
 
 

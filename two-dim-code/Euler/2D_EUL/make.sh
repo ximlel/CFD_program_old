@@ -90,6 +90,8 @@ cd $INITIAL_PATH
 #./EUL_source.out odd_even odd_even/odd_even odd_even_mesh Riemann_exact -1 0.4
 #./EUL_source.out odd_even odd_even/odd_even_Roe_Goundov odd_even_mesh Roe_Goundov -1 0.4
 
+./EUL_source.out shock-entropy_wave shock-entropy_wave/shock-entropy_wave_ROE Sod_mesh ROE -1 0.4
+
 #./EUL_source.out one_line_du one_line_du/one_line_du_ROE Free_mesh ROE -1 0.4
 #./EUL_source.out one_line_du one_line_du/one_line_du_HLL Free_mesh HLL -1 0.4
 #./EUL_source.out one_line_du one_line_du/one_line_du Free_mesh Riemann_exact -1 0.4
