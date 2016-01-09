@@ -75,8 +75,8 @@ double delta_2=0.3;
 //			lambda[1] = 0.5/delta_1*(lambda[1]*lambda[1] + delta_1*delta_1);		   
 	if(lambda[2]<delta)
 			lambda[2] = 0.5/delta*(lambda[2]*lambda[2] + delta*delta);
-	if(lambda[3]<delta_2)
-			lambda[3] = 0.5/delta_2*(lambda[3]*lambda[3] + delta_2*delta_2);	   
+//	if(lambda[3]<delta_2)
+//			lambda[3] = 0.5/delta_2*(lambda[3]*lambda[3] + delta_2*delta_2);	   
 
 	*lambda_max = 0;
 	for(i = 0; i < 4; i++)

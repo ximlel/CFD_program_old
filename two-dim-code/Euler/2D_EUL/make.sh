@@ -30,10 +30,11 @@ cd $INITIAL_PATH/meshing/
 gcc -c ./Sod_mesh.c
 gcc -c ./Free_mesh.c
 gcc -c ./odd_even_mesh.c
+gcc -c ./odd_even_EW_mesh.c
 gcc -c ./Shear_mesh.c
 gcc -c ./Cylinder_mesh.c
 gcc -c ./RMI_mesh.c
-ar crv meshing.a Sod_mesh.o Free_mesh.o odd_even_mesh.o Shear_mesh.o Cylinder_mesh.o RMI_mesh.o
+ar crv meshing.a Sod_mesh.o Free_mesh.o odd_even_mesh.o odd_even_EW_mesh.o Shear_mesh.o Cylinder_mesh.o RMI_mesh.o
 
 cd ../cell_centered_scheme/
 gcc -c ./linear_GRP_solver_Edir.c -I ../
@@ -58,6 +59,7 @@ gcc -o EUL_source.out ./EUL_source.o ../../lib/file_io/file_io.a ./meshing/meshi
 cd $INITIAL_PATH
 
 #Run
+
 
 ## first order
 
@@ -86,11 +88,10 @@ cd $INITIAL_PATH
 #./EUL_source.out contact_only contact_only/contact_only_Roe_Goundov Sod_mesh Roe_Goundov -1 0.4
 
 #./EUL_source.out odd_even odd_even/odd_even_ROE odd_even_mesh ROE -1 0.4
+./EUL_source.out odd_even_entropy_wave odd_even_EW/odd_even_EW_ROE odd_even_mesh ROE -1 0.4
 #./EUL_source.out odd_even odd_even/odd_even_HLL odd_even_mesh HLL -1 0.4
 #./EUL_source.out odd_even odd_even/odd_even odd_even_mesh Riemann_exact -1 0.4
 #./EUL_source.out odd_even odd_even/odd_even_Roe_Goundov odd_even_mesh Roe_Goundov -1 0.4
-
-./EUL_source.out shock-entropy_wave shock-entropy_wave/shock-entropy_wave_ROE Sod_mesh ROE -1 0.4
 
 #./EUL_source.out one_line_du one_line_du/one_line_du_ROE Free_mesh ROE -1 0.4
 #./EUL_source.out one_line_du one_line_du/one_line_du_HLL Free_mesh HLL -1 0.4
@@ -108,12 +109,17 @@ cd $INITIAL_PATH
 #./EUL_source.out Riemann_2D3_Quad Riemann_2D3_Quad/Riemann_2D3_Quad_ROE Free_mesh ROE -1 0.4
 #./EUL_source.out Riemann_2D3_Quad Riemann_2D3_Quad/Riemann_2D3_Quad Free_mesh Riemann_exact -1 0.4
 
+#./EUL_source.out shock-entropy_wave shock-entropy_wave/shock-entropy_wave_ROE Sod_mesh ROE -1 0.4
+
+#./EUL_source.out steady_entropy_wave steady_entropy_wave/steady_entropy_wave_ROE RMI_mesh ROE -1 0.4
+
 ### Two_species
 
 #./EUL_source.out RMI/RMI_origin RMI/RMI_Roe_Goundov RMI_mesh Roe_Goundov 1000 0.4
 #./EUL_source.out RMI/RMI_origin RMI/RMI RMI_mesh Riemann_exact -1 0.4 Two_species
 #./EUL_source.out RMI/RMI_origin RMI/RMI_single RMI_mesh Riemann_exact -1 0.4
 #./EUL_source.out RMI/RMI_321 RMI/RMI_321 RMI_mesh Riemann_exact -1 0.4 Two_species
+
 
 ## second order
 
@@ -123,7 +129,6 @@ cd $INITIAL_PATH
 #./EUL_source.out RMI/RMI_origin RMI/RMI_single RMI_mesh GRP -1 0.4 second_order
 #./EUL_source.out RMI/RMI_641 RMI/RMI_641 RMI_mesh GRP -1 0.4 second_order Two_species
 #./EUL_source.out RMI/RMI_641 RMI/RMI_641_single RMI_mesh GRP -1 0.4 second_order
-
 #=============================RMI KA test=========================
 #:<<KA
 nohup ./EUL_source.out RMI/RMI_K1A10 RMI/RMI_K1A10 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K1A10.out 2>&1 &

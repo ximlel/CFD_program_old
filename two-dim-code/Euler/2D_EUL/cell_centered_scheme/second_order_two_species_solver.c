@@ -631,7 +631,7 @@ void second_order_two_species_solver
 					{
 						U_M = U[1][n*k + j];
 						V_M = V[1][n*k + j];
-						E_M += 0.5*RHO[1][n*k + j]*(U_M*U_M+V_M*V_M);
+						E_M += 0.5*RHO[1][n*k + j]*(U_M*U_M+V_M*V_M)*VOLUME[n*k + j];
 					}
 		}
 	E_M_wave[0] = E_M/rho_bar;
@@ -644,7 +644,7 @@ void second_order_two_species_solver
 					{
 						U_M = U[1][n*k + j] - U_bar;
 						V_M = V[1][n*k + j] - V_bar;
-						E_M += 0.5*RHO[1][n*k + j]*(U_M*U_M+V_M*V_M);
+						E_M += 0.5*RHO[1][n*k + j]*(U_M*U_M+V_M*V_M)*VOLUME[n*k + j];
 					}
 		}
 	E_M_wave[1] = E_M/rho_bar;
@@ -657,7 +657,7 @@ void second_order_two_species_solver
 					{
 						U_M = U[1][n*k + j] - U_wave;
 						V_M = V[1][n*k + j] - V_wave;
-						E_M += 0.5*RHO[1][n*k + j]*(U_M*U_M+V_M*V_M);
+						E_M += 0.5*RHO[1][n*k + j]*(U_M*U_M+V_M*V_M)*VOLUME[n*k + j];
 					}
 		}
 	E_M_wave[2] = E_M/rho_bar;

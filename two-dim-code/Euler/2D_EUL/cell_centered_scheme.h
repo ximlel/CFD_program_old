@@ -1,7 +1,7 @@
 void first_order_solver
 (int * STEP, double * config, int NUM_CELL, int NUM_POINT, int NUM_BOUNDARY, int * CELL_POINT[],
  int * BOUNDARY_POINT[], int m, int n, double * RHO[], double * U[], double * V[], double * P[],
- double * X, double * Y, double * gamma, double * cpu_time, char * scheme, double CFL);
+ double * X, double * Y, double * gamma, double * cpu_time, char * scheme, double CFL, char * example);
 
 void first_order_two_species_solver
 (int * STEP, double * config, int NUM_CELL, int NUM_POINT, int NUM_BOUNDARY, int * CELL_POINT[],

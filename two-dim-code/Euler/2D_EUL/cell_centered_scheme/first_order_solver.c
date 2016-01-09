@@ -27,7 +27,7 @@
 void first_order_solver
 (int * STEP, double * config, int NUM_CELL, int NUM_POINT, int NUM_BOUNDARY, int * CELL_POINT[],
  int * BOUNDARY_POINT[], int m, int n, double * RHO[], double * U[], double * V[], double * P[],
- double * X, double * Y, double * gamma, double * cpu_time, char * scheme, double CFL/* the CFL number */)
+ double * X, double * Y, double * gamma, double * cpu_time, char * scheme, double CFL/* the CFL number */, char * example)
 {	
 	int i, j, k, l; 
 
@@ -193,7 +193,9 @@ void first_order_solver
 	double * F_mk_4[NUM_CELL];
 	initialize_memory(F_mk_4,NUM_CELL,CELL_POINT);
 
-
+	char PLOT_name[200];
+	char STEP_char[25];
+	int const interval = 1000;
 
 //------------THE MAIN LOOP-------------
 
@@ -428,24 +430,21 @@ void first_order_solver
 		break;
 
 
-/*
-//===================================PLOT=================================
 
-	char PLOT_name[100];
-	char STEP_char[25];
-	int const interval = 100;
+//===================================PLOT=================================
 
 	if(!(i%interval))
 		{
-			strcpy(PLOT_name, "RMI_breakpoint_\0");			
+			strcpy(PLOT_name, example);
+			strcat(PLOT_name, "/breakpoint_\0");			
 			sprintf(STEP_char, "%d", i);
 			strcat(PLOT_name, STEP_char);
 			printf("STEP = %d, t_all = %lf\n", i, t_all);		
-			file_write_TEC(NUM_POINT, X, Y, NUM_CELL, CELL_POINT, RHO[1], U[1], V[1], P[1], cpu_time, config, PLOT_name, "2D_EUL_first_order/");  
+			file_write_TEC(NUM_POINT, X, Y, NUM_CELL, CELL_POINT, RHO[1], U[1], V[1], P[1], cpu_time, config, PLOT_name, "2D_EUL_first_order"); 
 		}
 
 //==============================================================================	
-*/
+
 
 
 		}

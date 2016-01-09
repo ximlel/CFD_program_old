@@ -527,7 +527,7 @@ void file_write_VTK(int NUM_POINT, double * X, double * Y, int NUM_CELL, int * C
   }
 
   FILE * fp_write;
-  char file_data[100] = "";
+  char file_data[200] = "";
 
 
 
@@ -557,15 +557,15 @@ void file_write_VTK(int NUM_POINT, double * X, double * Y, int NUM_CELL, int * C
   }
   closedir(dir_test);
 
- char rho_data[100] = "";
+ char rho_data[200] = "";
   strcpy(rho_data, file_data);
   strcat(rho_data, "/\0");
   strcat(rho_data, "RHO.vtk\0");
- char uv_data[100] = "";
+ char uv_data[200] = "";
   strcpy(uv_data, file_data);
   strcat(uv_data, "/\0");
   strcat(uv_data, "UV.vtk\0");
- char p_data[100] = "";
+ char p_data[200] = "";
   strcpy(p_data, file_data);
   strcat(p_data, "/\0");
   strcat(p_data, "P.vtk\0");
@@ -740,7 +740,7 @@ void file_write_TEC(int NUM_POINT, double * X, double * Y, int NUM_CELL, int * C
   }
 
   FILE * fp_write;
-  char file_data[100] = "";
+  char file_data[200] = "";
 
 //===================Write solution File=========================
 
@@ -769,13 +769,13 @@ void file_write_TEC(int NUM_POINT, double * X, double * Y, int NUM_CELL, int * C
   }
   closedir(dir_test);
 
- char rho_data[100] = "";
+ char rho_data[200] = "";
   strcpy(rho_data, file_data);
   strcat(rho_data, "/RHO.tec\0");
- char uv_data[100] = "";
+ char uv_data[200] = "";
   strcpy(uv_data, file_data);
   strcat(uv_data, "/UV.tec\0");
- char p_data[100] = "";
+ char p_data[200] = "";
   strcpy(p_data, file_data);
   strcat(p_data, "/P.tec\0");
 
@@ -923,7 +923,7 @@ void file_two_species_write_TEC(int NUM_POINT, double * X, double * Y, int NUM_C
   }
 
   FILE * fp_write;
-  char file_data[100] = "";
+  char file_data[200] = "";
 
 //===================Write solution File=========================
 
@@ -952,16 +952,16 @@ void file_two_species_write_TEC(int NUM_POINT, double * X, double * Y, int NUM_C
   }
   closedir(dir_test);
 
- char rho_data[100] = "";
+ char rho_data[200] = "";
   strcpy(rho_data, file_data);
   strcat(rho_data, "/RHO.tec\0");
- char uv_data[100] = "";
+ char uv_data[200] = "";
   strcpy(uv_data, file_data);
   strcat(uv_data, "/UV.tec\0");
- char p_data[100] = "";
+ char p_data[200] = "";
   strcpy(p_data, file_data);
   strcat(p_data, "/P.tec\0");
- char cc_data[100] = "";
+ char cc_data[200] = "";
   strcpy(cc_data, file_data);
   strcat(cc_data, "/CC.tec\0");
 
