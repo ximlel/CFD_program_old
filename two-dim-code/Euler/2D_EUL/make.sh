@@ -88,10 +88,11 @@ cd $INITIAL_PATH
 #./EUL_source.out contact_only contact_only/contact_only_Roe_Goundov Sod_mesh Roe_Goundov -1 0.4
 
 #./EUL_source.out odd_even odd_even/odd_even_ROE odd_even_mesh ROE -1 0.4
-./EUL_source.out odd_even_entropy_wave odd_even_EW/odd_even_EW_ROE odd_even_mesh ROE -1 0.4
 #./EUL_source.out odd_even odd_even/odd_even_HLL odd_even_mesh HLL -1 0.4
 #./EUL_source.out odd_even odd_even/odd_even odd_even_mesh Riemann_exact -1 0.4
 #./EUL_source.out odd_even odd_even/odd_even_Roe_Goundov odd_even_mesh Roe_Goundov -1 0.4
+
+#./EUL_source.out odd_even_entropy_wave odd_even_EW/odd_even_EW_ROE odd_even_mesh ROE -1 0.4
 
 #./EUL_source.out one_line_du one_line_du/one_line_du_ROE Free_mesh ROE -1 0.4
 #./EUL_source.out one_line_du one_line_du/one_line_du_HLL Free_mesh HLL -1 0.4
@@ -130,7 +131,7 @@ cd $INITIAL_PATH
 #./EUL_source.out RMI/RMI_641 RMI/RMI_641 RMI_mesh GRP -1 0.4 second_order Two_species
 #./EUL_source.out RMI/RMI_641 RMI/RMI_641_single RMI_mesh GRP -1 0.4 second_order
 #=============================RMI KA test=========================
-#:<<KA
+:<<KA
 nohup ./EUL_source.out RMI/RMI_K1A10 RMI/RMI_K1A10 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K1A10.out 2>&1 &
 nohup ./EUL_source.out RMI/RMI_K1A20 RMI/RMI_K1A20 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K1A20.out 2>&1 &
 nohup ./EUL_source.out RMI/RMI_K1A40 RMI/RMI_K1A40 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K1A40.out 2>&1 &
@@ -151,9 +152,14 @@ nohup ./EUL_source.out RMI/RMI_K16A10 RMI/RMI_K16A10 RMI_mesh GRP -1 0.4 second_
 nohup ./EUL_source.out RMI/RMI_K16A20 RMI/RMI_K16A20 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K16A20.out 2>&1 &
 nohup ./EUL_source.out RMI/RMI_K16A40 RMI/RMI_K16A40 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K16A40.out 2>&1 &
 nohup ./EUL_source.out RMI/RMI_K16A80 RMI/RMI_K16A80 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_K16A80.out 2>&1 &
-#KA
+KA
 #=============================RMI KA test=========================
 #./EUL_source.out RMI/RMI_161 RMI_bp/RMI_161 RMI_mesh GRP -1 0.4 second_order Two_species
 #./EUL_source.out RMI/RMI_K1A10 RMI_bp/RMI_K1A10 RMI_mesh GRP -1 0.4 second_order Two_species
+#=============================RMI lnKA more test==========================
+#:<<lnKA
+nohup ./EUL_source.out RMI/RMI_lnKA_-3 RMI/RMI_lnKA_-3 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_lnKA_-3.out 2>&1 &
+#lnKA
+#=============================RMI lnKA more test==========================
 
 exit 0

@@ -195,7 +195,7 @@ void first_order_solver
 
 	char PLOT_name[200];
 	char STEP_char[25];
-	int const interval = 1000;
+	int const interval = 100;
 
 //------------THE MAIN LOOP-------------
 

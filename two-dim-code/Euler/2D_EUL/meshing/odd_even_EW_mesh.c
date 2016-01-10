@@ -75,7 +75,7 @@ int odd_even_EW_mesh
 		}
 	for(k = n; k < n+m; ++k)	
 		{
-			BOUNDARY_POINT[1][k] = -1; //prescribed boundary condition.
+			BOUNDARY_POINT[1][k] = -4; //periodic boundary condition in x-direction.
 		}
 	for(k = n+m; k < n*2 + m; ++k)	
 		{
@@ -83,7 +83,7 @@ int odd_even_EW_mesh
 		}
 	for(k = n*2 + m; k < num_boundary; ++k)	
 		{
-			BOUNDARY_POINT[1][k] = -1;
+			BOUNDARY_POINT[1][k] = -4;
 		}
 
 

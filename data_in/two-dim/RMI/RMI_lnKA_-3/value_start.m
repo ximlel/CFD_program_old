@@ -21,12 +21,12 @@ A_c=ceil(A);
 u=0;
 At=0.7575;
 rho_uH=1;
-rho_sH=(gamma+1)*Ma^2/((gamma-1)*Ma^2+2)*rho_uH;
+rho_sH=rho_uH/((gamma+1)*Ma^2/((gamma-1)*Ma^2+2));
 p_uH=1;  %p_uH=(1-1/rho_sH)*(gamma+1)/2/gamma/(Ma^2-1);  %p_L and p_uH are same.
-p_sH=(2*gamma*Ma^2-(gamma-1))/(gamma+1)*p_uH;
+p_sH=p_uH/((2*gamma*Ma^2-(gamma-1))/(gamma+1));
 v_sH=0;
-c_uH=sqrt(gamma*p_uH/rho_uH);
-v_uH=(1-rho_uH/rho_sH)*c_uH*Ma+v_sH*rho_uH/rho_sH;  %v_L and v_uH are same.
+c_sH=sqrt(gamma*p_sH/rho_sH);
+v_uH=(1-rho_sH/rho_uH)*c_sH*Ma+v_sH*rho_sH/rho_uH;  %v_L and v_uH are same.
 
 rho_L=(1-At)/(1+At)*rho_uH;
 
@@ -108,7 +108,7 @@ fclose(fid);
 
 
 eps=1e-9;
-t_all=0.725;
+t_all=1.2;
 step=25000;
 
 fid = fopen('config.txt','wt');

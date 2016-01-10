@@ -1,6 +1,6 @@
 #!/bin/bash
 
-for i in `find ./ -name '*' -type d`
+for i in `find ./ -name '*' ! -name '.?*' -type d`
 do
 if [ -f "$i/value_start.m" ]; then
 echo "run $i/value_start.m;" >> data_initilize.m 
