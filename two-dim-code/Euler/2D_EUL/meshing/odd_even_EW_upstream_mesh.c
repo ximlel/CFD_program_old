@@ -3,7 +3,7 @@
 #include <stdlib.h>
 
 
-int odd_even_EW_mesh
+int odd_even_EW_upstream_mesh
 (int * CELL_POINT[], double * X, double * Y, int * BOUNDARY_POINT[],
  double * gamma, double * config, int m, int n)
 {
@@ -75,7 +75,7 @@ int odd_even_EW_mesh
 		}
 	for(k = n; k < n+m; ++k)	
 		{
-			BOUNDARY_POINT[1][k] = -4; //periodic boundary condition in x-direction.
+			BOUNDARY_POINT[1][k] = -1; //initial boundary condition.
 		}
 	for(k = n+m; k < n*2 + m; ++k)	
 		{
@@ -83,7 +83,7 @@ int odd_even_EW_mesh
 		}
 	for(k = n*2 + m; k < num_boundary; ++k)	
 		{
-			BOUNDARY_POINT[1][k] = -4;
+			BOUNDARY_POINT[1][k] = -1; //initial boundary condition.
 		}
 
 

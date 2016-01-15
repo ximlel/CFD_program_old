@@ -43,36 +43,34 @@ A_c=ceil(A);
 u=0;
 At=0.7575;
 rho_uH=1;
-rho_sH=rho_uH/((gamma+1)*Ma^2/((gamma-1)*Ma^2+2));
+rho_sH=rho_uH*(gamma+1)*Ma^2/((gamma-1)*Ma^2+2);
 p_uH=1;  %p_uH=(1-1/rho_sH)*(gamma+1)/2/gamma/(Ma^2-1);  %p_L and p_uH are same.
-p_sH=p_uH/((2*gamma*Ma^2-(gamma-1))/(gamma+1));
-v_sH=0;
-c_sH=sqrt(gamma*p_sH/rho_sH);
-v_uH=(1-rho_sH/rho_uH)*c_sH*Ma+v_sH*rho_sH/rho_uH;  %v_L and v_uH are same.
+p_sH=p_uH*(2*gamma*Ma^2-(gamma-1))/(gamma+1);
+v_uH=0;
+c_uH=sqrt(gamma*p_uH/rho_uH);
+v_sH=(1-rho_uH/rho_sH)*c_uH*Ma+v_uH*rho_uH/rho_sH;  %v_L and v_uH are same.
 
 rho_L=(1-At)/(1+At)*rho_uH;
 
 
 
-index = @(y,x) y<A*cos(x*K/column*2*pi);
+index = @(y,x) y<A*cos(mod(x,column/K)*K/column*2*pi);
 
 CC=zeros(line,column);
 for j=1:(center-A_c)
 CC(j,:)=ones(1,column);
 end
-for l=0:(K-1)
-for i=1:round(column/K)
-	y_1=A*cos((i-1)*K/column*2*pi);
-    y_2=A*cos(i*K/column*2*pi);
+for i=1:column
+	y_1=A*cos(mod(i-1,column/K)*K/column*2*pi);
+    y_2=A*cos(mod(i,column/K)*K/column*2*pi);
 for j=(center-A_c+1):(center+A_c)
     if(min(y_1,y_2)>(j-center))
-       CC(j,i+l*round(column/K))=1; 
+       CC(j,i)=1; 
     elseif(max(y_1,y_2)<(j-center-1))
-       CC(j,i+l*round(column/K))=0;
+       CC(j,i)=0;
     else
-       CC(j,i+l*round(column/K))=quad2d(index,j-center-1,j-center,i-1,i,'AbsTol',1e-3);
+       CC(j,i)=quad2d(index,j-center-1,j-center,i-1,i,'AbsTol',1e-3);
     end
-end
 end
 end
 
