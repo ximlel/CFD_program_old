@@ -7,15 +7,14 @@
 
 void Roe_Goundov_solver(double *F, double gamma, double P_L, double RHO_L, double U_L, double P_R, double RHO_R, double U_R, double *lambda_max, double delta)
 {
-	//	double const  Q_user = 2.0;
+	double const  Q_user = 2.0;
 	
 	
 	double C_L, C_R;
 	C_L = sqrt(gamma*P_L/RHO_L);
 	C_R = sqrt(gamma*P_R/RHO_R);
 	double z = 0.5 *  (gamma-1.0) / gamma;
-	
-	/*
+
 	double Q, P_pvrs, P_max, P_min, RHO_bar, C_bar;
 	P_min = min(P_L,P_R);
 	P_max = max(P_L,P_R);
@@ -65,12 +64,12 @@ void Roe_Goundov_solver(double *F, double gamma, double P_L, double RHO_L, doubl
 			U_star_L = U_star;
 			U_star_R = U_star;
 		}
-	
+
 	lambda_L_1 = U_L - C_L;
 	lambda_R_1 = U_star_L - C_star_L;
 	lambda_L_3 = U_star_R + C_star_R;
 	lambda_R_3 = U_R + C_R;
-	*/
+	
 
 	double H_L, H_R;
 	H_L = gamma/(gamma-1.0)*P_L/RHO_L + 0.5*(U_L*U_L);
@@ -118,7 +117,6 @@ void Roe_Goundov_solver(double *F, double gamma, double P_L, double RHO_L, doubl
 
 	*lambda_max = fabs(U_S) + C_S;
 	
-	/*
 	if(lambda_L_1<0&&lambda_R_1>0)
 		{
 			for(i = 0; i < 3; i++)
@@ -138,7 +136,7 @@ void Roe_Goundov_solver(double *F, double gamma, double P_L, double RHO_L, doubl
 		}
 	else
 		{			
-	*/		for(j = 0; j < 3; j++)
+			for(j = 0; j < 3; j++)
 				{
 					if(lambda[j]<=0)
 						{						   						
@@ -148,10 +146,10 @@ void Roe_Goundov_solver(double *F, double gamma, double P_L, double RHO_L, doubl
 								}
 						}
 				}
-	//		}
-	
+		}
 	F[0] = U[0];
 	F[1] = U[1]/U[0];
 	F[2] = (U[2]/U[0] - 0.5*F[1]*F[1])*(gamma-1.0)*F[0];
 		
+	
 }

@@ -78,18 +78,26 @@ void ROE_solver(double *F, double gamma, double P_L, double RHO_L, double U_L, d
 	for(i = 0; i < 4; i++)
 		for(j = 0; j<4; j++)
 			{
-				W[i] = L[i][j]*delta_U[j];				
+				W[i] += L[i][j]*delta_U[j];				
 			}
 
 	lambda[0] = fabs(qn_S - C_S);
 	lambda[1] = fabs(qn_S);
  	lambda[2] = fabs(qn_S + C_S);
 	lambda[3] = fabs(qn_S);
+
+	
+	double delta_1=0.02;
+	double delta_2=0.22;
 	
 	if(lambda[0]<delta)
-			lambda[0] = 0.5/delta*(lambda[0]*lambda[0] + delta*delta);			   
+			lambda[0] = 0.5/delta*(lambda[0]*lambda[0] + delta*delta);	
+//	if(lambda[1]<delta_1)
+//			lambda[1] = 0.5/delta_1*(lambda[1]*lambda[1] + delta_1*delta_1);		   
 	if(lambda[2]<delta)
-			lambda[2] = 0.5/delta*(lambda[2]*lambda[2] + delta*delta);			   
+			lambda[2] = 0.5/delta*(lambda[2]*lambda[2] + delta*delta);
+//	if(lambda[3]<delta_2)
+//			lambda[3] = 0.5/delta_2*(lambda[3]*lambda[3] + delta_2*delta_2);		   
 
 	*lambda_max = 0;
 	for(i = 0; i < 4; i++)
