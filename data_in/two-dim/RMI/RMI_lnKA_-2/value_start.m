@@ -1,6 +1,5 @@
-A=0.135335;
-K=1;
-
+A=0.0676676;
+K=2;
 
 
 
@@ -39,25 +38,23 @@ rho_L=(1-At)/(1+At)*rho_uH;
 
 
 
-index = @(y,x) y<A*cos(x*K/column*2*pi);
+index = @(y,x) y<A*cos(mod(x,column/K)*K/column*2*pi);
 
 CC=zeros(line,column);
 for j=1:(center-A_c)
 CC(j,:)=ones(1,column);
 end
-for l=0:(K-1)
-for i=1:round(column/K)
-	y_1=A*cos((i-1)*K/column*2*pi);
-    y_2=A*cos(i*K/column*2*pi);
+for i=1:column
+	y_1=A*cos(mod(i-1,column/K)*K/column*2*pi);
+    y_2=A*cos(mod(i,column/K)*K/column*2*pi);
 for j=(center-A_c+1):(center+A_c)
     if(min(y_1,y_2)>(j-center))
-       CC(j,i+l*round(column/K))=1; 
+       CC(j,i)=1; 
     elseif(max(y_1,y_2)<(j-center-1))
-       CC(j,i+l*round(column/K))=0;
+       CC(j,i)=0;
     else
-       CC(j,i+l*round(column/K))=quad2d(index,j-center-1,j-center,i-1,i,'AbsTol',1e-3);
+       CC(j,i)=quad2d(index,j-center-1,j-center,i-1,i,'AbsTol',1e-3);
     end
-end
 end
 end
 
@@ -115,7 +112,7 @@ fclose(fid);
 
 
 eps=1e-9;
-t_all=0.443;
+t_all=1.2;
 step=25000;
 
 fid = fopen('config.txt','wt');

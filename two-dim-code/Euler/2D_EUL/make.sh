@@ -105,7 +105,7 @@ cd $INITIAL_PATH
 
 #./EUL_source.out shear_wave_upstream shear_wave_upstream/shear_wave_upstream_ROE Sod_mesh ROE -1 0.4
 
-./EUL_source.out one_line_du one_line_du/one_line_du_ROE Free_mesh ROE -1 0.4
+#./EUL_source.out one_line_du one_line_du/one_line_du_ROE Free_mesh ROE -1 0.4
 #./EUL_source.out one_line_du one_line_du/one_line_du_HLL Free_mesh HLL -1 0.4
 #./EUL_source.out one_line_du one_line_du/one_line_du Free_mesh Riemann_exact -1 0.4
 #./EUL_source.out one_line_du one_line_du/one_line_du_Roe_Goundov Free_mesh Roe_Goundov -1 0.4

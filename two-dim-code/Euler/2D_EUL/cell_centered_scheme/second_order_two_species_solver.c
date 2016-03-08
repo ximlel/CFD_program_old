@@ -622,7 +622,7 @@ void second_order_two_species_solver
 
 
 	double U_M, V_M, E_M;
-
+	/*
 	E_M = 0.0;	
 	for(k = 0; k < m; ++k)
 		{
@@ -661,6 +661,25 @@ void second_order_two_species_solver
 					}
 		}
 	E_M_wave[2] = E_M/rho_bar;
+	*/
+	
+	E_M_wave[0] = 0.0;
+	E_M_wave[1] = 0.0;
+	for(k = 0; k < m; ++k)
+		{
+			if(phi[k]>0.05&&phi[k]<0.95) 							   
+				for(j = 0; j < n ;++j)
+					{
+						U_M = U[1][n*k + j];
+						V_M = V[1][n*k + j] - V_wave;
+						E_M_wave[0] += 0.5*RHO[1][n*k + j]*(U_M*U_M)*VOLUME[n*k + j];
+						E_M_wave[1] += 0.5*RHO[1][n*k + j]*(V_M*V_M)*VOLUME[n*k + j];						
+					}
+		}
+	E_M_wave[0] = E_M_wave[0]/rho_bar;
+	E_M_wave[1] = E_M_wave[1]/rho_bar;
+	E_M_wave[2] = E_M_wave[0]+E_M_wave[1];
+	
 
 	printf("h = %lf, E_M_wave = %lf , %lf and %lf .\n", h, E_M_wave[0], E_M_wave[1], E_M_wave[2]);
 

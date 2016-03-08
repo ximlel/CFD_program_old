@@ -27,7 +27,7 @@ KA
 #=============================RMI KA test=========================
 
 #=============================RMI lnKA more test==========================
-:<<lnKA
+#:<<lnKA
 nohup ./EUL_source.out RMI/RMI_lnKA_-3 RMI/RMI_lnKA_-3 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_lnKA_-3.out 2>&1 &
 nohup ./EUL_source.out RMI/RMI_lnKA_-2.9 RMI/RMI_lnKA_-2.9 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_lnKA_-2.9.out 2>&1 &
 nohup ./EUL_source.out RMI/RMI_lnKA_-2.8 RMI/RMI_lnKA_-2.8 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_lnKA_-2.8.out 2>&1 &
@@ -89,7 +89,7 @@ nohup ./EUL_source.out RMI/RMI_lnKA_2.7 RMI/RMI_lnKA_2.7 RMI_mesh GRP -1 0.4 sec
 nohup ./EUL_source.out RMI/RMI_lnKA_2.8 RMI/RMI_lnKA_2.8 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_lnKA_2.8.out 2>&1 &
 nohup ./EUL_source.out RMI/RMI_lnKA_2.9 RMI/RMI_lnKA_2.9 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_lnKA_2.9.out 2>&1 &
 nohup ./EUL_source.out RMI/RMI_lnKA_3 RMI/RMI_lnKA_3 RMI_mesh GRP -1 0.4 second_order Two_species > ./RMI_record/RMI_lnKA_3.out 2>&1 &
-lnKA
+#lnKA
 #=============================RMI lnKA more test==========================
 
 #=============================RMI At more test==========================
