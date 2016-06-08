@@ -8,14 +8,14 @@ MS=2;
 rho_star=1;
 p_star=1;
 
-rho_R=1.4
-u_R=0
-v_R=1.4
-p_R=1
-rho_L=1.4
-u_L=0
-v_L=1
-p_L=1
+rho_R=2
+u_R=1
+v_R=0
+p_R=0.1
+rho_L=3
+u_L=1
+v_L=-2
+p_L=0.1
 
 rho=zeros(column,1);
 for i=1:shock

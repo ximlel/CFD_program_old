@@ -67,7 +67,7 @@ void ROE_solver(double *F, double gamma, double P_L, double RHO_L, double U_L, d
 
 
 	double delta_1=0.01;
-	double delta_2=0.25;
+	double delta_2=0.2;
 	
 //	if(lambda[0]<delta)
 //			lambda[0] = 0.5/delta*(lambda[0]*lambda[0] + delta*delta);	

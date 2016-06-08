@@ -46,7 +46,7 @@ void first_order_solver
 
 	double dire[3], mid[3];
 	double mid_qt;
-	double u_L, u_R, c_L, c_R;
+	double u_L, u_R, c_L, c_R, v_L, v_R;
 	double u_mid, v_mid, rho_mid, p_mid; // the Riemann solutions
 
 	int CELL_RIGHT, STEP_RIGHT; //For boundary condition
@@ -249,7 +249,7 @@ void first_order_solver
 											STEP_RIGHT = 1;
 											CELL_RIGHT = k;
 										}
-									else if (CELL_CELL[k][j]==-4)//periodic boundary condition.
+									else if (CELL_CELL[k][j]==-4)//x-direction periodic boundary condition.
 										{
 											STEP_RIGHT = 1;
 											if(!(k%n))
@@ -259,6 +259,19 @@ void first_order_solver
 											else
 												{																									
 													printf("Something wrong as we construct periodic boundary condition in x-direction.\n");
+													exit(8);
+												}
+										}
+									else if (CELL_CELL[k][j]==-5)//y-direction periodic boundary condition.
+										{
+											STEP_RIGHT = 1;
+											if(!(k/n))
+												CELL_RIGHT = n*(m-1)+k;
+											else if(k/n==m-1)
+												CELL_RIGHT = k-n*(m-1);
+											else
+												{																									
+													printf("Something wrong as we construct periodic boundary condition in y-direction.\n");
 													exit(8);
 												}
 										}
@@ -312,24 +325,22 @@ void first_order_solver
 											lambda_max = max(c_L+fabs(u_L),c_R+fabs(u_R));					
 										}								
 
-//=================================================the Goundov scheme of Roe solver==============================================
+//=================================================the HLL-correctional Roe solver==============================================
 
-									else if(strcmp(scheme,"Roe_Goundov")==0)
+									else if(strcmp(scheme,"Roe_HLL")==0)
 										{											
 											u_L = U[1][k]*n_x[k][j] + V[1][k]*n_y[k][j]; 
 											u_R = U[STEP_RIGHT][CELL_RIGHT]*n_x[k][j] + V[STEP_RIGHT][CELL_RIGHT]*n_y[k][j];
+
+											v_L = U[1][k]*(-n_y[k][j]) + V[1][k]*n_x[k][j]; 
+											v_R = U[STEP_RIGHT][CELL_RIGHT]*(-n_y[k][j]) + V[STEP_RIGHT][CELL_RIGHT]*n_x[k][j];
+											
 											c_L = sqrt(gamma[k] * P[1][k] / RHO[1][k]);
 											c_R = sqrt(gamma[k] * P[STEP_RIGHT][CELL_RIGHT] / RHO[STEP_RIGHT][CELL_RIGHT]);											
-											Roe_Goundov_solver(mid, gamma[k], P[1][k],RHO[1][k],u_L,P[STEP_RIGHT][CELL_RIGHT],RHO[STEP_RIGHT][CELL_RIGHT],u_R,&lambda_max, delta);		
+											Roe_HLL_solver(&mid_qt, mid, gamma[k], P[1][k],RHO[1][k],u_L, v_L, P[STEP_RIGHT][CELL_RIGHT],RHO[STEP_RIGHT][CELL_RIGHT],u_R, v_R, &lambda_max, delta);		
 											rho_mid = mid[0];
 											p_mid = mid[2];
 
-											/*if(fabs(mid[1])<delta_God)
-											  mid_qt = 0.5*(-U[1][k]*n_y[k][j] + V[1][k]*n_x[k][j])*(mid[1]/delta_God+1) + 0.5*(-U[STEP_RIGHT][CELL_RIGHT]*n_y[k][j] + V[STEP_RIGHT][CELL_RIGHT]*n_x[k][j])*(-mid[1]/delta_God+1);
-											  else*/ if(mid[1]>0)
-												mid_qt = -U[1][k]*n_y[k][j] + V[1][k]*n_x[k][j];
-											else
-												mid_qt = -U[STEP_RIGHT][CELL_RIGHT]*n_y[k][j] + V[STEP_RIGHT][CELL_RIGHT]*n_x[k][j];
 											u_mid = mid[1]*n_x[k][j] - mid_qt*n_y[k][j];
 											v_mid = mid[1]*n_y[k][j] + mid_qt*n_x[k][j];
 											

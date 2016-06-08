@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
+#include <time.h>
 
 
 int odd_even_EW_upstream_mesh
@@ -47,9 +48,16 @@ int odd_even_EW_upstream_mesh
 		X[k] = (k%(n+1))*config[2];
 		Y[k] = (k/(n+1))*config[3];
 	}
-	for(k = 0; k < (m+1); ++k)
+
+	srand((unsigned) time(NULL)); //seed--time.
+
+	for(k = n+1; k < m*(n+1); ++k)
 	{
-		Y[(n/2)*(m+1)+k] += ((k%2)-0.5)*0.002*config[3];
+		if(!(k%(n+1))||(k%(n+1))==n+1)
+			{							
+				X[k] += (0.5-(rand()%10001)/10000.0)*0.001*config[3];
+				Y[k] += (0.5-(rand()%10001)/10000.0)*0.001*config[3];
+			}
 	}
 	// BOUNDARY
 		for(k = 0; k < n+1; ++k)	
@@ -71,15 +79,15 @@ int odd_even_EW_upstream_mesh
 
 		for(k = 0; k < n; ++k)	
 		{
-			BOUNDARY_POINT[1][k] = -2; //reflecting boundary condition.
+			BOUNDARY_POINT[1][k] = -5; //y-direction periodic boundary condition.
 		}
 	for(k = n; k < n+m; ++k)	
 		{
-			BOUNDARY_POINT[1][k] = -1; //initial boundary condition.
+			BOUNDARY_POINT[1][k] = -3; //prescribed boundary condition.
 		}
 	for(k = n+m; k < n*2 + m; ++k)	
 		{
-			BOUNDARY_POINT[1][k] = -2;
+			BOUNDARY_POINT[1][k] = -5;
 		}
 	for(k = n*2 + m; k < num_boundary; ++k)	
 		{

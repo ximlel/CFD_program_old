@@ -173,6 +173,8 @@ int main(int argc, char *argv[])
 		NUM_BOUNDARY = Sod_mesh(CELL_POINT, X, Y, BOUNDARY_POINT, gamma, config, m, n);
 	else if(strcmp(argv[3],"odd_even_mesh")==0)
 		NUM_BOUNDARY = odd_even_mesh(CELL_POINT, X, Y, BOUNDARY_POINT, gamma, config, m, n);
+	else if(strcmp(argv[3],"odd_even_EW_upstream_mesh")==0)
+		NUM_BOUNDARY = odd_even_EW_upstream_mesh(CELL_POINT, X, Y, BOUNDARY_POINT, gamma, config, m, n);
 	else if(strcmp(argv[3],"Free_mesh")==0)
 		NUM_BOUNDARY = Free_mesh(CELL_POINT, X, Y, BOUNDARY_POINT, gamma, config, m, n);
 	else if(strcmp(argv[3],"Shear_mesh")==0)

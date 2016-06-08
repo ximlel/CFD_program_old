@@ -23,8 +23,9 @@ cd ../Riemann_solver/
 gcc -c ./Riemann_solver_exact.c
 gcc -c ./ROE_solver.c -I ../
 gcc -c ./Roe_Goundov_solver.c -I ../
+gcc -c ./Roe_HLL_solver.c -I ../
 gcc -c ./HLL_solver.c -I ../
-ar crv Riemann_solver.a Riemann_solver_exact.o ROE_solver.o Roe_Goundov_solver.o HLL_solver.o
+ar crv Riemann_solver.a Riemann_solver_exact.o ROE_solver.o Roe_Goundov_solver.o Roe_HLL_solver.o HLL_solver.o
 
 cd $INITIAL_PATH/meshing/
 gcc -c ./Sod_mesh.c
@@ -92,12 +93,17 @@ cd $INITIAL_PATH
 #./EUL_source.out odd_even odd_even/odd_even_HLL odd_even_mesh HLL -1 0.4
 #./EUL_source.out odd_even odd_even/odd_even odd_even_mesh Riemann_exact -1 0.4
 #./EUL_source.out odd_even odd_even/odd_even_Roe_Goundov odd_even_mesh Roe_Goundov -1 0.4
+#./EUL_source.out odd_even odd_even/odd_even_Roe_HLL odd_even_mesh Roe_HLL -1 0.4
 
 #./EUL_source.out odd_even_entropy_wave odd_even_EW/odd_even_EW_ROE odd_even_mesh ROE -1 0.4
 
 #./EUL_source.out odd_even_EW_upstream odd_even_EW_upstream/odd_even_EW_upstream_ROE odd_even_mesh ROE -1 0.4
 #./EUL_source.out odd_even_EW_upstream odd_even_EW_upstream/odd_even_EW_upstream_Roe_Goundov odd_even_mesh Roe_Goundov -1 0.4
 #./EUL_source.out odd_even_EW_upstream odd_even_EW_upstream/odd_even_EW_upstream odd_even_mesh Riemann_exact -1 0.4
+
+./EUL_source.out drho_upstream drho_upstream/drho_upstream_ROE odd_even_EW_upstream_mesh ROE -1 0.4
+
+./EUL_source.out du_upstream du_upstream/du_upstream_ROE odd_even_EW_upstream_mesh ROE -1 0.4
 
 #./EUL_source.out entropy_wave_upstream entropy_wave_upstream/entropy_wave_upstream_ROE Sod_mesh ROE -1 0.4
 #./EUL_source.out entropy_wave_upstream entropy_wave_upstream/entropy_wave_upstream Sod_mesh Riemann_exact -1 0.4
@@ -117,6 +123,7 @@ cd $INITIAL_PATH
 #./EUL_source.out Cylinder Cylinder/Cylinder_ROE Cylinder_mesh ROE -1 0.4
 #./EUL_source.out Cylinder Cylinder/Cylinder Cylinder_mesh Riemann_exact -1 0.4
 #./EUL_source.out Cylinder Cylinder/Cylinder_Roe_Goundov Cylinder_mesh Roe_Goundov -1 0.4
+#./EUL_source.out Cylinder Cylinder/Cylinder_Roe_HLL Cylinder_mesh Roe_HLL -1 0.4
 
 #./EUL_source.out Riemann_2D3_Quad Riemann_2D3_Quad/Riemann_2D3_Quad_ROE Free_mesh ROE -1 0.4
 #./EUL_source.out Riemann_2D3_Quad Riemann_2D3_Quad/Riemann_2D3_Quad Free_mesh Riemann_exact -1 0.4

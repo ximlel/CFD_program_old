@@ -6,6 +6,8 @@ double Riemann_solver_exact(double * U_star, double * P_star, double gamma, doub
 
 void Roe_Goundov_solver(double *F, double gamma, double P_L, double RHO_L, double U_L, double P_R, double RHO_R, double U_R, double *lambda_max, double delta);
 
+void Roe_HLL_solver(double *V_mk, double *F, double gamma, double P_L, double RHO_L, double U_L, double V_L, double P_R, double RHO_R, double U_R, double V_R, double *lambda_max, double delta);
+
 void GLACE(double (* M_pc)[2], double gamma, double P, double RHO, double l_pc, double n_pc_x, double n_pc_y);
 
 void EUCCLHYD(double (* M_pc)[2], double gamma, double P, double RHO, double posi_l_pc, double posi_n_pc_x, double posi_n_pc_y, double nega_l_pc, double nega_n_pc_x, double nega_n_pc_y);
