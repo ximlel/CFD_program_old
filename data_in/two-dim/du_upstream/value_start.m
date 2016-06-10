@@ -101,7 +101,7 @@ fclose(fid);
 
 eps=1e-9;
 t_all=100;
-step=5000;
+step=500000;
 
 fid = fopen('config.txt','wt');
 fprintf(fid,'%g\t',gamma);

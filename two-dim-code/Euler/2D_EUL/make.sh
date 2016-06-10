@@ -101,9 +101,15 @@ cd $INITIAL_PATH
 #./EUL_source.out odd_even_EW_upstream odd_even_EW_upstream/odd_even_EW_upstream_Roe_Goundov odd_even_mesh Roe_Goundov -1 0.4
 #./EUL_source.out odd_even_EW_upstream odd_even_EW_upstream/odd_even_EW_upstream odd_even_mesh Riemann_exact -1 0.4
 
-./EUL_source.out drho_upstream drho_upstream/drho_upstream_ROE odd_even_EW_upstream_mesh ROE -1 0.4
+#./EUL_source.out drho_upstream drho_upstream/drho_upstream_ROE odd_even_EW_upstream_mesh ROE -1 0.4
 
-./EUL_source.out du_upstream du_upstream/du_upstream_ROE odd_even_EW_upstream_mesh ROE -1 0.4
+#./EUL_source.out du_upstream du_upstream/du_upstream_ROE odd_even_EW_upstream_mesh ROE -1 0.4
+
+#./EUL_source.out stationary_shock_OE stationary_shock_OE/stationary_shock_OE_ROE odd_even_EW_upstream_mesh ROE -1 0.4
+
+./EUL_source.out stationary_shock_OE stationary_shock_OE/stationary_shock_OE_Roe_Goundov odd_even_EW_upstream_mesh Roe_Goundov -1 0.4
+
+#./EUL_source.out no_stationary_shock_OE no_stationary_shock_OE/no_stationary_shock_OE_ROE odd_even_EW_upstream_mesh ROE -1 0.4
 
 #./EUL_source.out entropy_wave_upstream entropy_wave_upstream/entropy_wave_upstream_ROE Sod_mesh ROE -1 0.4
 #./EUL_source.out entropy_wave_upstream entropy_wave_upstream/entropy_wave_upstream Sod_mesh Riemann_exact -1 0.4
