@@ -325,6 +325,35 @@ void first_order_solver
 											lambda_max = max(c_L+fabs(u_L),c_R+fabs(u_R));					
 										}								
 
+//=================================================the Goundov scheme of Roe solver==============================================
+
+									else if(strcmp(scheme,"Roe_Goundov")==0)
+										{											
+											u_L = U[1][k]*n_x[k][j] + V[1][k]*n_y[k][j]; 
+											u_R = U[STEP_RIGHT][CELL_RIGHT]*n_x[k][j] + V[STEP_RIGHT][CELL_RIGHT]*n_y[k][j];
+											c_L = sqrt(gamma[k] * P[1][k] / RHO[1][k]);
+											c_R = sqrt(gamma[k] * P[STEP_RIGHT][CELL_RIGHT] / RHO[STEP_RIGHT][CELL_RIGHT]);											
+											Roe_Goundov_solver(mid, gamma[k], P[1][k],RHO[1][k],u_L,P[STEP_RIGHT][CELL_RIGHT],RHO[STEP_RIGHT][CELL_RIGHT],u_R,&lambda_max, delta);		
+											rho_mid = mid[0];
+											p_mid = mid[2];
+
+											/*if(fabs(mid[1])<delta_God)
+											  mid_qt = 0.5*(-U[1][k]*n_y[k][j] + V[1][k]*n_x[k][j])*(mid[1]/delta_God+1) + 0.5*(-U[STEP_RIGHT][CELL_RIGHT]*n_y[k][j] + V[STEP_RIGHT][CELL_RIGHT]*n_x[k][j])*(-mid[1]/delta_God+1);
+											  else*/ if(mid[1]>0)
+												mid_qt = -U[1][k]*n_y[k][j] + V[1][k]*n_x[k][j];
+											else
+												mid_qt = -U[STEP_RIGHT][CELL_RIGHT]*n_y[k][j] + V[STEP_RIGHT][CELL_RIGHT]*n_x[k][j];
+											u_mid = mid[1]*n_x[k][j] - mid_qt*n_y[k][j];
+											v_mid = mid[1]*n_y[k][j] + mid_qt*n_x[k][j];
+											
+											F_mk[0] = rho_mid*u_mid*n_x[k][j] + rho_mid*v_mid*n_y[k][j];
+											F_mk[1] = F_mk[0]*u_mid + p_mid*n_x[k][j];
+											F_mk[2] = F_mk[0]*v_mid + p_mid*n_y[k][j];
+											F_mk[3] = (gamma[k]/(gamma[k]-1.0))*p_mid/rho_mid + 0.5*u_mid*u_mid + 0.5*v_mid*v_mid;
+											F_mk[3] = F_mk[0]*F_mk[3];				
+										}
+
+
 //=================================================the HLL-correctional Roe solver==============================================
 
 									else if(strcmp(scheme,"Roe_HLL")==0)

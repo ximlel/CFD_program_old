@@ -7,12 +7,16 @@ L_y=0.01;
 
 gamma=1.4;
 
-delta_rho=1;
+delta_rho=0.1;
 
-rho_R=3;
+M_0=10;
+
+rho_R=1;
+u_R=1;
+p_m=1/(gamma*M_0^2);
+
 rho_L=rho_R+delta_rho;
-p_m=1;
-u_R=6;
+
 u_L=u_R;
 M_R=u_R/sqrt(gamma*p_m/rho_R);
 M_L=u_L/sqrt(gamma*p_m/rho_L);
@@ -100,8 +104,8 @@ fclose(fid);
 
 
 eps=1e-9;
-t_all=100;
-step=500000;
+t_all=20;
+step=100000;
 
 fid = fopen('config.txt','wt');
 fprintf(fid,'%g\t',gamma);

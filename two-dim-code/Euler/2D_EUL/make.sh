@@ -102,12 +102,19 @@ cd $INITIAL_PATH
 #./EUL_source.out odd_even_EW_upstream odd_even_EW_upstream/odd_even_EW_upstream odd_even_mesh Riemann_exact -1 0.4
 
 #./EUL_source.out drho_upstream drho_upstream/drho_upstream_ROE odd_even_EW_upstream_mesh ROE -1 0.4
+#./EUL_source.out drho_upstream drho_upstream/drho_upstream_Roe_Goundov odd_even_EW_upstream_mesh Roe_Goundov -1 0.4
 
 #./EUL_source.out du_upstream du_upstream/du_upstream_ROE odd_even_EW_upstream_mesh ROE -1 0.4
+#./EUL_source.out du_upstream du_upstream/du_upstream_Roe_Goundov odd_even_EW_upstream_mesh Roe_Goundov -1 0.4
 
-#./EUL_source.out stationary_shock_OE stationary_shock_OE/stationary_shock_OE_ROE odd_even_EW_upstream_mesh ROE -1 0.4
+./EUL_source.out stationary_shock_OE stationary_shock_OE/stationary_shock_OE_ROE odd_even_EW_upstream_mesh ROE -1 0.4
+#./EUL_source.out stationary_shock_OE stationary_shock_OE/stationary_shock_OE_Roe_Goundov odd_even_EW_upstream_mesh Roe_Goundov -1 0.4
 
-./EUL_source.out stationary_shock_OE stationary_shock_OE/stationary_shock_OE_Roe_Goundov odd_even_EW_upstream_mesh Roe_Goundov -1 0.4
+#./EUL_source.out EW_SI EW_SI/EW_SI_ROE odd_even_EW_upstream_mesh ROE -1 0.4
+#./EUL_source.out EW_SI EW_SI/EW_SI_Roe_Goundov odd_even_EW_upstream_mesh Roe_Goundov -1 0.4
+
+#./EUL_source.out VW_SI VW_SI/VW_SI_ROE odd_even_EW_upstream_mesh ROE -1 0.4
+#./EUL_source.out VW_SI VW_SI/VW_SI_Roe_Goundov odd_even_EW_upstream_mesh Roe_Goundov -1 0.4
 
 #./EUL_source.out no_stationary_shock_OE no_stationary_shock_OE/no_stationary_shock_OE_ROE odd_even_EW_upstream_mesh ROE -1 0.4
 
