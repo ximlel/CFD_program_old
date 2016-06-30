@@ -94,6 +94,8 @@ cd $INITIAL_PATH
 #./EUL_source.out odd_even odd_even/odd_even odd_even_mesh Riemann_exact -1 0.4
 #./EUL_source.out odd_even odd_even/odd_even_Roe_Goundov odd_even_mesh Roe_Goundov -1 0.4
 #./EUL_source.out odd_even odd_even/odd_even_Roe_HLL odd_even_mesh Roe_HLL -1 0.4
+#./EUL_source.out odd_even odd_even/odd_even_vfix odd_even_mesh Riemann_exact_vfix -1 0.4
+
 
 #./EUL_source.out odd_even_entropy_wave odd_even_EW/odd_even_EW_ROE odd_even_mesh ROE -1 0.4
 
@@ -107,7 +109,7 @@ cd $INITIAL_PATH
 #./EUL_source.out du_upstream du_upstream/du_upstream_ROE odd_even_EW_upstream_mesh ROE -1 0.4
 #./EUL_source.out du_upstream du_upstream/du_upstream_Roe_Goundov odd_even_EW_upstream_mesh Roe_Goundov -1 0.4
 
-./EUL_source.out stationary_shock_OE stationary_shock_OE/stationary_shock_OE_ROE odd_even_EW_upstream_mesh ROE -1 0.4
+#./EUL_source.out stationary_shock_OE stationary_shock_OE/stationary_shock_OE_ROE odd_even_EW_upstream_mesh ROE -1 0.4
 #./EUL_source.out stationary_shock_OE stationary_shock_OE/stationary_shock_OE_Roe_Goundov odd_even_EW_upstream_mesh Roe_Goundov -1 0.4
 
 #./EUL_source.out EW_SI EW_SI/EW_SI_ROE odd_even_EW_upstream_mesh ROE -1 0.4
@@ -140,10 +142,14 @@ cd $INITIAL_PATH
 
 #./EUL_source.out Riemann_2D3_Quad Riemann_2D3_Quad/Riemann_2D3_Quad_ROE Free_mesh ROE -1 0.4
 #./EUL_source.out Riemann_2D3_Quad Riemann_2D3_Quad/Riemann_2D3_Quad Free_mesh Riemann_exact -1 0.4
+./EUL_source.out Riemann_2D3_Quad Riemann_2D3_Quad/Riemann_2D3_Quad_vfix Free_mesh Riemann_exact_vfix -1 0.4
 
 #./EUL_source.out shock-entropy_wave shock-entropy_wave/shock-entropy_wave_ROE Sod_mesh ROE -1 0.4
 
 #./EUL_source.out steady_entropy_wave steady_entropy_wave/steady_entropy_wave_ROE RMI_mesh ROE -1 0.4
+
+#./EUL_source.out NEW_TEST NEW_TEST/NEW_TEST Free_mesh Riemann_exact_vfix -1 0.4
+#./EUL_source.out NEW_TEST NEW_TEST/NEW_TEST_R Free_mesh Riemann_exact -1 0.4
 
 ### Two_species
 

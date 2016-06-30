@@ -193,6 +193,14 @@ void first_order_solver
 	double * F_mk_4[NUM_CELL];
 	initialize_memory(F_mk_4,NUM_CELL,CELL_POINT);
 
+	//  vfix
+	double * RHO_Q_T[NUM_CELL];
+	initialize_memory(RHO_Q_T,NUM_CELL,CELL_POINT);
+	double * U_MID[NUM_CELL];
+	initialize_memory(U_MID,NUM_CELL,CELL_POINT);
+
+
+	
 	char PLOT_name[200];
 	char STEP_char[25];
 	int const interval = 100;
@@ -323,7 +331,39 @@ void first_order_solver
 											F_mk[3] = (gamma[k]/(gamma[k]-1.0))*p_mid/rho_mid + 0.5*u_mid*u_mid + 0.5*v_mid*v_mid;
 											F_mk[3] = F_mk[0]*F_mk[3];
 											lambda_max = max(c_L+fabs(u_L),c_R+fabs(u_R));					
+										}
+
+
+
+									else if(strcmp(scheme,"Riemann_exact_vfix")==0)
+										{																				
+											u_L = U[1][k]*n_x[k][j] + V[1][k]*n_y[k][j]; 
+											u_R = U[STEP_RIGHT][CELL_RIGHT]*n_x[k][j] + V[STEP_RIGHT][CELL_RIGHT]*n_y[k][j];
+											c_L = sqrt(gamma[k] * P[1][k] / RHO[1][k]);
+											c_R = sqrt(gamma[k] * P[STEP_RIGHT][CELL_RIGHT] / RHO[STEP_RIGHT][CELL_RIGHT]);
+											linear_GRP_solver_Edir(dire, mid, RHO[1][k],RHO[STEP_RIGHT][CELL_RIGHT], 0.0, 0.0, u_L, u_R, 0.0, 0.0, P[1][k], P[STEP_RIGHT][CELL_RIGHT], 0.0, 0.0, gamma[k], eps);
+											rho_mid = mid[0];
+											p_mid = mid[2];
+
+											if(mid[1]>0)
+												mid_qt = -U[1][k]*n_y[k][j] + V[1][k]*n_x[k][j];
+											else
+												mid_qt = -U[STEP_RIGHT][CELL_RIGHT]*n_y[k][j] + V[STEP_RIGHT][CELL_RIGHT]*n_x[k][j];
+											u_mid = mid[1]*n_x[k][j] - mid_qt*n_y[k][j];
+											v_mid = mid[1]*n_y[k][j] + mid_qt*n_x[k][j];
+
+											F_mk[0] = rho_mid*u_mid*n_x[k][j] + rho_mid*v_mid*n_y[k][j];
+											F_mk[1] = F_mk[0]*u_mid + p_mid*n_x[k][j];
+											F_mk[2] = F_mk[0]*v_mid + p_mid*n_y[k][j];
+											F_mk[3] = (gamma[k]/(gamma[k]-1.0))*p_mid/rho_mid + 0.5*u_mid*u_mid + 0.5*v_mid*v_mid;
+											F_mk[3] = F_mk[0]*F_mk[3];
+
+											U_MID[k][j]=mid[1];
+											RHO_Q_T[k][j] = RHO[1][k]*RHO[STEP_RIGHT][CELL_RIGHT]*(-U[1][k]*n_y[k][j] + V[1][k]*n_x[k][j] + U[STEP_RIGHT][CELL_RIGHT]*n_y[k][j] - V[STEP_RIGHT][CELL_RIGHT]*n_x[k][j])*(-U[1][k]*n_y[k][j] + V[1][k]*n_x[k][j] + U[STEP_RIGHT][CELL_RIGHT]*n_y[k][j] - V[STEP_RIGHT][CELL_RIGHT]*n_x[k][j]);
+											
+											lambda_max = max(c_L+fabs(u_L),c_R+fabs(u_R));					
 										}								
+								
 
 //=================================================the Goundov scheme of Roe solver==============================================
 
@@ -438,6 +478,24 @@ void first_order_solver
 					v_con[k] += - tau*F_mk_3[k][j] * sqrt((X[p_p]-X[p_n])*(X[p_p]-X[p_n])+(Y[p_p]-Y[p_n])*(Y[p_p]-Y[p_n])) / VOLUME[k];
 					e_con[k] += - tau*F_mk_4[k][j] * sqrt((X[p_p]-X[p_n])*(X[p_p]-X[p_n])+(Y[p_p]-Y[p_n])*(Y[p_p]-Y[p_n])) / VOLUME[k];
 				}
+
+			for(j = 0; j < CELL_POINT[k][0]; ++j)
+				{
+					if(j == CELL_POINT[k][0]-1) 
+						{
+							p_p=CELL_POINT[k][1];
+							p_n=CELL_POINT[k][j+1];
+						}				  
+					else
+						{
+							p_p=CELL_POINT[k][j+2];
+							p_n=CELL_POINT[k][j+1];
+						}
+												
+					if(strcmp(scheme,"Riemann_exact_vfix")==0&&U_MID[k][j]<0)
+						e_con[k] += 0.5*tau * sqrt((X[p_p]-X[p_n])*(X[p_p]-X[p_n])+(Y[p_p]-Y[p_n])*(Y[p_p]-Y[p_n])) / VOLUME[k]*U_MID[k][j]*(1+tau * sqrt((X[p_p]-X[p_n])*(X[p_p]-X[p_n])+(Y[p_p]-Y[p_n])*(Y[p_p]-Y[p_n])) / VOLUME[k]*U_MID[k][j])*RHO_Q_T[k][j]/RHO[1][k];
+				}
+
 			
 			U[1][k] = u_con[k]/RHO[1][k];
 			V[1][k] = v_con[k]/RHO[1][k];
