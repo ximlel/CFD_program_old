@@ -196,9 +196,11 @@ void first_order_solver
 	//  vfix
 	double * RHO_Q_T[NUM_CELL];
 	initialize_memory(RHO_Q_T,NUM_CELL,CELL_POINT);
+	double * RHO_Q_N[NUM_CELL];
+	initialize_memory(RHO_Q_N,NUM_CELL,CELL_POINT);
 	double * U_MID[NUM_CELL];
 	initialize_memory(U_MID,NUM_CELL,CELL_POINT);
-
+	double RHO_TEMP_1, RHO_TEMP_2;
 
 	
 	char PLOT_name[200];
@@ -283,6 +285,29 @@ void first_order_solver
 													exit(8);
 												}
 										}
+									else if (CELL_CELL[k][j]==-6)//y-direction -100 periodic boundary condition.
+										{
+											STEP_RIGHT = 1;
+											if(!(k/n))
+										
+									{	
+																					
+												CELL_RIGHT = n*(m-1)+k-100;
+											if(CELL_RIGHT<n*(m-1))
+												CELL_RIGHT = n*(m-1);
+									}				
+											else if(k/n==m-1)
+									{
+												CELL_RIGHT = k-n*(m-1)+100;
+											if(CELL_RIGHT>(n-1))
+												CELL_RIGHT = n-1;
+									}
+											else
+												{																									
+													printf("Something wrong as we construct periodic boundary condition in y-direction.\n");
+													exit(8);
+												}
+										}
 									else
 										{
 											printf("No suitable boundary!\n");
@@ -360,6 +385,7 @@ void first_order_solver
 
 											U_MID[k][j]=mid[1];
 											RHO_Q_T[k][j] = RHO[1][k]*RHO[STEP_RIGHT][CELL_RIGHT]*(-U[1][k]*n_y[k][j] + V[1][k]*n_x[k][j] + U[STEP_RIGHT][CELL_RIGHT]*n_y[k][j] - V[STEP_RIGHT][CELL_RIGHT]*n_x[k][j])*(-U[1][k]*n_y[k][j] + V[1][k]*n_x[k][j] + U[STEP_RIGHT][CELL_RIGHT]*n_y[k][j] - V[STEP_RIGHT][CELL_RIGHT]*n_x[k][j]);
+											RHO_Q_N[k][j] = (RHO[1][k]-RHO[STEP_RIGHT][CELL_RIGHT])*mid[1];
 											
 											lambda_max = max(c_L+fabs(u_L),c_R+fabs(u_R));					
 										}								
@@ -472,7 +498,7 @@ void first_order_solver
 							p_p=CELL_POINT[k][j+2];
 							p_n=CELL_POINT[k][j+1];
 						}
-												
+					RHO_TEMP_1 = RHO[1][k];												
 					RHO[1][k] += - tau*F_mk_1[k][j] * sqrt((X[p_p]-X[p_n])*(X[p_p]-X[p_n])+(Y[p_p]-Y[p_n])*(Y[p_p]-Y[p_n])) / VOLUME[k];
 					u_con[k] += - tau*F_mk_2[k][j] * sqrt((X[p_p]-X[p_n])*(X[p_p]-X[p_n])+(Y[p_p]-Y[p_n])*(Y[p_p]-Y[p_n])) / VOLUME[k];
 					v_con[k] += - tau*F_mk_3[k][j] * sqrt((X[p_p]-X[p_n])*(X[p_p]-X[p_n])+(Y[p_p]-Y[p_n])*(Y[p_p]-Y[p_n])) / VOLUME[k];
@@ -493,7 +519,10 @@ void first_order_solver
 						}
 												
 					if(strcmp(scheme,"Riemann_exact_vfix")==0&&U_MID[k][j]<0)
-						e_con[k] += 0.5*tau * sqrt((X[p_p]-X[p_n])*(X[p_p]-X[p_n])+(Y[p_p]-Y[p_n])*(Y[p_p]-Y[p_n])) / VOLUME[k]*U_MID[k][j]*(1+tau * sqrt((X[p_p]-X[p_n])*(X[p_p]-X[p_n])+(Y[p_p]-Y[p_n])*(Y[p_p]-Y[p_n])) / VOLUME[k]*U_MID[k][j])*RHO_Q_T[k][j]/RHO[1][k];
+{
+						RHO_TEMP_2 = RHO_TEMP_1 + tau * sqrt((X[p_p]-X[p_n])*(X[p_p]-X[p_n])+(Y[p_p]-Y[p_n])*(Y[p_p]-Y[p_n])) / VOLUME[k]*RHO_Q_N[k][j];
+						e_con[k] += 0.5*tau * sqrt((X[p_p]-X[p_n])*(X[p_p]-X[p_n])+(Y[p_p]-Y[p_n])*(Y[p_p]-Y[p_n])) / VOLUME[k]*U_MID[k][j]*(1+tau * sqrt((X[p_p]-X[p_n])*(X[p_p]-X[p_n])+(Y[p_p]-Y[p_n])*(Y[p_p]-Y[p_n])) / VOLUME[k]*U_MID[k][j])*RHO_Q_T[k][j]/RHO[1][k];//RHO_TEMP_2;
+}
 				}
 
 			

@@ -68,7 +68,7 @@ int Free_mesh
 
 		for(k = 0; k < n; ++k)	
 		{
-			BOUNDARY_POINT[1][k] = -3; 
+			BOUNDARY_POINT[1][k] = -6; 
 		}
 	for(k = n; k < n+m; ++k)	
 		{
@@ -76,7 +76,7 @@ int Free_mesh
 		}
 	for(k = n+m; k < n*2 + m; ++k)	
 		{
-			BOUNDARY_POINT[1][k] = -3;
+			BOUNDARY_POINT[1][k] = -6;
 		}
 	for(k = n*2 + m; k < num_boundary; ++k)	
 		{
