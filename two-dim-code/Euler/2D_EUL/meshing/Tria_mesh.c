@@ -3,7 +3,7 @@
 #include <stdlib.h>
 
 
-int Free_mesh
+int Tria_mesh
 (int * CELL_POINT[], double * X, double * Y, int * BOUNDARY_POINT[],
  double * gamma, double * config, int m, int n)
 {
@@ -35,40 +35,49 @@ int Free_mesh
 	//  CELL_POINT
 	for(k = 0; k < m*n; ++k)
 		{
-			CELL_POINT[k][0] = 4;
-			CELL_POINT[k][1] = k + k/n;
-			CELL_POINT[k][2] = CELL_POINT[k][1] + 1;
-			CELL_POINT[k][3] = k + k/n + n + 2;
-			CELL_POINT[k][4] = CELL_POINT[k][3] - 1;
+		if(k%2)
+			{
+				CELL_POINT[k][0] = 3;
+				CELL_POINT[k][1] = ((k-1)/2) + ((k-1)/2)/(n/2);
+				CELL_POINT[k][2] = CELL_POINT[k][1] + 1;
+				CELL_POINT[k][3] = CELL_POINT[k][1] + n/2 + 2;
+			}
+		else
+			{
+				CELL_POINT[k][0] = 3;
+				CELL_POINT[k][1] = (k/2) + (k/2)/(n/2);
+				CELL_POINT[k][2] = CELL_POINT[k][1] + n/2 + 2;
+				CELL_POINT[k][3] = CELL_POINT[k][1] + n/2 + 1;
+			}
 		}
     // X, Y
-	for(k = 0; k < (m+1)*(n+1); ++k)
+	for(k = 0; k < (m+1)*(n/2+1); ++k)
 	{
-		X[k] = (k%(n+1))*config[2];
-		Y[k] = (k/(n+1))*config[3];
+		X[k] = (k%(n/2+1))*config[2];
+		Y[k] = (k/(n/2+1))*config[3];
 	}
 	// BOUNDARY
-		for(k = 0; k < n+1; ++k)	
+		for(k = 0; k < n/2+1; ++k)	
 		{
 			BOUNDARY_POINT[0][k] = k; 
 		}
-	for(k = n+1; k < n+m+1; ++k)	
+	for(k = n/2+1; k < n/2+m+1; ++k)	
 		{
-			BOUNDARY_POINT[0][k] = BOUNDARY_POINT[0][k-1] + n + 1;
+			BOUNDARY_POINT[0][k] = BOUNDARY_POINT[0][k-1] + n/2 + 1;
 		}
-	for(k = n+m+1; k < n*2 + m + 1; ++k)	
+	for(k = n/2+m+1; k < n + m + 1; ++k)	
 		{
 			BOUNDARY_POINT[0][k] = BOUNDARY_POINT[0][k-1] - 1;
 		}
-	for(k = n*2 + m + 1; k < num_boundary; ++k)	
+	for(k = n + m + 1; k < num_boundary; ++k)	
 		{
-			BOUNDARY_POINT[0][k] = BOUNDARY_POINT[0][k-1] - n - 1;
+			BOUNDARY_POINT[0][k] = BOUNDARY_POINT[0][k-1] - n/2 - 1;
 		}
 
 
 		for(k = 0; k < n; ++k)	
 		{
-			BOUNDARY_POINT[1][k] = -5;//6; 
+			BOUNDARY_POINT[1][k] = -6; 
 		}
 	for(k = n; k < n+m; ++k)	
 		{
@@ -76,7 +85,7 @@ int Free_mesh
 		}
 	for(k = n+m; k < n*2 + m; ++k)	
 		{
-			BOUNDARY_POINT[1][k] = -5;//6;
+			BOUNDARY_POINT[1][k] = -6;
 		}
 	for(k = n*2 + m; k < num_boundary; ++k)	
 		{

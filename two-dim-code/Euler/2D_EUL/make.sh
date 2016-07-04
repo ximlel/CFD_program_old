@@ -148,11 +148,14 @@ cd $INITIAL_PATH
 
 #./EUL_source.out steady_entropy_wave steady_entropy_wave/steady_entropy_wave_ROE RMI_mesh ROE -1 0.4
 
-./EUL_source.out NEW_TEST NEW_TEST/NEW_TEST Free_mesh Riemann_exact_vfix -1 0.4
+./EUL_source.out NEW_TEST_Sod NEW_TEST_Sod/NEW_TEST_Sod Free_mesh Riemann_exact_vfix -1 0.4
+#./EUL_source.out NEW_TEST_Sod NEW_TEST_Sod/NEW_TEST_Sod_R Free_mesh Riemann_exact -1 0.4
+
+#./EUL_source.out NEW_TEST NEW_TEST/NEW_TEST Free_mesh Riemann_exact_vfix -1 0.4
 #./EUL_source.out NEW_TEST NEW_TEST/NEW_TEST_R Free_mesh Riemann_exact -1 0.4
 
 #./EUL_source.out NEW_TEST_OBLIQUE NEW_TEST_OBLIQUE/NEW_TEST_OBLIQUE_R Free_mesh Riemann_exact -1 0.4
-#./EUL_source.out NEW_TEST_OBLIQUE NEW_TEST_OBLIQUE/NEW_TEST_OBLIQUE Free_mesh Riemann_exact_vfix -1 0.4
+#./EUL_source.out NEW_TEST_OBLIQUE NEW_TEST_OBLIQUE/NEW_TEST_OBLIQUE Sod_mesh Riemann_exact_vfix -1 0.4
 
 ### Two_species
 

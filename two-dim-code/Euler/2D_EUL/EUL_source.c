@@ -28,7 +28,7 @@ double * V0 = NULL;
 double * RHO0 = NULL;
 double * CC0 = NULL;
 
-
+double SSTTAARR[3];
 
 int main(int argc, char *argv[])
 {

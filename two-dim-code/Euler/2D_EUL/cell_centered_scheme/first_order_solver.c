@@ -14,7 +14,6 @@
 #include "../../../lib/file_io.h"
 
 
-
 /* This function use first order scheme to solve 2-D
  * equations of motion by Eulerian method.
  *
@@ -22,6 +21,8 @@
  *         could be seen in the comments of the main function.
  *NUM_CELL is the number of the grids.
  */
+
+extern double SSTTAARR[3];
 
 
 void first_order_solver
@@ -196,11 +197,11 @@ void first_order_solver
 	//  vfix
 	double * RHO_Q_T[NUM_CELL];
 	initialize_memory(RHO_Q_T,NUM_CELL,CELL_POINT);
-	double * RHO_Q_N[NUM_CELL];
-	initialize_memory(RHO_Q_N,NUM_CELL,CELL_POINT);
+	double * F_mk_1_fix[NUM_CELL];
+	initialize_memory(F_mk_1_fix,NUM_CELL,CELL_POINT);
 	double * U_MID[NUM_CELL];
 	initialize_memory(U_MID,NUM_CELL,CELL_POINT);
-	double RHO_TEMP_1, RHO_TEMP_2;
+	double RHO_TEMP_0, RHO_TEMP_1, RHO_TEMP_2;
 
 	
 	char PLOT_name[200];
@@ -367,6 +368,7 @@ void first_order_solver
 											c_L = sqrt(gamma[k] * P[1][k] / RHO[1][k]);
 											c_R = sqrt(gamma[k] * P[STEP_RIGHT][CELL_RIGHT] / RHO[STEP_RIGHT][CELL_RIGHT]);
 											linear_GRP_solver_Edir(dire, mid, RHO[1][k],RHO[STEP_RIGHT][CELL_RIGHT], 0.0, 0.0, u_L, u_R, 0.0, 0.0, P[1][k], P[STEP_RIGHT][CELL_RIGHT], 0.0, 0.0, gamma[k], eps);
+
 											rho_mid = mid[0];
 											p_mid = mid[2];
 
@@ -383,9 +385,9 @@ void first_order_solver
 											F_mk[3] = (gamma[k]/(gamma[k]-1.0))*p_mid/rho_mid + 0.5*u_mid*u_mid + 0.5*v_mid*v_mid;
 											F_mk[3] = F_mk[0]*F_mk[3];
 
-											U_MID[k][j]=mid[1];
-											RHO_Q_T[k][j] = RHO[1][k]*RHO[STEP_RIGHT][CELL_RIGHT]*(-U[1][k]*n_y[k][j] + V[1][k]*n_x[k][j] + U[STEP_RIGHT][CELL_RIGHT]*n_y[k][j] - V[STEP_RIGHT][CELL_RIGHT]*n_x[k][j])*(-U[1][k]*n_y[k][j] + V[1][k]*n_x[k][j] + U[STEP_RIGHT][CELL_RIGHT]*n_y[k][j] - V[STEP_RIGHT][CELL_RIGHT]*n_x[k][j]);
-											RHO_Q_N[k][j] = (RHO[1][k]-RHO[STEP_RIGHT][CELL_RIGHT])*mid[1];
+											U_MID[k][j] = SSTTAARR[2];
+											RHO_Q_T[k][j] = SSTTAARR[0]*SSTTAARR[1]*(-U[1][k]*n_y[k][j] + V[1][k]*n_x[k][j] + U[STEP_RIGHT][CELL_RIGHT]*n_y[k][j] - V[STEP_RIGHT][CELL_RIGHT]*n_x[k][j])*(-U[1][k]*n_y[k][j] + V[1][k]*n_x[k][j] + U[STEP_RIGHT][CELL_RIGHT]*n_y[k][j] - V[STEP_RIGHT][CELL_RIGHT]*n_x[k][j]);
+											F_mk_1_fix[k][j] = RHO[STEP_RIGHT][CELL_RIGHT]*u_L;
 											
 											lambda_max = max(c_L+fabs(u_L),c_R+fabs(u_R));					
 										}								
@@ -486,6 +488,8 @@ void first_order_solver
 
 	for(k = 0; k < NUM_CELL; ++k)
 		{
+			RHO_TEMP_0 = RHO[1][k];	
+
 			for(j = 0; j < CELL_POINT[k][0]; ++j)
 				{
 					if(j == CELL_POINT[k][0]-1) 
@@ -498,7 +502,7 @@ void first_order_solver
 							p_p=CELL_POINT[k][j+2];
 							p_n=CELL_POINT[k][j+1];
 						}
-					RHO_TEMP_1 = RHO[1][k];												
+								
 					RHO[1][k] += - tau*F_mk_1[k][j] * sqrt((X[p_p]-X[p_n])*(X[p_p]-X[p_n])+(Y[p_p]-Y[p_n])*(Y[p_p]-Y[p_n])) / VOLUME[k];
 					u_con[k] += - tau*F_mk_2[k][j] * sqrt((X[p_p]-X[p_n])*(X[p_p]-X[p_n])+(Y[p_p]-Y[p_n])*(Y[p_p]-Y[p_n])) / VOLUME[k];
 					v_con[k] += - tau*F_mk_3[k][j] * sqrt((X[p_p]-X[p_n])*(X[p_p]-X[p_n])+(Y[p_p]-Y[p_n])*(Y[p_p]-Y[p_n])) / VOLUME[k];
@@ -518,11 +522,11 @@ void first_order_solver
 							p_n=CELL_POINT[k][j+1];
 						}
 												
-					if(strcmp(scheme,"Riemann_exact_vfix")==0&&U_MID[k][j]<0)
-{
-						RHO_TEMP_2 = RHO_TEMP_1 + tau * sqrt((X[p_p]-X[p_n])*(X[p_p]-X[p_n])+(Y[p_p]-Y[p_n])*(Y[p_p]-Y[p_n])) / VOLUME[k]*RHO_Q_N[k][j];
-						e_con[k] += 0.5*tau * sqrt((X[p_p]-X[p_n])*(X[p_p]-X[p_n])+(Y[p_p]-Y[p_n])*(Y[p_p]-Y[p_n])) / VOLUME[k]*U_MID[k][j]*(1+tau * sqrt((X[p_p]-X[p_n])*(X[p_p]-X[p_n])+(Y[p_p]-Y[p_n])*(Y[p_p]-Y[p_n])) / VOLUME[k]*U_MID[k][j])*RHO_Q_T[k][j]/RHO[1][k];//RHO_TEMP_2;
-}
+					if(strcmp(scheme,"Riemann_exact_vfix")==0&&U_MID[k][j]<eps)
+						{
+							RHO_TEMP_1 = RHO_TEMP_0 +  tau*(RHO_TEMP_0*U[1][k]*n_x[k][j] + RHO_TEMP_0*V[1][k]*n_y[k][j] - F_mk_1_fix[k][j]) * sqrt((X[p_p]-X[p_n])*(X[p_p]-X[p_n])+(Y[p_p]-Y[p_n])*(Y[p_p]-Y[p_n])) / VOLUME[k];
+							e_con[k] += 0.5*tau * sqrt((X[p_p]-X[p_n])*(X[p_p]-X[p_n])+(Y[p_p]-Y[p_n])*(Y[p_p]-Y[p_n])) / VOLUME[k]*U_MID[k][j]*(1+tau * sqrt((X[p_p]-X[p_n])*(X[p_p]-X[p_n])+(Y[p_p]-Y[p_n])*(Y[p_p]-Y[p_n])) / VOLUME[k]*U_MID[k][j])*RHO_Q_T[k][j]/RHO[1][k];//RHO_TEMP_1;
+						}
 				}
 
 			

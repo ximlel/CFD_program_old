@@ -1,5 +1,5 @@
 line=100;
-column=200;
+column=100;
 shock=50;
 
 gamma=1.4;
@@ -8,74 +8,66 @@ MS=2;
 rho_star=1;
 p_star=1;
 
-rho_R=2
-u_R=-0.5
-v_R=1.5
+rho_R=0.125
+u_R=0
+v_R=0
 p_R=0.1
-rho_L=3
-u_L=0.5
-v_L=0.5
-p_L=0.1
-rho_M=2.5
-u_M=u_R*0.4+u_L*0.6
-v_M=v_R*0.4+v_L*0.6
-p_M=0.1
+rho_L=1
+u_L=0
+v_L=10
+p_L=1
 
 rho=zeros(column,1);
-fid = fopen('RHO.txt','wt');
-for j=1:line
-for i=1:(line+10-j)
+for i=1:shock
     rho(i)=rho_L;
 end
-rho(line+10-j+1)=rho_M;
-for i=(line+10-j+2):column
+for i=(shock+1):column
     rho(i)=rho_R;
 end
+fid = fopen('RHO.txt','wt');
+for j=1:line
 fprintf(fid,'%12.10f\t',rho);
 fprintf(fid,'\n');
 end
 fclose(fid);
 
 u=zeros(column,1);
-fid = fopen('U.txt','wt');
-for j=1:line
-for i=1:(line+10-j)
+for i=1:shock
     u(i)=u_L;
 end
-u(line+10-j+1)=u_M;
-for i=(line+10-j+2):column
+for i=(shock+1):column
     u(i)=u_R;
 end
+fid = fopen('U.txt','wt');
+for j=1:line
 fprintf(fid,'%12.10f\t',u);
 fprintf(fid,'\n');
 end
 fclose(fid);
 
 v=zeros(column,1);
-fid = fopen('V.txt','wt');
-for j=1:line
-for i=1:(line+10-j)
+for i=1:shock
     v(i)=v_L;
 end
-v(line+10-j+1)=v_M;
-for i=(line+10-j+2):column
+for i=(shock+1):column
     v(i)=v_R;
 end
+fid = fopen('V.txt','wt');
+for j=1:line
 fprintf(fid,'%12.10f\t',v);
 fprintf(fid,'\n');
 end
 fclose(fid);
 
 p=zeros(column,1);
-fid = fopen('P.txt','wt');
-for j=1:line
-for i=1:(line+10-j)
+for i=1:shock
     p(i)=p_L;
 end
-p(line+10-j+1)=p_M;
-for i=(line+10-j+2):column
+for i=(shock+1):column
     p(i)=p_R;
 end
+fid = fopen('P.txt','wt');
+for j=1:line
 fprintf(fid,'%12.10f\t',p);
 fprintf(fid,'\n');
 end
