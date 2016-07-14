@@ -30,7 +30,7 @@ void first_order_solver
  int * BOUNDARY_POINT[], int m, int n, double * RHO[], double * U[], double * V[], double * P[],
  double * X, double * Y, double * gamma, double * cpu_time, char * scheme, double CFL/* the CFL number */, char * example)
 {	
-	int i, j, k, l; 
+	int i, j, k, l, h; 
 
 	clock_t tic, toc;
 	double sum = 0.0;
@@ -53,11 +53,12 @@ void first_order_solver
 	int CELL_RIGHT, STEP_RIGHT; //For boundary condition
 	double cum;
 	
-	double u_con[NUM_CELL],  v_con[NUM_CELL],  e_con[NUM_CELL];
+	double u_con[NUM_CELL],  v_con[NUM_CELL],  e_con[NUM_CELL],  v2_con[NUM_CELL];
 	for(k = 0; k < NUM_CELL; ++k)
 		{			
 			u_con[k] = RHO[0][k]*U[0][k];
 			v_con[k] = RHO[0][k]*V[0][k];
+			v2_con[k] = RHO[0][k]*V[0][k]*V[0][k];
 			e_con[k] = P[0][k]/(gamma[k]-1.0) + 0.5*(U[0][k]*U[0][k]+V[0][k]*V[0][k])*RHO[0][k];				
 		}	//Initialize conserved variables.
 
@@ -193,15 +194,21 @@ void first_order_solver
 	initialize_memory(F_mk_3,NUM_CELL,CELL_POINT);
 	double * F_mk_4[NUM_CELL];
 	initialize_memory(F_mk_4,NUM_CELL,CELL_POINT);
+	double * F_mk_33[NUM_CELL];
+	initialize_memory(F_mk_33,NUM_CELL,CELL_POINT);
 
 	//  vfix
 	double * RHO_Q_T[NUM_CELL];
 	initialize_memory(RHO_Q_T,NUM_CELL,CELL_POINT);
-	double * F_mk_1_fix[NUM_CELL];
-	initialize_memory(F_mk_1_fix,NUM_CELL,CELL_POINT);
+	double * RHO_U_MID[NUM_CELL];
+	initialize_memory(RHO_U_MID,NUM_CELL,CELL_POINT);
 	double * U_MID[NUM_CELL];
 	initialize_memory(U_MID,NUM_CELL,CELL_POINT);
-	double RHO_TEMP_0, RHO_TEMP_1, RHO_TEMP_2;
+	double * V_MID[NUM_CELL];
+	initialize_memory(V_MID,NUM_CELL,CELL_POINT);
+	double * P_Q_N[NUM_CELL];
+	initialize_memory(P_Q_N,NUM_CELL,CELL_POINT);
+	int h_p, h_n;
 
 	
 	char PLOT_name[200];
@@ -351,11 +358,14 @@ void first_order_solver
 											u_mid = mid[1]*n_x[k][j] - mid_qt*n_y[k][j];
 											v_mid = mid[1]*n_y[k][j] + mid_qt*n_x[k][j];
 											
-											F_mk[0] = rho_mid*u_mid*n_x[k][j] + rho_mid*v_mid*n_y[k][j];
+											F_mk[0] = rho_mid*mid[1];
 											F_mk[1] = F_mk[0]*u_mid + p_mid*n_x[k][j];
 											F_mk[2] = F_mk[0]*v_mid + p_mid*n_y[k][j];
 											F_mk[3] = (gamma[k]/(gamma[k]-1.0))*p_mid/rho_mid + 0.5*u_mid*u_mid + 0.5*v_mid*v_mid;
 											F_mk[3] = F_mk[0]*F_mk[3];
+
+											F_mk_33[k][j] = F_mk[0]*v_mid*v_mid;
+
 											lambda_max = max(c_L+fabs(u_L),c_R+fabs(u_R));					
 										}
 
@@ -385,9 +395,13 @@ void first_order_solver
 											F_mk[3] = (gamma[k]/(gamma[k]-1.0))*p_mid/rho_mid + 0.5*u_mid*u_mid + 0.5*v_mid*v_mid;
 											F_mk[3] = F_mk[0]*F_mk[3];
 
-											U_MID[k][j] = SSTTAARR[2];
-											RHO_Q_T[k][j] = SSTTAARR[0]*SSTTAARR[1]*(-U[1][k]*n_y[k][j] + V[1][k]*n_x[k][j] + U[STEP_RIGHT][CELL_RIGHT]*n_y[k][j] - V[STEP_RIGHT][CELL_RIGHT]*n_x[k][j])*(-U[1][k]*n_y[k][j] + V[1][k]*n_x[k][j] + U[STEP_RIGHT][CELL_RIGHT]*n_y[k][j] - V[STEP_RIGHT][CELL_RIGHT]*n_x[k][j]);
-											F_mk_1_fix[k][j] = RHO[STEP_RIGHT][CELL_RIGHT]*u_L;
+                                                                       //vfix
+											RHO_U_MID[k][j] = rho_mid*mid[1];
+											RHO_Q_T[k][j] = RHO[1][k]*((-U[1][k]*n_y[k][j] + V[1][k]*n_x[k][j] - mid_qt)*(-U[1][k]*n_y[k][j] + V[1][k]*n_x[k][j] - mid_qt)+(u_L-mid[1])*(u_L-mid[1]));
+//(-U[1][k]*n_y[k][j] + V[1][k]*n_x[k][j] - mid_qt)*(-U[1][k]*n_y[k][j] + V[1][k]*n_x[k][j] - mid_qt);
+											U_MID[k][j] = u_mid;
+											V_MID[k][j] = v_mid;
+											P_Q_N[k][j] = gamma[k]/(gamma[k]-1.0)*mid[1]*p_mid;
 											
 											lambda_max = max(c_L+fabs(u_L),c_R+fabs(u_R));					
 										}								
@@ -488,7 +502,6 @@ void first_order_solver
 
 	for(k = 0; k < NUM_CELL; ++k)
 		{
-			RHO_TEMP_0 = RHO[1][k];	
 
 			for(j = 0; j < CELL_POINT[k][0]; ++j)
 				{
@@ -506,6 +519,9 @@ void first_order_solver
 					RHO[1][k] += - tau*F_mk_1[k][j] * sqrt((X[p_p]-X[p_n])*(X[p_p]-X[p_n])+(Y[p_p]-Y[p_n])*(Y[p_p]-Y[p_n])) / VOLUME[k];
 					u_con[k] += - tau*F_mk_2[k][j] * sqrt((X[p_p]-X[p_n])*(X[p_p]-X[p_n])+(Y[p_p]-Y[p_n])*(Y[p_p]-Y[p_n])) / VOLUME[k];
 					v_con[k] += - tau*F_mk_3[k][j] * sqrt((X[p_p]-X[p_n])*(X[p_p]-X[p_n])+(Y[p_p]-Y[p_n])*(Y[p_p]-Y[p_n])) / VOLUME[k];
+
+					v2_con[k] += - tau*F_mk_33[k][j] * sqrt((X[p_p]-X[p_n])*(X[p_p]-X[p_n])+(Y[p_p]-Y[p_n])*(Y[p_p]-Y[p_n])) / VOLUME[k];
+
 					e_con[k] += - tau*F_mk_4[k][j] * sqrt((X[p_p]-X[p_n])*(X[p_p]-X[p_n])+(Y[p_p]-Y[p_n])*(Y[p_p]-Y[p_n])) / VOLUME[k];
 				}
 
@@ -522,16 +538,37 @@ void first_order_solver
 							p_n=CELL_POINT[k][j+1];
 						}
 												
-					if(strcmp(scheme,"Riemann_exact_vfix")==0&&U_MID[k][j]<eps)
+					if(strcmp(scheme,"Riemann_exact_vfix")==0)
 						{
-							RHO_TEMP_1 = RHO_TEMP_0 +  tau*(RHO_TEMP_0*U[1][k]*n_x[k][j] + RHO_TEMP_0*V[1][k]*n_y[k][j] - F_mk_1_fix[k][j]) * sqrt((X[p_p]-X[p_n])*(X[p_p]-X[p_n])+(Y[p_p]-Y[p_n])*(Y[p_p]-Y[p_n])) / VOLUME[k];
-							e_con[k] += 0.5*tau * sqrt((X[p_p]-X[p_n])*(X[p_p]-X[p_n])+(Y[p_p]-Y[p_n])*(Y[p_p]-Y[p_n])) / VOLUME[k]*U_MID[k][j]*(1+tau * sqrt((X[p_p]-X[p_n])*(X[p_p]-X[p_n])+(Y[p_p]-Y[p_n])*(Y[p_p]-Y[p_n])) / VOLUME[k]*U_MID[k][j])*RHO_Q_T[k][j]/RHO[1][k];//RHO_TEMP_1;
+							e_con[k] += 0.5 * tau * sqrt((X[p_p]-X[p_n])*(X[p_p]-X[p_n])+(Y[p_p]-Y[p_n])*(Y[p_p]-Y[p_n])) / VOLUME[k]*RHO_U_MID[k][j]*RHO_Q_T[k][j]/RHO[1][k];
+//							e_con[k] += tau * sqrt((X[p_p]-X[p_n])*(X[p_p]-X[p_n])+(Y[p_p]-Y[p_n])*(Y[p_p]-Y[p_n])) / VOLUME[k]*P_Q_N[k][j];
+							for(h = j+1; h < CELL_POINT[k][0]; ++h)
+								{
+									if(h == CELL_POINT[k][0]-1) 
+										{
+											h_p=CELL_POINT[k][1];
+											h_n=CELL_POINT[k][h+1];
+										}				  
+									else
+										{
+											h_p=CELL_POINT[k][h+2];
+											h_n=CELL_POINT[k][h+1];
+										}														
+									e_con[k] -= 0.5*tau * sqrt((X[p_p]-X[p_n])*(X[p_p]-X[p_n])+(Y[p_p]-Y[p_n])*(Y[p_p]-Y[p_n])) / VOLUME[k]*RHO_U_MID[k][j]*tau * sqrt((X[h_p]-X[h_n])*(X[h_p]-X[h_n])+(Y[h_p]-Y[h_n])*(Y[h_p]-Y[h_n])) / VOLUME[k]*RHO_U_MID[k][h]*((U_MID[k][j]-U_MID[k][h])*(U_MID[k][j]-U_MID[k][h])+(V_MID[k][j]-V_MID[k][h])*(V_MID[k][j]-V_MID[k][h]))/RHO[1][k];
+								}
 						}
 				}
 
 			
 			U[1][k] = u_con[k]/RHO[1][k];
 			V[1][k] = v_con[k]/RHO[1][k];
+/*
+	if(v_con[k]>0)
+			V[1][k] = sqrt(v2_con[k]/RHO[1][k]);
+	else
+			V[1][k] = -sqrt(v2_con[k]/RHO[1][k]);
+*/
+
 			P[1][k] = (e_con[k] - 0.5*(U[1][k]*U[1][k]+V[1][k]*V[1][k])*RHO[1][k])*(gamma[k]-1.0);
 
 			if(P[1][k] < eps&&strcmp(scheme,"Roe_Goundov")==0) 
