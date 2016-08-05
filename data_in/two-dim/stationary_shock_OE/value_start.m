@@ -1,13 +1,13 @@
-line=70; %*3
-column=200;
+line=10; %*3
+column=30;
 
-L_x=0.01;
-L_y=0.01;
+L_x=0.1;
+L_y=0.1;
 
 
 gamma=1.4;
 
-delta_rho=0.01;
+delta_rho=0.0;
 
 M_0=10;
 
@@ -90,7 +90,7 @@ fclose(fid);
 
 
 eps=1e-9;
-t_all=20;
+t_all=3;
 step=100000;
 
 fid = fopen('config.txt','wt');
