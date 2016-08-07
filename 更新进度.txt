@@ -1,1 +1,8 @@
-begin,new dic:main-code,from 2D Euler
+initialize memory double * = NULL
+
+
+
+exit	5 memory
+	1 file/dic
+	2 读入错误
+	3 unequal

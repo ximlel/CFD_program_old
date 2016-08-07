@@ -27,8 +27,11 @@ int file_read(FILE * fp, double * U, int num);
 /* this function counts how many numbers are there
  * the initial data file.
  */
-int file_pre_read(FILE * fp);
+int file_pre_read_line(FILE * fp);
 
+
+
+int file_pre_read_column(FILE * fp);
 
 
 /* This function reads the initial data file. The function 
@@ -37,13 +40,21 @@ int file_pre_read(FILE * fp);
  * double. The value of first of these variables is m.
  * The following m variables are the initial value.
  */
-void initialize(char * add, double * F);
+void initialize(char * name, char * addrho, char * addu, char * addv, char * addp);
+
+void initialize_CC(char * name, char * addcc);
 
 /* This function read the configuration data file,
- * and store the configuration data in the array "config".
- * config[?] stand for what? (see  Configuration_instructions.pdf)
+ * and store the configuration data in the array
+ * "config".
+ * config[0] is the polytropic index
+ * config[1] is the total time
+ * config[2] is the spatial grid size in x direction
+ * config[3] is the spatial grid size in y direction
+ * config[4] is the largest value can be seen as zero
+ * config[5] is the maximum number of time steps
  */
-void configurate(char * add);
+void configurate(double * config, char * name, char * add);
 
 
 void file_write_VTK(int NUM_POINT, double * X, double * Y, int NUM_CELL, int * CELL_POINT[], double * RHO, double * U, double * V, double * P, double * cpu_time, double * config, char * example, char * problem);

@@ -22,32 +22,39 @@ int format_string(char * str);
 int file_read(FILE * fp, double * U, int num);
 
 
+int CreateDir(const char* pPath);
+
+
 
 
 /* this function counts how many numbers are there
  * the initial data file.
  */
-int file_pre_read(FILE * fp);
-
+int _1D_file_pre_read(FILE * fp);
 
 
 /* This function reads the initial data file. The function 
  * initialize return a pointer pointing to the position of
- * a block of memory consisting (m+1) variables* of type
+ * a block of memory consisting (m+1) variables of type
  * double. The value of first of these variables is m.
  * The following m variables are the initial value.
  */
-void initialize(char * add, double * F);
+void _1D_initialize(char * name, char * addU, char * addP, char * addrho);
+
 
 /* This function read the configuration data file,
- * and store the configuration data in the array "config".
- * config[?] stand for what? (see  Configuration_instructions.pdf)
+ * and store the configuration data in the array
+ * "config".
+ * config[0] is the polytropic index
+ * config[1] is the total time
+ * config[2] is the spatial grid size
+ * config[3] is the largest value can be seen as zero
+ * config[4] is the maximum number of time steps
  */
-void configurate(char * add);
+void _1D_configurate(double * config, char * name, char * add);
 
 
-void file_write_VTK(int NUM_POINT, double * X, double * Y, int NUM_CELL, int * CELL_POINT[], double * RHO, double * U, double * V, double * P, double * cpu_time, double * config, char * example, char * problem);
-
-void file_write_TEC(int NUM_POINT, double * X, double * Y, int NUM_CELL, int * CELL_POINT[], double * RHO, double * U, double * V, double * P, double * cpu_time, double * config, char * example, char * problem);
-
-void file_two_species_write_TEC(int NUM_POINT, double * X, double * Y, int NUM_CELL, int * CELL_POINT[], double * RHO, double * U, double * V, double * P, double * CC, double * cpu_time, double * config, char * example, char * problem);
+/* This function write the solution into an output file.
+ * It is quite simple so there will be no more comments.
+ */
+void _1D_file_write_TEC(int m, int N, double * RHO[], double * U[], double * P[], double * X, double * cpu_time, double * config, char * example, char * problem);

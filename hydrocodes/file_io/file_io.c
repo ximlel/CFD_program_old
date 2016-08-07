@@ -11,21 +11,17 @@
 
 
 #include "../file_io.h"
-#include "../custom.h"
+#include "../tools.h"
 
 
 
-#ifndef N_CONF
-#define N_CONF 6
-#endif /* N_CONF */
+extern double * RHO;
+extern double * U;
+extern double * P;
+extern double * V;
+extern double * PHI;
 
-
-extern double * RHO0;
-extern double * U0;
-extern double * V0;
-extern double * P0;
-extern double * CC0;
-
+extern double * config;
 
 
 
@@ -59,14 +55,14 @@ int file_pre_read_line(FILE * fp)
 							else if(column != M)
 								{
 									printf("Input data error, line=%d, M=%d, column=%d\n", line, M, column);
-									if(RHO0)
-										free(RHO0);
-									if(U0)
-										free(U0);
-									if(V0)
-										free(V0);
-									if(P0)
-										free(P0);
+									if(RHO)
+										free(RHO);
+									if(U)
+										free(U);
+									if(V)
+										free(V);
+									if(P)
+										free(P);
 									exit(1);
 								}
 

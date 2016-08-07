@@ -7,15 +7,17 @@ INITIAL_PATH=$PWD
 
 #Compile
 
-cd ./hydrocodes/tools
-gcc -c ./common.c
+cd ../../lib/file_io/
+gcc -c ./comman.c
 gcc -c ./file_io.c -I ../
-ar crv file_io.a common.o file_io.o
+ar crv file_io.a comman.o file_io.o
 
-cd ./hydrocodes/tools
-gcc -c ./mathematical_algorithms.c
-gcc -c ./memory_management.c
-ar crv tools.a mathematical_algorithms.o memory_management.o
+cd ../custom/
+gcc -c ./initialize_memory.c
+gcc -c ./rinv.c
+gcc -c ./rhd.c
+gcc -c ./CreateDir.c
+ar crv custom.a initialize_memory.o rinv.o rhd.o CreateDir.o
 
 cd ../Riemann_solver/
 gcc -c ./Riemann_solver_exact.c
