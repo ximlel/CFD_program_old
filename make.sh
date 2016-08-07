@@ -9,10 +9,11 @@ INITIAL_PATH=$PWD
 
 cd ./hydrocodes/tools
 gcc -c ./common.c
-gcc -c ./file_io.c -I ../
-ar crv file_io.a common.o file_io.o
+gcc -c ./file_in.c -I ../
+gcc -c ./file_out.c -I ../
+ar crv file_io.a common.o file_in.o file_out.o
 
-cd ./hydrocodes/tools
+cd ../tools
 gcc -c ./mathematical_algorithms.c
 gcc -c ./memory_management.c
 ar crv tools.a mathematical_algorithms.o memory_management.o

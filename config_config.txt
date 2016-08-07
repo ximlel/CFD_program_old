@@ -6,10 +6,12 @@
 5	the maximum number of time steps
 	
 
-11	the spatial grid size in x direction
-12	the spatial grid size in y direction
-13	the spatial grid size in z direction
-
+10	the spatial grid size in x direction
+11	the spatial grid size in y direction
+12	the spatial grid size in z direction
+13	the grid number in x direction     //n
+14	the grid number in y direction     //m
+15	the grid number in z direction
 
 
 

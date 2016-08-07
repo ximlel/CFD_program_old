@@ -29,15 +29,20 @@ double * PHI = NULL;
 
 double config[200] = {1.0/0.0};
 
+int DIM;
 
 
 
 int main(int argc, char *argv[])
 {
-	/*Find the directory of input data.
+	/* Set dimension.
+	 */
+	DIM = atoi(argv[5]);
+	
+	/* Find the directory of input data.
 	 */
 	char add_mkdir[PATH_MAX];
-	switch(atoi(argv[5]))
+	switch(DIM)
 		{
 		case 1 :
 			strcpy(add_mkdir, "../data_in/one-dim/");
@@ -62,6 +67,8 @@ int main(int argc, char *argv[])
 
 	/* Firstly we read the initial data file. 
 	 */	
+	printf("%s is configurated:\n", argv[1]);
+
 	char addconfig[PATH_MAX];
 	strcpy(addconfig, add_mkdir);
 	strcat(addconfig, "/config.txt");
@@ -98,82 +105,19 @@ int main(int argc, char *argv[])
 			}
 		}
 
-	printf("%s is initialized, grid number = %d\n.", argv[1], (int)config[3]);
+	printf("%s is initialized, grid number = %d.\n", argv[1], (int)config[3]);
 
-
-	int m = (int)RHO0[0], n = (int)RHO0[1];  
-	int NUM_CELL;
-	NUM_CELL = m*n;			/* m*n is the number of initial value
-							 * as well as the number of grids.
-							 * As m*n is frequently use to
-							 * represent the number of grids,
-							 * we do not use the name such as
-							 * num_grid here to correspond to
-							 * notation in the math theory.
-							 */
 
 	int NUM_POINT;
 	NUM_POINT = (m+1)*(n+1);
 
-	int NUM_BOUNDARY;
-	double config[N_CONF];  /* config[0] is the polytropic index
-							 * config[1] is the total time
-							 * config[2] is the spatial grid size in x direction
-							 * config[3] is the spatial grid size in y direction
-							 * config[4] is the largest value can be seen as zero
-							 * config[5] is the maximum number of time steps
-							 */
-	configurate(config, argv[0], addconfig); /* Read the config-
-											  * uration data.
-											  * The detail could
-											  * be seen in the
-											  * definition of
-											  * array config.
-											  */
+
 	int i = 0, k = 0, N = (int)(config[5]);
   
 	double cpu_time[N];
 	cpu_time[0] = 0.0;
 
 
-	double RHO_t[NUM_CELL];
-	for(k=0; k<NUM_CELL; k++)
-		RHO_t[k] = (RHO0+2)[k]; 
-
-	double U_t[NUM_CELL];
-	for(k=0; k<NUM_CELL; k++)
-		U_t[k] = (U0+2)[k];
-	
-	double V_t[NUM_CELL];
-	for(k=0; k<NUM_CELL; k++)
-		V_t[k] = (V0+2)[k];
-		
-  	double P_t[NUM_CELL];
-	for(k=0; k<NUM_CELL; k++)
-		P_t[k] = (P0+2)[k];
-		
-  	double CC_t[NUM_CELL];
-	if(strcmp(argv[argc-1],"Two_species")==0)
-		for(k=0; k<NUM_CELL; k++)
-			CC_t[k] = (CC0+2)[k];
-
-	
-	double *RHO[2];
-	double *U[2];
-	double *V[2];
-	double *P[2];
-	double *CC[2];
-	
-	RHO[0] = RHO0+2;
-	RHO[1] = RHO_t;
-	U[0] = U0+2;
-	U[1] = U_t;
-	V[0] = V0+2;
-	V[1] = V_t;
-	P[0] = P0+2;
-	P[1] = P_t;	
-	CC[0] = CC0+2;
-	CC[1] = CC_t;
 	
 
 	double X[NUM_POINT];
