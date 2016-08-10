@@ -1,0 +1,193 @@
+\documentclass{article}
+\usepackage{fontspec}
+\setmainfont{微软雅黑}
+\XeTeXlinebreaklocale "zh"
+\XeTeXlinebreakskip = 0pt plus 1pt minus 0.1pt
+\begin{document}
+\title{程序说明}
+\date{}
+\maketitle
+
+\section{程序结构}
+\ \\
+
+\textbf{data\_in} 文件夹放置输入文件RHO,U,P；
+其中config文件中依次为气体常数，时间步长，网格宽度，可识别的最小非0正数，时间步数。
+
+\textbf{plot} 文件夹输出RHO,U,P变化图。
+
+\textbf{data\_out} 文件夹输出计算过程中RHO,U,P和拉式坐标的变化。
+
+\textbf{file\_io} 为文件处理程序。
+
+\textbf{finite\_difference\_solver} 为算法格式文件。
+
+\textbf{Riemann\_solver} 为精确Riemann解法器。
+
+\textbf{LAG\_source.c} 是主程序。
+
+\textbf{make.sh} 为编译和运行程序的脚本。
+
+在终端下运行make.sh即可，gcc编译，gnuplot画图。
+
+\section{格式}
+\ \\
+
+精确Riemann解法器根据[1]所写，$u^{*},p^{*}$为Rienmann问题$*$区域的解。
+
+格式为向前Euler：(GRP/Gdounov\_solver\_source.c)
+
+$m_i(1/\rho_i^{n+1}-1/\rho_i^{n})-\Delta t(u_{i+1/2}^n-u_{i-1/2}^n)=0$，
+
+$m_i(u_i^{n+1}-u_i^{n})+\Delta t(p_{i+1/2}^n-p_{i-1/2}^n)=0$，
+
+$m_i(e_i^{n+1}-e_i^{n})+\Delta t(p_{i+1/2}^nu_{i+1/2}^n-p_{i-1/2}^nu_{i-1/2}^n)=0$。
+
+接触间断的位置计算：
+
+$x_{i+1/2}^{n+1}=x_{i+1/2}^{n}+\Delta tu_{i+1/2}^{n+1/2}$。
+
+节点$j+1/2$时平均数值通量：
+
+$u_{i+1/2}^{n+1/2}=u_{i+1/2}^{*n}+\frac{\Delta t}{2}(\frac{D u}{D t})_{i+1/2}^{n}$，
+
+$p_{i+1/2}^{n+1/2}=p_{i+1/2}^{*n}+\frac{\Delta t}{2}(\frac{D p}{D t})_{i+1/2}^{n}$。
+
+拉式Gdounov格式$(\frac{D u}{D t})_{i+1/2}^{n}，(\frac{D p}{D t})_{i+1/2}^{n}$取0。
+
+拉式GRP格式由斜率求接触间断处的物质导数(GRP\_solver\_source.c)，由GRP格式算出时间导数(linear\_GRP\_solver\_LAG.c)，向前Euler,再通过斜率限制器得到斜率(GRP\_solver\_source.c)。
+
+\section{算例}
+\ \\
+
+6.1 sod激波管，
+
+6.2.1 Shock-Contact Interaction。
+
+画的图为转换到欧拉坐标下的RHO,U,P以及拉式坐标的图。
+
+
+\section*{Refences}
+[1] E. F. Toro. A Fast Riemann Solver with Constant Covolume Applied to the
+Random Choice Method. Int. J. Numer. Meth. Fluids, 9:1145–1164, 1989.
+
+程序实现Maire的书上76-120页的内容，结果见plot文件夹。
+
+\section{程序结构}
+\ \\
+
+\textbf{data\_in} 文件夹放置输入文件RHO, U, V, P值及config，
+其中config文件中的数依次为多方气体指数，时间步长，x轴网格宽度，y轴网格宽度，精度范围内的最小非0正数，时间步数。
+
+\textbf{data\_out} 文件夹放置输出的最终结果，包括网格节点坐标，网格拓扑结构以及网格上的RHO, U, P值。
+
+\textbf{file\_io} 为读入写出文件的处理程序的文件夹。
+
+\textbf{meshing} 文件夹包含生成网格数据的函数。
+
+\textbf{cell\_centered\_scheme} 文件夹包含整个网格中心算法的程序。
+
+\textbf{Riemann\_solver} 文件夹包含求表示子网格力的角矩阵 M\_pc 的函数。
+
+\textbf{plot} 文件夹存储图示结果。
+
+\textbf{LAG\_source.c} 是加载输入文件，实施算法，输出结果的运行主程序。
+
+\textbf{make.sh} 为编译和运行程序的脚本。
+
+\ \\
+
+在终端下运行make.sh (gcc编译)。
+
+使用paraview软件打开 data\_out 中的.vtk文件查看结果。
+
+\section{细节说明}
+\ \\
+
+data\_in 文件夹中U, V分别代表速度的x轴分量和y轴分量。初始数据的第n行为规则方形网格从下往上数的第n行。
+
+meshing 文件夹为根据不同问题生成不同网格数据的程序。将所有网格和网格节点依次编号为0,1,2,\ldots， 数组 CELL\_POINT[i] 中按逆时针顺序存储第i个网格上所有节点的编号，且其中第1个数为该网格上的节点个数； BOUNDARY\_POINT[0] 中逆时针存储网格边界上的节点编号；X[i][j], Y[i][j]上分别存储第i步第j个节点的横纵坐标值；NORMAL\_VELOCITY 中存储给定的边界节点两边的法向速度（初始边界条件）；gamma 中存储每个网格上的多方气体指数$\gamma$。
+
+如果对于不规则的多边形网格，只要按照上面数组的方式输入网格拓扑结构，按编号顺序输入初始RHO, U, V, P值，并且给出合适的边界条件即可。
+
+一阶程序运行的前5个参数分别为RHO, U, V, P及config文件的地址，第6个为输出文件的标识符，第7个选择生成网格的meshing程序，第8个为选用的格式中求解子网格力的方法（GLACE或者EUCCLHYD），第9个为选择输出第几步得到的结果（0代表输出最后一步的结果）。
+
+高阶程序运行的前5个参数分别为RHO, U, V, P及config文件的地址，第6个为输出文件的标识符，第7个选择生成网格的meshing程序，第8个为选用的格式中求解子网格力的方法（linear-线性的EUCCLHYD或者nonlinear-非线性的EUCCLHYD），第9个为选用的斜率限制器（BJ-Barth Jespersen或者Ven-Venkatakrishman），第10个为选择输出第几步得到的结果（0代表输出最后一步的结果）。
+
+cell\_centered\_scheme 文件夹中的 initialize\_memory.c 文件为解法器调用的一些函数。高阶程序中 Riemann\_solver 文件夹中还包含计算 $\frac{d}{dt}$M\_pc 的函数。
+
+高阶程序中只处理边界节点两边的法向速度不随时间变化，也就是没有关于时间的导数项的情况；对于速度的两个分量分别进行了分片线性重构。
+
+\section{算例}
+\ \\
+
+\subsection{CB--Checkerboard problem}
+\ \\
+
+[0,1]×[0,1]区间上10×10的网格。
+$\gamma=5/3$, $\rho^0=P^0=1$, $\mathbf{U_{i,j}^0}=[(-1)^{i+j},0]$, $t_{fin}=1$, $\Delta t=10^{-2}$。
+
+\textbf{plot：}（书上的图取的$\mathbf{U_{i,j}^0}$值应该不一样）
+
+u\_CB\_GLA -- GLACE格式运行5步后的网格和速度的x轴分量
+
+u\_CB\_EUC -- EUCCLHYD格式运行90步后的网格和速度的x轴分量
+
+
+\subsection{Sedov--Sedov problem}
+\ \\
+
+[0,1.2]×[0,1.2]区间上30×30的网格。
+$\gamma=7/5$, $\rho^0=1$, $P^0=10^{-6}$, $\mathbf{U^0}=\mathbf{0}$, $t_{fin}=1$, $\Delta t=10^{-3}$, 第一个网格上$P^0=61.204$。
+
+高阶格式为非线性的EUCCLHYD以及使用Ven斜率限制器。
+
+\textbf{plot：}
+
+rho\_Sedov\_GLA -- GLACE格式在停止时间t=1时的网格和密度
+
+rho\_Sedov\_EUC -- EUCCLHYD格式在停止时间t=1时的网格和密度
+
+rho\_Sedov -- 高阶非线性EUCCLHYD格式在停止时间t=1时的网格和密度
+
+\subsection{Sod--Sod problem}
+\ \\
+
+[0,0.1]×[0,1]区间上2×100的网格。
+$\gamma_{left}=7/5$, $\gamma_{right}=5/3$, $\rho_l^0=P_l^0=1$, $\mathbf{U_l^0}=\mathbf{0}$, $\rho_r^0=0.125$, $P_r^0=0.1$, $\mathbf{U_r^0}=\mathbf{0}$, $t_{fin}=0.2$, $\Delta t=10^{-2}$。
+
+高阶格式为线性的EUCCLHYD以及使用BJ斜率限制器。
+
+\textbf{plot：}（只计算了数值解）
+
+rho\_Sod -- 在停止时间t=0.2时密度的数值解
+
+u\_Sod -- 在停止时间t=0.2时速度的数值解
+
+p\_Sod -- 在停止时间t=0.2时压力的数值解
+
+\subsection{Saltzman--Saltzman problem}
+\ \\
+
+[0,1]×[0,0.1]区间上100×10的网格，对网格作如下坐标变换
+\begin{equation}
+\left\{\begin{array}{l}
+x_{sk}=x+(0.1-y)*\sin(\pi*x),\\
+y_{sk}=y
+\end{array}\right.
+\end{equation}
+
+
+$\gamma=5/3$, $\rho^0=1$, $P^0=10^{-6}$, $\mathbf{U^0}=\mathbf{0}$, $t_{fin}=1$, $\Delta t=10^{-3}$, 左边界有方向向右大小为1的法向速度。
+
+高阶格式为线性的EUCCLHYD以及使用Ven斜率限制器。
+
+\textbf{plot：}
+
+rho\_Saltzman\_0.75 -- 在时间t=0.75时的网格和密度
+
+rho\_Saltzman\_0.95 -- 在时间t=0.95时的网格和密度
+
+rho\_Saltzman\_0.99 -- 在时间t=0.99时的网格和密度
+
+\end{document}
