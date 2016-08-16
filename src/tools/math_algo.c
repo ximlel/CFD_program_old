@@ -1,73 +1,103 @@
+/*!\file math_algo.c
+ * \brief  Some mathematical algorithm functions.
+ * \author Lei Xin
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 
-
-double rnd(double *r)//random number
-{
-    int m;
-    double s,u,v,p;
-    s=65536.0; u=2053.0; v=13849.0;
-    m=(int)(*r/s); *r=*r-m*s;
-    *r=u*(*r)+v; m=(int)(*r/s);
-    *r=*r-m*s; p=*r/s;
-    return(p);
-}
-
-
-int rinv(double a[], int n)//inverse of matrix
+/*!\brief A function to caculate the inverse of the input square matrix.
+ * \param a The pointer of the input square matrix.
+ * \param[in] n The order of the input square matrix.
+ */
+int rinv(double a[], int n)
 {
 	int *is,*js,i,j,k,l,u,v;
     double d,p;
     is=malloc(n*sizeof(int));
     js=malloc(n*sizeof(int));
     for (k=0; k<=n-1; k++)
-		{ d=0.0;
+		{
+			d=0.0;
 			for (i=k; i<=n-1; i++)
 				for (j=k; j<=n-1; j++)
-					{ l=i*n+j; p=fabs(a[l]);
-						if (p>d) { d=p; is[k]=i; js[k]=j;}
+					{
+						l=i*n+j;
+						p=fabs(a[l]);
+						if (p>d)
+							{
+								d=p;
+								is[k]=i;
+								js[k]=j;
+							}
 					}
 			if (d+1.0==1.0)
-				{ free(is); free(js); printf("err**not inv\n");
+				{
+					free(is);
+					free(js);
+					printf("err**not inv\n");
 					return(0);
 				}
 			if (is[k]!=k)
 				for (j=0; j<=n-1; j++)
-					{ u=k*n+j; v=is[k]*n+j;
-						p=a[u]; a[u]=a[v]; a[v]=p;
+					{
+						u=k*n+j;
+						v=is[k]*n+j;
+						p=a[u];
+						a[u]=a[v];
+						a[v]=p;
 					}
 			if (js[k]!=k)
 				for (i=0; i<=n-1; i++)
-					{ u=i*n+k; v=i*n+js[k];
-						p=a[u]; a[u]=a[v]; a[v]=p;
+					{
+						u=i*n+k;
+						v=i*n+js[k];
+						p=a[u];
+						a[u]=a[v];
+						a[v]=p;
 					}
 			l=k*n+k;
 			a[l]=1.0/a[l];
 			for (j=0; j<=n-1; j++)
 				if (j!=k)
-					{ u=k*n+j; a[u]=a[u]*a[l];}
+					{
+						u=k*n+j;
+						a[u]=a[u]*a[l];
+					}
 			for (i=0; i<=n-1; i++)
 				if (i!=k)
 					for (j=0; j<=n-1; j++)
 						if (j!=k)
-							{ u=i*n+j;
+							{
+								u=i*n+j;
 								a[u]=a[u]-a[i*n+k]*a[k*n+j];
 							}
 			for (i=0; i<=n-1; i++)
 				if (i!=k)
-					{ u=i*n+k; a[u]=-a[u]*a[l];}
+					{
+						u=i*n+k;
+						a[u]=-a[u]*a[l];
+					}
 		}
     for (k=n-1; k>=0; k--)
 		{ if (js[k]!=k)
 				for (j=0; j<=n-1; j++)
-					{ u=k*n+j; v=js[k]*n+j;
-						p=a[u]; a[u]=a[v]; a[v]=p;
+					{
+						u=k*n+j;
+						v=js[k]*n+j;
+						p=a[u];
+						a[u]=a[v];
+						a[v]=p;
 					}
 			if (is[k]!=k)
 				for (i=0; i<=n-1; i++)
-					{ u=i*n+k; v=i*n+is[k];
-						p=a[u]; a[u]=a[v]; a[v]=p;
+					{
+						u=i*n+k;
+						v=i*n+is[k];
+						p=a[u];
+						a[u]=a[v];
+						a[v]=p;
 					}
 		}
     free(is); free(js);
@@ -77,7 +107,6 @@ int rinv(double a[], int n)//inverse of matrix
 
 void Gauss_elimination(int n, double (*a)[n+1], double *x)
 { 
-
 	int i,j,k;
 	double temp,s,l;
 
@@ -89,8 +118,7 @@ void Gauss_elimination(int n, double (*a)[n+1], double *x)
 				{
 					if(fabs(a[j][i])>fabs(a[k][i]))
 						k=j;
-				}
-			
+				}			
 			//line feed   
 			if(k!=i)
 				for(j=i;j<=n;j++)
@@ -99,7 +127,6 @@ void Gauss_elimination(int n, double (*a)[n+1], double *x)
 						a[i][j]=a[k][j];
 						a[k][j]=temp;
 					}
-			
 			//elimination
 			for(j=i+1;j<n;j++)
 				{ 
@@ -123,16 +150,20 @@ void Gauss_elimination(int n, double (*a)[n+1], double *x)
 		}
 }
 
-
-double miu_BJ(double x) //Barth_Jespersen limiter
+/*!\brief  \f$\mu\f$ of Barth Jesperse limiter.
+ * \param[in] x Variable \f$x\f$ in \f$\mu(x)\f$
+ * \return Value of \f$\mu(x)\f$
+ */
+inline double mu_BJ(double x)
 {
-	if(x<1)
-		return x;
-	else
-		return 1;		
+	return x<1?x:1;
 }
 
-double miu_Ven(double x) //Venkatakrishnan limiter
+/*!\brief  \f$\mu\f$ of Venkatakrishnan limiter.
+ * \param[in] x Variable \f$x\f$ in \f$\mu(x)\f$
+ * \return Value of \f$\mu(x)\f$
+ */
+inline double mu_Ven(double x)
 {
 	return (x*x+2*x)/(x*x+x+2);
 }

@@ -11,3 +11,6 @@ exit	5 memory
 m=config[13];
 n=config[14];
 NUM_CELL=config[3];
+
+
+TEC-->paraview 3D

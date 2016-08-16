@@ -27,7 +27,7 @@ int file_read(FILE * fp, double * U, int num);
 /* this function counts how many numbers are there
  * the initial data file.
  */
-int file_pre_read(FILE * fp);
+int file_pre_read(FILE * fp, int test_rc);
 
 
 

@@ -1,0 +1,109 @@
+\hypertarget{math__algo_8c}{}\section{src/tools/math\+\_\+algo.c File Reference}
+\label{math__algo_8c}\index{src/tools/math\+\_\+algo.\+c@{src/tools/math\+\_\+algo.\+c}}
+
+
+Some mathematical algorithm functions.  
+
+
+{\ttfamily \#include $<$stdio.\+h$>$}\\*
+{\ttfamily \#include $<$stdlib.\+h$>$}\\*
+{\ttfamily \#include $<$math.\+h$>$}\\*
+Include dependency graph for math\+\_\+algo.\+c\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=258pt]{math__algo_8c__incl}
+\end{center}
+\end{figure}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+int \hyperlink{math__algo_8c_a4cb3ca792b7a1da54be98720d357662c}{rinv} (double a\mbox{[}$\,$\mbox{]}, int n)
+\begin{DoxyCompactList}\small\item\em A function to caculate the inverse of the input square matrix. \end{DoxyCompactList}\item 
+void {\bfseries Gauss\+\_\+elimination} (int n, double($\ast$a)\mbox{[}n+1\mbox{]}, double $\ast$x)\hypertarget{math__algo_8c_a91f9b179f1a1b65f2037fe973bb68b17}{}\label{math__algo_8c_a91f9b179f1a1b65f2037fe973bb68b17}
+
+\item 
+double \hyperlink{math__algo_8c_a6039518f6dde52eaaf2950e7823a9f87}{mu\+\_\+\+BJ} (double x)
+\begin{DoxyCompactList}\small\item\em $\mu$ of Barth Jesperse limiter. \end{DoxyCompactList}\item 
+double \hyperlink{math__algo_8c_aa2cb699d7e58a899296068e1d9fc1ab2}{mu\+\_\+\+Ven} (double x)
+\begin{DoxyCompactList}\small\item\em $\mu$ of Venkatakrishnan limiter. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Some mathematical algorithm functions. 
+
+\begin{DoxyAuthor}{Author}
+Lei Xin 
+\end{DoxyAuthor}
+
+
+\subsection{Function Documentation}
+\index{math\+\_\+algo.\+c@{math\+\_\+algo.\+c}!mu\+\_\+\+BJ@{mu\+\_\+\+BJ}}
+\index{mu\+\_\+\+BJ@{mu\+\_\+\+BJ}!math\+\_\+algo.\+c@{math\+\_\+algo.\+c}}
+\subsubsection[{\texorpdfstring{mu\+\_\+\+B\+J(double x)}{mu_BJ(double x)}}]{\setlength{\rightskip}{0pt plus 5cm}double mu\+\_\+\+BJ (
+\begin{DoxyParamCaption}
+\item[{double}]{x}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{math__algo_8c_a6039518f6dde52eaaf2950e7823a9f87}{}\label{math__algo_8c_a6039518f6dde52eaaf2950e7823a9f87}
+
+
+$\mu$ of Barth Jesperse limiter. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em x} & Variable $x$ in $\mu(x)$ \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Value of $\mu(x)$ 
+\end{DoxyReturn}
+
+
+Definition at line 157 of file math\+\_\+algo.\+c.
+
+\index{math\+\_\+algo.\+c@{math\+\_\+algo.\+c}!mu\+\_\+\+Ven@{mu\+\_\+\+Ven}}
+\index{mu\+\_\+\+Ven@{mu\+\_\+\+Ven}!math\+\_\+algo.\+c@{math\+\_\+algo.\+c}}
+\subsubsection[{\texorpdfstring{mu\+\_\+\+Ven(double x)}{mu_Ven(double x)}}]{\setlength{\rightskip}{0pt plus 5cm}double mu\+\_\+\+Ven (
+\begin{DoxyParamCaption}
+\item[{double}]{x}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{math__algo_8c_aa2cb699d7e58a899296068e1d9fc1ab2}{}\label{math__algo_8c_aa2cb699d7e58a899296068e1d9fc1ab2}
+
+
+$\mu$ of Venkatakrishnan limiter. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em x} & Variable $x$ in $\mu(x)$ \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Value of $\mu(x)$ 
+\end{DoxyReturn}
+
+
+Definition at line 166 of file math\+\_\+algo.\+c.
+
+\index{math\+\_\+algo.\+c@{math\+\_\+algo.\+c}!rinv@{rinv}}
+\index{rinv@{rinv}!math\+\_\+algo.\+c@{math\+\_\+algo.\+c}}
+\subsubsection[{\texorpdfstring{rinv(double a[], int n)}{rinv(double a[], int n)}}]{\setlength{\rightskip}{0pt plus 5cm}int rinv (
+\begin{DoxyParamCaption}
+\item[{double}]{a\mbox{[}$\,$\mbox{]}, }
+\item[{int}]{n}
+\end{DoxyParamCaption}
+)}\hypertarget{math__algo_8c_a4cb3ca792b7a1da54be98720d357662c}{}\label{math__algo_8c_a4cb3ca792b7a1da54be98720d357662c}
+
+
+A function to caculate the inverse of the input square matrix. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+ & {\em a} & The pointer of the input square matrix. \\
+\hline
+\mbox{\tt in}  & {\em n} & The order of the input square matrix. \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 14 of file math\+\_\+algo.\+c.
+

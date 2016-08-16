@@ -1,6 +1,6 @@
 CC = gcc
 #C compiler
-CFLAGS += -c -o
+CFLAGS = -c -o
 #C compiler options
 LIBS = -lm
 RM = rm -vf

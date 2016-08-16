@@ -1,48 +1,73 @@
+/*!\file file_in.c
+ * \author Du Zhifang, Lei Xin
+ * \brief This file is a collection of functions used to read files
+ and check whether they are qualified. 
+ */
+
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <math.h>
 
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <dirent.h>
 
-#include "../file_io.h"
+#include "../include/file_io.h"
 
 
 extern double config[200];
 
 
-
-/* this function counts how many numbers are there
- * in the initial data file.
+/*!\brief This function counts how many numbers are there in the initial data file. 
+ * \author Du Zhifang, Lei Xin
+ * \param[in] fp The pointer of the file to read in.
+ * \param[in] test_lc Whether there is test for the range of data in the initial data file:
+ * - 0 or 1 : no test,
+ * - 2 : 2-D test (CR separates row),
+ * - 3 : 3-D test (CR separates row, blank line separates column in x-y plane).
+ * \return The number of the numbers in the initial data file.  
+ * \retval -1 The given number of column is not coincided with that in the data file.
+ * \retval 
  */
-int file_pre_read(FILE * fp, int LC)
+int file_pre_read(FILE * fp, int test_rc)
 {
 	int num = 0;
-	/* We need to know how many numbers are there in
-	 * the initial data. "flag" helps us to count.
-	 * We read characters one by one from the data
-	 * file. The value of "flag" is 1 when read a
-	 * number-using character (i.e. 0, 1, 2, and so
-	 * on and the dot), while is 0 when read a 
-	 * non-number-using character. 
+	
+	/* \brief It helps us to count.
+	 *
+	 * We read characters one by one from the data file.
+	 * The value of "flag" is:
+	 * - 1: when we read a number-using character (0, 1, 2, ..., e, E, minus sign and the dot).
+	 * - 0: when we read a non-number-using character.
 	 */
 	int flag = 0;
+
+	int row_count;
+	int colun_count;
 
 	char ch;
 
 	while((ch = getc(fp)) != EOF)
-		{
-			/* When RHO, U, P or ... is read, 
-			 * if the given number of column is
-			 * not coincided with that in the data file,
-			 * return -1(which means error).
-			 */
-			if(LC&&(ch == '\n')&&(!isinf(config[13]))&&(!isinf(config[14]))&&(num%(int)config[13]!=0))
-					return -1;
-
+		{		   
+			if(test_rc&&(ch == '\n')&&(!isinf(config[13]))&&(!isinf(config[14])))
+				{
+					if(num%(int)config[13]==0)
+						{
+							if(num/(int)config[13]==row_count||num/(int)config[13]==row_count+1)
+								row_count = num/(int)config[13];
+							else
+								{
+									printf("Row test is failed.\n");
+									exit(1);
+								}
+						}
+					else
+						{
+							printf("Row test is failed.\n");
+							exit(1);
+						}
+				}
 			
 			if(((ch == ' ') || (ch == '\t') || (ch == '\n')) && (flag))
 				{
