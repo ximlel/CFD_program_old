@@ -1,0 +1,84 @@
+\hypertarget{file__out_8c}{}\section{src/file\+\_\+io/file\+\_\+out.c File Reference}
+\label{file__out_8c}\index{src/file\+\_\+io/file\+\_\+out.\+c@{src/file\+\_\+io/file\+\_\+out.\+c}}
+{\ttfamily \#include $<$string.\+h$>$}\\*
+{\ttfamily \#include $<$stdio.\+h$>$}\\*
+{\ttfamily \#include $<$stdlib.\+h$>$}\\*
+{\ttfamily \#include $<$math.\+h$>$}\\*
+{\ttfamily \#include $<$time.\+h$>$}\\*
+{\ttfamily \#include $<$sys/types.\+h$>$}\\*
+{\ttfamily \#include $<$sys/stat.\+h$>$}\\*
+{\ttfamily \#include $<$dirent.\+h$>$}\\*
+{\ttfamily \#include \char`\"{}../file\+\_\+io.\+h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}../tools.\+h\char`\"{}}\\*
+Include dependency graph for file\+\_\+out.\+c\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{file__out_8c__incl}
+\end{center}
+\end{figure}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{file__out_8c_a8cc14f305fadfc4e2f6c028937243c9b}{\+\_\+1\+D\+\_\+file\+\_\+write\+\_\+\+T\+EC} (int m, int N, double $\ast$\hyperlink{file__out_8c_a60adfcb91199d9957fc2a388d97743cc}{R\+HO}\mbox{[}$\,$\mbox{]}, double $\ast$\hyperlink{file__out_8c_aa4eca6bbf61516707d8c0fb8cae547bb}{U}\mbox{[}$\,$\mbox{]}, double $\ast$\hyperlink{file__out_8c_aa3d96144cd3ae7dbbc31710932fbf845}{P}\mbox{[}$\,$\mbox{]}, double $\ast$X, double $\ast$cpu\+\_\+time, double $\ast$\hyperlink{file__out_8c_a6d077a61a7265ffdaed10089930f4926}{config}, char $\ast$example, char $\ast$problem)
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+double $\ast$ \hyperlink{file__out_8c_a60adfcb91199d9957fc2a388d97743cc}{R\+HO}
+\item 
+double $\ast$ \hyperlink{file__out_8c_aa4eca6bbf61516707d8c0fb8cae547bb}{U}
+\item 
+double $\ast$ \hyperlink{file__out_8c_aa3d96144cd3ae7dbbc31710932fbf845}{P}
+\item 
+double $\ast$ \hyperlink{file__out_8c_ac2961263bd9c86f683fee9eb17d3dffe}{V}
+\item 
+double $\ast$ \hyperlink{file__out_8c_a2dbb1cf6f46f0b7f077c610cfe634a6a}{P\+HI}
+\item 
+double \hyperlink{file__out_8c_a6d077a61a7265ffdaed10089930f4926}{config} \mbox{[}200\mbox{]}
+\end{DoxyCompactItemize}
+
+
+\subsection{Function Documentation}
+\index{file\+\_\+out.\+c@{file\+\_\+out.\+c}!\+\_\+1\+D\+\_\+file\+\_\+write\+\_\+\+T\+EC@{\+\_\+1\+D\+\_\+file\+\_\+write\+\_\+\+T\+EC}}
+\index{\+\_\+1\+D\+\_\+file\+\_\+write\+\_\+\+T\+EC@{\+\_\+1\+D\+\_\+file\+\_\+write\+\_\+\+T\+EC}!file\+\_\+out.\+c@{file\+\_\+out.\+c}}
+\subsubsection[{\texorpdfstring{\+\_\+1\+D\+\_\+file\+\_\+write\+\_\+\+T\+E\+C(int m, int N, double $\ast$\+R\+HO[], double $\ast$U[], double $\ast$P[], double $\ast$\+X, double $\ast$cpu\+\_\+time, double $\ast$config, char $\ast$example, char $\ast$problem)}{_1D_file_write_TEC(int m, int N, double *RHO[], double *U[], double *P[], double *X, double *cpu_time, double *config, char *example, char *problem)}}]{\setlength{\rightskip}{0pt plus 5cm}void \+\_\+1\+D\+\_\+file\+\_\+write\+\_\+\+T\+EC (
+\begin{DoxyParamCaption}
+\item[{int}]{m, }
+\item[{int}]{N, }
+\item[{double $\ast$}]{R\+HO\mbox{[}$\,$\mbox{]}, }
+\item[{double $\ast$}]{U\mbox{[}$\,$\mbox{]}, }
+\item[{double $\ast$}]{P\mbox{[}$\,$\mbox{]}, }
+\item[{double $\ast$}]{X, }
+\item[{double $\ast$}]{cpu\+\_\+time, }
+\item[{double $\ast$}]{config, }
+\item[{char $\ast$}]{example, }
+\item[{char $\ast$}]{problem}
+\end{DoxyParamCaption}
+)}\hypertarget{file__out_8c_a8cc14f305fadfc4e2f6c028937243c9b}{}\label{file__out_8c_a8cc14f305fadfc4e2f6c028937243c9b}
+
+
+Definition at line 32 of file file\+\_\+out.\+c.
+
+
+
+\subsection{Variable Documentation}
+\index{file\+\_\+out.\+c@{file\+\_\+out.\+c}!config@{config}}
+\index{config@{config}!file\+\_\+out.\+c@{file\+\_\+out.\+c}}
+\subsubsection[{\texorpdfstring{config}{config}}]{\setlength{\rightskip}{0pt plus 5cm}double config\mbox{[}200\mbox{]}}\hypertarget{file__out_8c_a6d077a61a7265ffdaed10089930f4926}{}\label{file__out_8c_a6d077a61a7265ffdaed10089930f4926}
+\index{file\+\_\+out.\+c@{file\+\_\+out.\+c}!P@{P}}
+\index{P@{P}!file\+\_\+out.\+c@{file\+\_\+out.\+c}}
+\subsubsection[{\texorpdfstring{P}{P}}]{\setlength{\rightskip}{0pt plus 5cm}double$\ast$ P}\hypertarget{file__out_8c_aa3d96144cd3ae7dbbc31710932fbf845}{}\label{file__out_8c_aa3d96144cd3ae7dbbc31710932fbf845}
+\index{file\+\_\+out.\+c@{file\+\_\+out.\+c}!P\+HI@{P\+HI}}
+\index{P\+HI@{P\+HI}!file\+\_\+out.\+c@{file\+\_\+out.\+c}}
+\subsubsection[{\texorpdfstring{P\+HI}{PHI}}]{\setlength{\rightskip}{0pt plus 5cm}double$\ast$ P\+HI}\hypertarget{file__out_8c_a2dbb1cf6f46f0b7f077c610cfe634a6a}{}\label{file__out_8c_a2dbb1cf6f46f0b7f077c610cfe634a6a}
+\index{file\+\_\+out.\+c@{file\+\_\+out.\+c}!R\+HO@{R\+HO}}
+\index{R\+HO@{R\+HO}!file\+\_\+out.\+c@{file\+\_\+out.\+c}}
+\subsubsection[{\texorpdfstring{R\+HO}{RHO}}]{\setlength{\rightskip}{0pt plus 5cm}double$\ast$ R\+HO}\hypertarget{file__out_8c_a60adfcb91199d9957fc2a388d97743cc}{}\label{file__out_8c_a60adfcb91199d9957fc2a388d97743cc}
+\index{file\+\_\+out.\+c@{file\+\_\+out.\+c}!U@{U}}
+\index{U@{U}!file\+\_\+out.\+c@{file\+\_\+out.\+c}}
+\subsubsection[{\texorpdfstring{U}{U}}]{\setlength{\rightskip}{0pt plus 5cm}double$\ast$ U}\hypertarget{file__out_8c_aa4eca6bbf61516707d8c0fb8cae547bb}{}\label{file__out_8c_aa4eca6bbf61516707d8c0fb8cae547bb}
+\index{file\+\_\+out.\+c@{file\+\_\+out.\+c}!V@{V}}
+\index{V@{V}!file\+\_\+out.\+c@{file\+\_\+out.\+c}}
+\subsubsection[{\texorpdfstring{V}{V}}]{\setlength{\rightskip}{0pt plus 5cm}double$\ast$ V}\hypertarget{file__out_8c_ac2961263bd9c86f683fee9eb17d3dffe}{}\label{file__out_8c_ac2961263bd9c86f683fee9eb17d3dffe}

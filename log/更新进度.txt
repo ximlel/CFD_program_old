@@ -2,11 +2,10 @@ initialize memory double * = NULL
 
 
 
-exit	5 memory
-	1 file/dic
-	2 读入错误
-	3 unequal
-
+exit
+	1 文件目录错误
+	2 读入数据错误
+	5 内存错误
 
 m=config[13];
 n=config[14];

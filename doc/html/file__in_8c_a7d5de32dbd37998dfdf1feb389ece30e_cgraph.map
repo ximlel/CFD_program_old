@@ -1,0 +1,7 @@
+<map id="configurate" name="configurate">
+<area shape="rect" id="node2" href="$file__in_8c.html#a9ad5d79a041eb3c4200a6e74635a4d77" title="This function counts how many numbers are there in the initial data file. " alt="" coords="141,5,237,32"/>
+<area shape="rect" id="node3" href="$common_8c.html#aefc614a80b24bb346ce5a012d994eeb6" title="file_read" alt="" coords="154,56,225,83"/>
+<area shape="rect" id="node6" href="$file__in_8c.html#a7cb5921c79aced1abe4d03ff43980d74" title="config_check" alt="" coords="140,107,239,133"/>
+<area shape="rect" id="node4" href="$common_8c.html#a1761e6f9e776417c6974c4641c6e29fb" title="format_string" alt="" coords="287,31,385,57"/>
+<area shape="rect" id="node5" href="$common_8c.html#a7cd3d2bf6849ccbee8cdd30c57e7a540" title="str2num" alt="" coords="301,81,371,108"/>
+</map>

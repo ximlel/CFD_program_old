@@ -9,9 +9,11 @@ This file is a collection of functions used to read files and check whether they
 {\ttfamily \#include $<$stdio.\+h$>$}\\*
 {\ttfamily \#include $<$stdlib.\+h$>$}\\*
 {\ttfamily \#include $<$math.\+h$>$}\\*
+{\ttfamily \#include $<$stdbool.\+h$>$}\\*
 {\ttfamily \#include $<$sys/types.\+h$>$}\\*
 {\ttfamily \#include $<$sys/stat.\+h$>$}\\*
 {\ttfamily \#include $<$dirent.\+h$>$}\\*
+{\ttfamily \#include \char`\"{}../include/var\+\_\+struc.\+h\char`\"{}}\\*
 {\ttfamily \#include \char`\"{}../include/file\+\_\+io.\+h\char`\"{}}\\*
 Include dependency graph for file\+\_\+in.\+c\+:\nopagebreak
 \begin{figure}[H]
@@ -23,8 +25,6 @@ Include dependency graph for file\+\_\+in.\+c\+:\nopagebreak
 \subsection*{Functions}
 \begin{DoxyCompactItemize}
 \item 
-int \hyperlink{file__in_8c_a99d4ed7b7cfd80a93fa861bd7d29e5cf}{file\+\_\+pre\+\_\+read} (F\+I\+LE $\ast$fp, int test\+\_\+lc)
-\begin{DoxyCompactList}\small\item\em This function counts how many numbers are there in the initial data file. \end{DoxyCompactList}\item 
 void {\bfseries initialize} (char $\ast$add, double $\ast$F)\hypertarget{file__in_8c_acb162616ea6c692468acaa3fe2ec79b2}{}\label{file__in_8c_acb162616ea6c692468acaa3fe2ec79b2}
 
 \item 
@@ -32,12 +32,6 @@ void {\bfseries configurate} (char $\ast$add)\hypertarget{file__in_8c_a7d5de32db
 
 \item 
 int {\bfseries config\+\_\+check} (void)\hypertarget{file__in_8c_a7cb5921c79aced1abe4d03ff43980d74}{}\label{file__in_8c_a7cb5921c79aced1abe4d03ff43980d74}
-
-\end{DoxyCompactItemize}
-\subsection*{Variables}
-\begin{DoxyCompactItemize}
-\item 
-double {\bfseries config} \mbox{[}200\mbox{]}\hypertarget{file__in_8c_a6d077a61a7265ffdaed10089930f4926}{}\label{file__in_8c_a6d077a61a7265ffdaed10089930f4926}
 
 \end{DoxyCompactItemize}
 
@@ -48,45 +42,3 @@ This file is a collection of functions used to read files and check whether they
 \begin{DoxyAuthor}{Author}
 Du Zhifang, Lei Xin 
 \end{DoxyAuthor}
-
-
-\subsection{Function Documentation}
-\index{file\+\_\+in.\+c@{file\+\_\+in.\+c}!file\+\_\+pre\+\_\+read@{file\+\_\+pre\+\_\+read}}
-\index{file\+\_\+pre\+\_\+read@{file\+\_\+pre\+\_\+read}!file\+\_\+in.\+c@{file\+\_\+in.\+c}}
-\subsubsection[{\texorpdfstring{file\+\_\+pre\+\_\+read(\+F\+I\+L\+E $\ast$fp, int test\+\_\+lc)}{file_pre_read(FILE *fp, int test_lc)}}]{\setlength{\rightskip}{0pt plus 5cm}int file\+\_\+pre\+\_\+read (
-\begin{DoxyParamCaption}
-\item[{F\+I\+LE $\ast$}]{fp, }
-\item[{int}]{test\+\_\+lc}
-\end{DoxyParamCaption}
-)}\hypertarget{file__in_8c_a99d4ed7b7cfd80a93fa861bd7d29e5cf}{}\label{file__in_8c_a99d4ed7b7cfd80a93fa861bd7d29e5cf}
-
-
-This function counts how many numbers are there in the initial data file. 
-
-\begin{DoxyAuthor}{Author}
-Du Zhifang, Lei Xin 
-\end{DoxyAuthor}
-
-\begin{DoxyParams}[1]{Parameters}
-\mbox{\tt in}  & {\em fp} & The pointer of the file to read in. \\
-\hline
-\mbox{\tt in}  & {\em test\+\_\+lc} & Whether there is test for the range of data in the initial data file\+:
-\begin{DoxyItemize}
-\item 0 or 1 \+: no test,
-\item 2 \+: 2-\/D test (CR separates row),
-\item 3 \+: 3-\/D test (CR separates row, blank line separates column in x-\/y plane). 
-\end{DoxyItemize}\\
-\hline
-\end{DoxyParams}
-\begin{DoxyReturn}{Returns}
-The number of the numbers in the initial data file. 
-\end{DoxyReturn}
-
-\begin{DoxyRetVals}{Return values}
-{\em -\/1} & The given number of column is not coincided with that in the data file. \\
-\hline
-\end{DoxyRetVals}
-
-
-Definition at line 33 of file file\+\_\+in.\+c.
-

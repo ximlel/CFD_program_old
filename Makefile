@@ -1,6 +1,6 @@
 CC = gcc
 #C compiler
-CFLAGS = -c -o
+CFLAGS = -std=c99 -o
 #C compiler options
 LIBS = -lm
 RM = rm -vf
@@ -15,15 +15,14 @@ SOURCE = hydrocode
 
 all : modules
 	@echo "**********Generate executable file***********"
-	$(CC) $(CFLAGS) $(SRC)/$(SOURCE).o $(SRC)/$(SOURCE).c
-	$(CC) -o $(SRC)/$(SOURCE).out $(SRC)/$(SOURCE).o $(addsuffix /*.a,$(addprefix $(SRC)/,$(HEAD))) $(LIBS)
+	$(CC) $(CFLAGS) $(SRC)/$(SOURCE).out $(SRC)/$(SOURCE).c $(addsuffix /*.a,$(addprefix $(SRC)/,$(HEAD))) $(LIBS)
 .PHONYP:all
 
 modules:
 #Enter each subdirectory
 #Call the Makefile in the subdirectory
 	@for n in $(HEAD); do \
-	( make -f Makefile.sub --directory=$(SRC)/$$n )  \
+	( make -f Makefile_sub --directory=$(SRC)/$$n )  \
 	done;
 .PHONYP:modules
 
@@ -31,6 +30,6 @@ clean:
 #Clean in the subdirectory
 	@$(RM) $(SRC)/$(SOURCE).o
 	@for n in $(HEAD); do \
-	( make -f Makefile.sub --directory=$(SRC)/$$n clean ) \
+	( make -f Makefile_sub --directory=$(SRC)/$$n clean ) \
 	done;
 .PHONYP:clean

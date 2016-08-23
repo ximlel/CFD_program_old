@@ -1,3 +1,6 @@
+#ifndef Riemann_solver_H
+#define Riemann_solver_H
+
 void ROE_solver(double *F, double gamma, double P_L, double RHO_L, double U_L, double V_L,double n_x, double n_y, double P_R, double RHO_R, double U_R,double V_R,double *lambda_max, double delta);
 
 void HLL_solver(double *F, double gamma, double P_L, double RHO_L, double U_L, double V_L,double n_x, double n_y, double P_R, double RHO_R, double U_R,double V_R,double *lambda_max);
@@ -19,3 +22,5 @@ void GLACE_dt(double (* M_pc)[2], double gamma, double P, double RHO, double l_p
 void EUCCLHYD_iteration(double (* M_pc)[2], double gamma, double P, double RHO, double posi_l_pc, double posi_n_pc_x, double posi_n_pc_y, double nega_l_pc, double nega_n_pc_x, double nega_n_pc_y, double U, double V, double U_p_x, double U_p_y);
 
 void EUCCLHYD_dt_iteration(double (* M_pc)[2], double gamma, double P, double RHO, double posi_l_pc, double posi_n_pc_x, double posi_n_pc_y, double nega_l_pc, double nega_n_pc_x, double nega_n_pc_y, double dt_posi_l_n_pc_x, double dt_posi_l_n_pc_y, double dt_posi_n_pc_x, double dt_posi_n_pc_y, double dt_nega_l_n_pc_x, double dt_nega_l_n_pc_y, double dt_nega_n_pc_x, double dt_nega_n_pc_y);
+
+#endif

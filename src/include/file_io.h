@@ -1,3 +1,4 @@
+
 //extern double * U0;
 
 double str2num(const char * number);
@@ -23,12 +24,18 @@ int file_read(FILE * fp, double * U, int num);
 
 
 
-
-/* this function counts how many numbers are there
- * the initial data file.
+/*!\brief This function counts how many numbers are there in the initial data file. 
+ * \author Du Zhifang, Lei Xin
+ * \param[in] fp The pointer of the file to read in.
+ * \param[in] test_lc Whether there is test for the range of data in the initial data file:
+ * - 0 or 1 : no test,
+ * - 2 : 2-D test (CR separates row),
+ * - 3 : 3-D test (CR separates row, blank line separates column in x-y plane).
+ * \return The number of the numbers in the initial data file.  
+ * \retval -1 The given number of column is not coincided with that in the data file.
+ * \retval 
  */
-int file_pre_read(FILE * fp, int test_rc);
-
+static int file_pre_read(FILE * fp, char * file_add, _Bool rc);
 
 
 /* This function reads the initial data file. The function 

@@ -21,11 +21,6 @@
 
 /*The global primitive variable and configuration array.
  */
-double * RHO = NULL;
-double * U = NULL;
-double * P = NULL;
-double * V = NULL;
-double * PHI = NULL;
 
 double config[200] = {1.0/0.0};
 

@@ -17,19 +17,12 @@
           <UL>
           <LI><OBJECT type="text/sitemap"><param name="Name" value="config_check"><param name="Local" value="file__in_8c.html#a7cb5921c79aced1abe4d03ff43980d74"><param name="ImageNumber" value="11"></OBJECT>
           <LI><OBJECT type="text/sitemap"><param name="Name" value="configurate"><param name="Local" value="file__in_8c.html#a7d5de32dbd37998dfdf1feb389ece30e"><param name="ImageNumber" value="11"></OBJECT>
-          <LI><OBJECT type="text/sitemap"><param name="Name" value="file_pre_read"><param name="Local" value="file__in_8c.html#a99d4ed7b7cfd80a93fa861bd7d29e5cf"><param name="ImageNumber" value="11"></OBJECT>
           <LI><OBJECT type="text/sitemap"><param name="Name" value="initialize"><param name="Local" value="file__in_8c.html#acb162616ea6c692468acaa3fe2ec79b2"><param name="ImageNumber" value="11"></OBJECT>
-          <LI><OBJECT type="text/sitemap"><param name="Name" value="config"><param name="Local" value="file__in_8c.html#a6d077a61a7265ffdaed10089930f4926"><param name="ImageNumber" value="11"></OBJECT>
           </UL>
         <LI><OBJECT type="text/sitemap"><param name="Name" value="file_ooooooo.c"><param name="Local" value="file__ooooooo_8c_source.html"><param name="ImageNumber" value="11"></OBJECT>
         <LI><OBJECT type="text/sitemap"><param name="Name" value="file_out.c"><param name="Local" value="file__out_8c_source.html"><param name="ImageNumber" value="11"></OBJECT>
         </UL>
       </UL>
-    </UL>
-  <LI><OBJECT type="text/sitemap"><param name="Name" value="Globals"><param name="Local" value="globals.html"><param name="ImageNumber" value="11"></OBJECT>
-    <UL>
-    <LI><OBJECT type="text/sitemap"><param name="Name" value="All"><param name="Local" value="globals.html"><param name="ImageNumber" value="11"></OBJECT>
-    <LI><OBJECT type="text/sitemap"><param name="Name" value="Functions"><param name="Local" value="globals_func.html"><param name="ImageNumber" value="11"></OBJECT>
     </UL>
   </UL>
 </UL>

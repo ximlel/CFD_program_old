@@ -10,8 +10,8 @@ int Cylinder_mesh
 	int num_boundary;
 	int i, k;
 	num_boundary = 2*m+2*n;
-	BOUNDARY_POINT[0] = (int *)malloc(num_boundary * sizeof(int));
-	BOUNDARY_POINT[1] = (int *)malloc(num_boundary * sizeof(int));
+	BOUNDARY_POINT[0] = malloc(num_boundary * sizeof(int));
+	BOUNDARY_POINT[1] = malloc(num_boundary * sizeof(int));
 	if((BOUNDARY_POINT[0] == NULL)|(BOUNDARY_POINT[1] == NULL))
 				{
 					printf("NOT enough memory! BOUNDARY_POINT\n");

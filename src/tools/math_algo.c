@@ -1,16 +1,8 @@
-/*!\file math_algo.c
- * \brief  Some mathematical algorithm functions.
- * \author Lei Xin
- */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 
-/*!\brief A function to caculate the inverse of the input square matrix.
- * \param a The pointer of the input square matrix.
- * \param[in] n The order of the input square matrix.
- */
+
 int rinv(double a[], int n)
 {
 	int *is,*js,i,j,k,l,u,v;
@@ -81,7 +73,8 @@ int rinv(double a[], int n)
 					}
 		}
     for (k=n-1; k>=0; k--)
-		{ if (js[k]!=k)
+		{
+			if (js[k]!=k)
 				for (j=0; j<=n-1; j++)
 					{
 						u=k*n+j;
@@ -103,7 +96,6 @@ int rinv(double a[], int n)
     free(is); free(js);
     return(1);
 }
-
 
 void Gauss_elimination(int n, double (*a)[n+1], double *x)
 { 
@@ -150,20 +142,12 @@ void Gauss_elimination(int n, double (*a)[n+1], double *x)
 		}
 }
 
-/*!\brief  \f$\mu\f$ of Barth Jesperse limiter.
- * \param[in] x Variable \f$x\f$ in \f$\mu(x)\f$
- * \return Value of \f$\mu(x)\f$
- */
 inline double mu_BJ(double x)
 {
-	return x<1?x:1;
+	return (x<1?x:1);
 }
 
-/*!\brief  \f$\mu\f$ of Venkatakrishnan limiter.
- * \param[in] x Variable \f$x\f$ in \f$\mu(x)\f$
- * \return Value of \f$\mu(x)\f$
- */
 inline double mu_Ven(double x)
 {
-	return (x*x+2*x)/(x*x+x+2);
+	return ((x*x+2*x)/(x*x+x+2));
 }

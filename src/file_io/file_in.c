@@ -8,82 +8,77 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <ctype.h>
+#include <stdbool.h>
 
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <dirent.h>
 
+#include "../include/var_struc.h"
 #include "../include/file_io.h"
 
 
-extern double config[200];
+#ifndef N_CONF
+#define N_CONF 400 
+#endif
 
 
-/*!\brief This function counts how many numbers are there in the initial data file. 
- * \author Du Zhifang, Lei Xin
- * \param[in] fp The pointer of the file to read in.
- * \param[in] test_lc Whether there is test for the range of data in the initial data file:
- * - 0 or 1 : no test,
- * - 2 : 2-D test (CR separates row),
- * - 3 : 3-D test (CR separates row, blank line separates column in x-y plane).
- * \return The number of the numbers in the initial data file.  
- * \retval -1 The given number of column is not coincided with that in the data file.
- * \retval 
- */
-int file_pre_read(FILE * fp, int test_rc)
+
+static int file_pre_read(FILE * fp, char * add, _Bool rc)
 {
+	double n_x = config[13], n_y = config[14], n_z = config[15];
+
+	
 	int num = 0;
 	
-	/* \brief It helps us to count.
+	/* "flag" helps us to count.
 	 *
-	 * We read characters one by one from the data file.
-	 * The value of "flag" is:
-	 * - 1: when we read a number-using character (0, 1, 2, ..., e, E, minus sign and the dot).
-	 * - 0: when we read a non-number-using character.
+	 * - flase: when we read a number-using character (0, 1, 2, ..., e, E, minus sign and dot).
+	 * -  true: when we read a non-number-using character.
 	 */
-	int flag = 0;
+	_Bool flag = false;
 
-	int row_count;
-	int colun_count;
+	int r_count, c_count;
 
-	char ch;
+	int ch;
 
-	while((ch = getc(fp)) != EOF)
+	while ((ch = getc(fp)) != EOF)
 		{		   
-			if(test_rc&&(ch == '\n')&&(!isinf(config[13]))&&(!isinf(config[14])))
+			if (rc && ch == '\n' && !isinf(n_x) && !isinf(n_y))
 				{
-					if(num%(int)config[13]==0)
+					if (num%(int)n_x == 0)
 						{
-							if(num/(int)config[13]==row_count||num/(int)config[13]==row_count+1)
-								row_count = num/(int)config[13];
+							if(num/(int)n_x == r_count || num/(int)n_x == (r_count+1))
+								r_count = num/(int)config[13];
 							else
 								{
-									printf("Row test is failed.\n");
-									exit(1);
+									fprintf(stderr, "Row test is failed in the file '%s'!\n", add);
+									exit(2);
 								}
 						}
 					else
 						{
-							printf("Row test is failed.\n");
-							exit(1);
+							fprintf(stderr,"Row test is failed in the file '%s'!\n", add);
+							exit(2);
 						}
 				}
 			
-			if(((ch == ' ') || (ch == '\t') || (ch == '\n')) && (flag))
+			if( isspace(ch)&&flag )
 				{
 					++num;
 					flag = 0;
 				}			
-			else if( ((ch == 46)||(ch == 45)||(ch == 69)||(ch == 101)||((ch > 47) && (ch < 58))) && (!flag) )
+			else if((ch == 46||ch == 45||ch == 69||ch == 101||isdigit(ch)) && (!flag))
 				flag = 1;
-			else if(((ch == ' ') || (ch == '\t') || (ch == '\n')) && (!flag))
+			else if(isspace(ch)&&(!flag))
 				continue;
-			else if( ((ch == 46)||(ch == 45)||(ch == 69)||(ch == 101)||((ch > 47) && (ch < 58))) && (flag) )
+			else if((ch == 46||ch == 45||ch == 69||ch == 101||isdigit(ch)) && (flag) )
 				continue;
 			else
 				{
-					printf("Input contains illigal character(ASCII=%d, num=%d)!\n", (int)ch, num);
-					exit(1);
+					fprintf(stderr, "Input contains illegal character(ASCII=%d, num=%d)!\n", ch, num);
+					exit(2);
 				}
 		}
 	
@@ -91,29 +86,22 @@ int file_pre_read(FILE * fp, int test_rc)
 }
 
 
-/* This function reads the initial data file. The function 
- * initialize return a pointer pointing to the position of
- * a block of memory consisting (m+1) variables* of type
- * double. The value of first of these variables is m.
- * The following m variables are the initial value.
- */
 void initialize(char * add, double * F)
 {
 	FILE * fp;
 	int num;  
-	char ch;
 	int file_read_state;
 
 
-	//open the initial data file
-	if((fp = fopen(add, "r")) == 0)
+	// Open the initial data file.
+	if((fp = fopen(add, "r")) == NULL)
 		{
-			printf("Cannot open initial data file: '%s'!\n",add);
+			fprintf(stderr, "Can't open initial data file: %s!\n", add);
 			exit(1);
 		}
 	if(isinf(config[3]))
 		config[3] = num;
-	else if((num = file_pre_read(fp)) != (int)config[3])
+	else if((num = file_pre_read(fp, add, 2)) != (int)config[3])
 		{
 			printf("Unequal! number of grid in '%s' is %d, but in config is %d.", add, num, (int)config[3]);
 			exit(3);
@@ -147,40 +135,39 @@ void initialize(char * add, double * F)
  */
 void configurate(char * add)
 {
-	double config_pre[400];		
+	double config_pre[N_CONF*2];		
 	FILE * fp_data;
 
 	//open the configuration data file.
-	//printf("%s\n", add);
 	if((fp_data = fopen(add, "r")) == 0)
 		{
-			printf("Cannot open configuration file!\n");
+			fprintf(stderr,"Cannot open configuration file!\n");
 			exit(1);
 		}
 
-	int n_conf, state;
+	int num, state;
 
 	//read the configuration data file.
-	if((n_conf = file_pre_read(fp_data)) == 0||n_conf > 400)
+	if((num = file_pre_read(fp_data, add, 0)) == 0||num > N_CONF*2)
 		{
 			printf("Configuration file error.\n");
 			exit(2);
 		}
-	else if (n_conf%2)
+	else if (num%2)
 		{
 			printf("Number of the configuration file is not even.");
 			exit(2);
 		}
 
 	fseek(fp_data, 0L, SEEK_SET);
-	state = file_read(fp_data, config_pre, n_conf);
+	state = file_read(fp_data, config_pre, num);
 	fclose(fp_data);
 
 
 	int n;  
 	if(state)
 		{
-			if(state == n_conf)
+			if(state == num)
 				printf("Error on configuration data file reading!\n");
 			else
 				printf("The %d-th entry in the configuration file is not a number.\n", state);
@@ -188,7 +175,7 @@ void configurate(char * add)
 		}
 	else
 		{
-			for(int i=0; i<n_conf/2; i+=2)  
+			for(int i=0; i<num/2; i+=2)  
 				{
 					if((n = (int)config_pre[i])>200 || n<0)
 						{

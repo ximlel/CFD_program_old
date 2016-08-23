@@ -1,0 +1,270 @@
+\hypertarget{file__ooooooo_8c}{}\section{src/file\+\_\+io/file\+\_\+ooooooo.c File Reference}
+\label{file__ooooooo_8c}\index{src/file\+\_\+io/file\+\_\+ooooooo.\+c@{src/file\+\_\+io/file\+\_\+ooooooo.\+c}}
+{\ttfamily \#include $<$math.\+h$>$}\\*
+{\ttfamily \#include $<$string.\+h$>$}\\*
+{\ttfamily \#include $<$stdio.\+h$>$}\\*
+{\ttfamily \#include $<$stdlib.\+h$>$}\\*
+{\ttfamily \#include $<$time.\+h$>$}\\*
+{\ttfamily \#include $<$sys/types.\+h$>$}\\*
+{\ttfamily \#include $<$sys/stat.\+h$>$}\\*
+{\ttfamily \#include $<$dirent.\+h$>$}\\*
+{\ttfamily \#include \char`\"{}../file\+\_\+io.\+h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}../tools.\+h\char`\"{}}\\*
+Include dependency graph for file\+\_\+ooooooo.\+c\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{file__ooooooo_8c__incl}
+\end{center}
+\end{figure}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+int \hyperlink{file__ooooooo_8c_abe6168e56b6552d469ae3794f3e151f5}{file\+\_\+pre\+\_\+read\+\_\+line} (F\+I\+LE $\ast$fp)
+\item 
+int \hyperlink{file__ooooooo_8c_ad9b962c596caa22d06862ace73f290e3}{file\+\_\+pre\+\_\+read\+\_\+column} (F\+I\+LE $\ast$fp)
+\item 
+void \hyperlink{file__ooooooo_8c_ac89d1815763299bfad2a1c6e90903fcb}{initialize} (char $\ast$name, char $\ast$addrho, char $\ast$addu, char $\ast$addv, char $\ast$addp)
+\item 
+void \hyperlink{file__ooooooo_8c_a34db6eebcff8ed521a90fb5baf465c79}{initialize\+\_\+\+CC} (char $\ast$name, char $\ast$addcc)
+\item 
+void \hyperlink{file__ooooooo_8c_a91043f799b58868627bb4983f5952473}{configurate} (double $\ast$\hyperlink{file__out_8c_a6d077a61a7265ffdaed10089930f4926}{config}, char $\ast$name, char $\ast$add)
+\item 
+void \hyperlink{file__ooooooo_8c_a0a74df3b96a6c3b578c4858bad6f0cf0}{file\+\_\+write\+\_\+\+V\+TK} (int N\+U\+M\+\_\+\+P\+O\+I\+NT, double $\ast$X, double $\ast$Y, int N\+U\+M\+\_\+\+C\+E\+LL, int $\ast$C\+E\+L\+L\+\_\+\+P\+O\+I\+NT\mbox{[}$\,$\mbox{]}, double $\ast$\hyperlink{file__out_8c_a60adfcb91199d9957fc2a388d97743cc}{R\+HO}, double $\ast$\hyperlink{file__out_8c_aa4eca6bbf61516707d8c0fb8cae547bb}{U}, double $\ast$\hyperlink{file__out_8c_ac2961263bd9c86f683fee9eb17d3dffe}{V}, double $\ast$\hyperlink{file__out_8c_aa3d96144cd3ae7dbbc31710932fbf845}{P}, double $\ast$cpu\+\_\+time, double $\ast$\hyperlink{file__out_8c_a6d077a61a7265ffdaed10089930f4926}{config}, char $\ast$example, char $\ast$problem)
+\item 
+void \hyperlink{file__ooooooo_8c_ac3fff5d9b234ac292df9a5301309eed1}{file\+\_\+write\+\_\+\+T\+EC} (int N\+U\+M\+\_\+\+P\+O\+I\+NT, double $\ast$X, double $\ast$Y, int N\+U\+M\+\_\+\+C\+E\+LL, int $\ast$C\+E\+L\+L\+\_\+\+P\+O\+I\+NT\mbox{[}$\,$\mbox{]}, double $\ast$\hyperlink{file__out_8c_a60adfcb91199d9957fc2a388d97743cc}{R\+HO}, double $\ast$\hyperlink{file__out_8c_aa4eca6bbf61516707d8c0fb8cae547bb}{U}, double $\ast$\hyperlink{file__out_8c_ac2961263bd9c86f683fee9eb17d3dffe}{V}, double $\ast$\hyperlink{file__out_8c_aa3d96144cd3ae7dbbc31710932fbf845}{P}, double $\ast$cpu\+\_\+time, double $\ast$\hyperlink{file__out_8c_a6d077a61a7265ffdaed10089930f4926}{config}, char $\ast$example, char $\ast$problem)
+\item 
+void \hyperlink{file__ooooooo_8c_ac5429fd274acb8525df3f2fd0bfa8827}{file\+\_\+two\+\_\+species\+\_\+write\+\_\+\+T\+EC} (int N\+U\+M\+\_\+\+P\+O\+I\+NT, double $\ast$X, double $\ast$Y, int N\+U\+M\+\_\+\+C\+E\+LL, int $\ast$C\+E\+L\+L\+\_\+\+P\+O\+I\+NT\mbox{[}$\,$\mbox{]}, double $\ast$\hyperlink{file__out_8c_a60adfcb91199d9957fc2a388d97743cc}{R\+HO}, double $\ast$\hyperlink{file__out_8c_aa4eca6bbf61516707d8c0fb8cae547bb}{U}, double $\ast$\hyperlink{file__out_8c_ac2961263bd9c86f683fee9eb17d3dffe}{V}, double $\ast$\hyperlink{file__out_8c_aa3d96144cd3ae7dbbc31710932fbf845}{P}, double $\ast$CC, double $\ast$cpu\+\_\+time, double $\ast$\hyperlink{file__out_8c_a6d077a61a7265ffdaed10089930f4926}{config}, char $\ast$example, char $\ast$problem)
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+double $\ast$ \hyperlink{file__ooooooo_8c_a60adfcb91199d9957fc2a388d97743cc}{R\+HO}
+\item 
+double $\ast$ \hyperlink{file__ooooooo_8c_aa4eca6bbf61516707d8c0fb8cae547bb}{U}
+\item 
+double $\ast$ \hyperlink{file__ooooooo_8c_aa3d96144cd3ae7dbbc31710932fbf845}{P}
+\item 
+double $\ast$ \hyperlink{file__ooooooo_8c_ac2961263bd9c86f683fee9eb17d3dffe}{V}
+\item 
+double $\ast$ \hyperlink{file__ooooooo_8c_a2dbb1cf6f46f0b7f077c610cfe634a6a}{P\+HI}
+\item 
+double $\ast$ \hyperlink{file__ooooooo_8c_abce05fe606872153d57b0321d0a7e46a}{config}
+\end{DoxyCompactItemize}
+
+
+\subsection{Function Documentation}
+\index{file\+\_\+ooooooo.\+c@{file\+\_\+ooooooo.\+c}!configurate@{configurate}}
+\index{configurate@{configurate}!file\+\_\+ooooooo.\+c@{file\+\_\+ooooooo.\+c}}
+\subsubsection[{\texorpdfstring{configurate(double $\ast$config, char $\ast$name, char $\ast$add)}{configurate(double *config, char *name, char *add)}}]{\setlength{\rightskip}{0pt plus 5cm}void configurate (
+\begin{DoxyParamCaption}
+\item[{double $\ast$}]{config, }
+\item[{char $\ast$}]{name, }
+\item[{char $\ast$}]{add}
+\end{DoxyParamCaption}
+)}\hypertarget{file__ooooooo_8c_a91043f799b58868627bb4983f5952473}{}\label{file__ooooooo_8c_a91043f799b58868627bb4983f5952473}
+
+
+Definition at line 443 of file file\+\_\+ooooooo.\+c.
+
+
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{file__ooooooo_8c_a91043f799b58868627bb4983f5952473_cgraph}
+\end{center}
+\end{figure}
+
+
+\index{file\+\_\+ooooooo.\+c@{file\+\_\+ooooooo.\+c}!file\+\_\+pre\+\_\+read\+\_\+column@{file\+\_\+pre\+\_\+read\+\_\+column}}
+\index{file\+\_\+pre\+\_\+read\+\_\+column@{file\+\_\+pre\+\_\+read\+\_\+column}!file\+\_\+ooooooo.\+c@{file\+\_\+ooooooo.\+c}}
+\subsubsection[{\texorpdfstring{file\+\_\+pre\+\_\+read\+\_\+column(\+F\+I\+L\+E $\ast$fp)}{file_pre_read_column(FILE *fp)}}]{\setlength{\rightskip}{0pt plus 5cm}int file\+\_\+pre\+\_\+read\+\_\+column (
+\begin{DoxyParamCaption}
+\item[{F\+I\+LE $\ast$}]{fp}
+\end{DoxyParamCaption}
+)}\hypertarget{file__ooooooo_8c_ad9b962c596caa22d06862ace73f290e3}{}\label{file__ooooooo_8c_ad9b962c596caa22d06862ace73f290e3}
+
+
+Definition at line 145 of file file\+\_\+ooooooo.\+c.
+
+
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=297pt]{file__ooooooo_8c_ad9b962c596caa22d06862ace73f290e3_icgraph}
+\end{center}
+\end{figure}
+
+
+\index{file\+\_\+ooooooo.\+c@{file\+\_\+ooooooo.\+c}!file\+\_\+pre\+\_\+read\+\_\+line@{file\+\_\+pre\+\_\+read\+\_\+line}}
+\index{file\+\_\+pre\+\_\+read\+\_\+line@{file\+\_\+pre\+\_\+read\+\_\+line}!file\+\_\+ooooooo.\+c@{file\+\_\+ooooooo.\+c}}
+\subsubsection[{\texorpdfstring{file\+\_\+pre\+\_\+read\+\_\+line(\+F\+I\+L\+E $\ast$fp)}{file_pre_read_line(FILE *fp)}}]{\setlength{\rightskip}{0pt plus 5cm}int file\+\_\+pre\+\_\+read\+\_\+line (
+\begin{DoxyParamCaption}
+\item[{F\+I\+LE $\ast$}]{fp}
+\end{DoxyParamCaption}
+)}\hypertarget{file__ooooooo_8c_abe6168e56b6552d469ae3794f3e151f5}{}\label{file__ooooooo_8c_abe6168e56b6552d469ae3794f3e151f5}
+
+
+Definition at line 31 of file file\+\_\+ooooooo.\+c.
+
+
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=280pt]{file__ooooooo_8c_abe6168e56b6552d469ae3794f3e151f5_icgraph}
+\end{center}
+\end{figure}
+
+
+\index{file\+\_\+ooooooo.\+c@{file\+\_\+ooooooo.\+c}!file\+\_\+two\+\_\+species\+\_\+write\+\_\+\+T\+EC@{file\+\_\+two\+\_\+species\+\_\+write\+\_\+\+T\+EC}}
+\index{file\+\_\+two\+\_\+species\+\_\+write\+\_\+\+T\+EC@{file\+\_\+two\+\_\+species\+\_\+write\+\_\+\+T\+EC}!file\+\_\+ooooooo.\+c@{file\+\_\+ooooooo.\+c}}
+\subsubsection[{\texorpdfstring{file\+\_\+two\+\_\+species\+\_\+write\+\_\+\+T\+E\+C(int N\+U\+M\+\_\+\+P\+O\+I\+N\+T, double $\ast$\+X, double $\ast$\+Y, int N\+U\+M\+\_\+\+C\+E\+L\+L, int $\ast$\+C\+E\+L\+L\+\_\+\+P\+O\+I\+NT[], double $\ast$\+R\+H\+O, double $\ast$\+U, double $\ast$\+V, double $\ast$\+P, double $\ast$\+C\+C, double $\ast$cpu\+\_\+time, double $\ast$config, char $\ast$example, char $\ast$problem)}{file_two_species_write_TEC(int NUM_POINT, double *X, double *Y, int NUM_CELL, int *CELL_POINT[], double *RHO, double *U, double *V, double *P, double *CC, double *cpu_time, double *config, char *example, char *problem)}}]{\setlength{\rightskip}{0pt plus 5cm}void file\+\_\+two\+\_\+species\+\_\+write\+\_\+\+T\+EC (
+\begin{DoxyParamCaption}
+\item[{int}]{N\+U\+M\+\_\+\+P\+O\+I\+NT, }
+\item[{double $\ast$}]{X, }
+\item[{double $\ast$}]{Y, }
+\item[{int}]{N\+U\+M\+\_\+\+C\+E\+LL, }
+\item[{int $\ast$}]{C\+E\+L\+L\+\_\+\+P\+O\+I\+NT\mbox{[}$\,$\mbox{]}, }
+\item[{double $\ast$}]{R\+HO, }
+\item[{double $\ast$}]{U, }
+\item[{double $\ast$}]{V, }
+\item[{double $\ast$}]{P, }
+\item[{double $\ast$}]{CC, }
+\item[{double $\ast$}]{cpu\+\_\+time, }
+\item[{double $\ast$}]{config, }
+\item[{char $\ast$}]{example, }
+\item[{char $\ast$}]{problem}
+\end{DoxyParamCaption}
+)}\hypertarget{file__ooooooo_8c_ac5429fd274acb8525df3f2fd0bfa8827}{}\label{file__ooooooo_8c_ac5429fd274acb8525df3f2fd0bfa8827}
+
+
+Definition at line 911 of file file\+\_\+ooooooo.\+c.
+
+\index{file\+\_\+ooooooo.\+c@{file\+\_\+ooooooo.\+c}!file\+\_\+write\+\_\+\+T\+EC@{file\+\_\+write\+\_\+\+T\+EC}}
+\index{file\+\_\+write\+\_\+\+T\+EC@{file\+\_\+write\+\_\+\+T\+EC}!file\+\_\+ooooooo.\+c@{file\+\_\+ooooooo.\+c}}
+\subsubsection[{\texorpdfstring{file\+\_\+write\+\_\+\+T\+E\+C(int N\+U\+M\+\_\+\+P\+O\+I\+N\+T, double $\ast$\+X, double $\ast$\+Y, int N\+U\+M\+\_\+\+C\+E\+L\+L, int $\ast$\+C\+E\+L\+L\+\_\+\+P\+O\+I\+NT[], double $\ast$\+R\+H\+O, double $\ast$\+U, double $\ast$\+V, double $\ast$\+P, double $\ast$cpu\+\_\+time, double $\ast$config, char $\ast$example, char $\ast$problem)}{file_write_TEC(int NUM_POINT, double *X, double *Y, int NUM_CELL, int *CELL_POINT[], double *RHO, double *U, double *V, double *P, double *cpu_time, double *config, char *example, char *problem)}}]{\setlength{\rightskip}{0pt plus 5cm}void file\+\_\+write\+\_\+\+T\+EC (
+\begin{DoxyParamCaption}
+\item[{int}]{N\+U\+M\+\_\+\+P\+O\+I\+NT, }
+\item[{double $\ast$}]{X, }
+\item[{double $\ast$}]{Y, }
+\item[{int}]{N\+U\+M\+\_\+\+C\+E\+LL, }
+\item[{int $\ast$}]{C\+E\+L\+L\+\_\+\+P\+O\+I\+NT\mbox{[}$\,$\mbox{]}, }
+\item[{double $\ast$}]{R\+HO, }
+\item[{double $\ast$}]{U, }
+\item[{double $\ast$}]{V, }
+\item[{double $\ast$}]{P, }
+\item[{double $\ast$}]{cpu\+\_\+time, }
+\item[{double $\ast$}]{config, }
+\item[{char $\ast$}]{example, }
+\item[{char $\ast$}]{problem}
+\end{DoxyParamCaption}
+)}\hypertarget{file__ooooooo_8c_ac3fff5d9b234ac292df9a5301309eed1}{}\label{file__ooooooo_8c_ac3fff5d9b234ac292df9a5301309eed1}
+
+
+Definition at line 728 of file file\+\_\+ooooooo.\+c.
+
+\index{file\+\_\+ooooooo.\+c@{file\+\_\+ooooooo.\+c}!file\+\_\+write\+\_\+\+V\+TK@{file\+\_\+write\+\_\+\+V\+TK}}
+\index{file\+\_\+write\+\_\+\+V\+TK@{file\+\_\+write\+\_\+\+V\+TK}!file\+\_\+ooooooo.\+c@{file\+\_\+ooooooo.\+c}}
+\subsubsection[{\texorpdfstring{file\+\_\+write\+\_\+\+V\+T\+K(int N\+U\+M\+\_\+\+P\+O\+I\+N\+T, double $\ast$\+X, double $\ast$\+Y, int N\+U\+M\+\_\+\+C\+E\+L\+L, int $\ast$\+C\+E\+L\+L\+\_\+\+P\+O\+I\+NT[], double $\ast$\+R\+H\+O, double $\ast$\+U, double $\ast$\+V, double $\ast$\+P, double $\ast$cpu\+\_\+time, double $\ast$config, char $\ast$example, char $\ast$problem)}{file_write_VTK(int NUM_POINT, double *X, double *Y, int NUM_CELL, int *CELL_POINT[], double *RHO, double *U, double *V, double *P, double *cpu_time, double *config, char *example, char *problem)}}]{\setlength{\rightskip}{0pt plus 5cm}void file\+\_\+write\+\_\+\+V\+TK (
+\begin{DoxyParamCaption}
+\item[{int}]{N\+U\+M\+\_\+\+P\+O\+I\+NT, }
+\item[{double $\ast$}]{X, }
+\item[{double $\ast$}]{Y, }
+\item[{int}]{N\+U\+M\+\_\+\+C\+E\+LL, }
+\item[{int $\ast$}]{C\+E\+L\+L\+\_\+\+P\+O\+I\+NT\mbox{[}$\,$\mbox{]}, }
+\item[{double $\ast$}]{R\+HO, }
+\item[{double $\ast$}]{U, }
+\item[{double $\ast$}]{V, }
+\item[{double $\ast$}]{P, }
+\item[{double $\ast$}]{cpu\+\_\+time, }
+\item[{double $\ast$}]{config, }
+\item[{char $\ast$}]{example, }
+\item[{char $\ast$}]{problem}
+\end{DoxyParamCaption}
+)}\hypertarget{file__ooooooo_8c_a0a74df3b96a6c3b578c4858bad6f0cf0}{}\label{file__ooooooo_8c_a0a74df3b96a6c3b578c4858bad6f0cf0}
+
+
+Definition at line 515 of file file\+\_\+ooooooo.\+c.
+
+\index{file\+\_\+ooooooo.\+c@{file\+\_\+ooooooo.\+c}!initialize@{initialize}}
+\index{initialize@{initialize}!file\+\_\+ooooooo.\+c@{file\+\_\+ooooooo.\+c}}
+\subsubsection[{\texorpdfstring{initialize(char $\ast$name, char $\ast$addrho, char $\ast$addu, char $\ast$addv, char $\ast$addp)}{initialize(char *name, char *addrho, char *addu, char *addv, char *addp)}}]{\setlength{\rightskip}{0pt plus 5cm}void initialize (
+\begin{DoxyParamCaption}
+\item[{char $\ast$}]{name, }
+\item[{char $\ast$}]{addrho, }
+\item[{char $\ast$}]{addu, }
+\item[{char $\ast$}]{addv, }
+\item[{char $\ast$}]{addp}
+\end{DoxyParamCaption}
+)}\hypertarget{file__ooooooo_8c_ac89d1815763299bfad2a1c6e90903fcb}{}\label{file__ooooooo_8c_ac89d1815763299bfad2a1c6e90903fcb}
+
+
+Definition at line 206 of file file\+\_\+ooooooo.\+c.
+
+
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{file__ooooooo_8c_ac89d1815763299bfad2a1c6e90903fcb_cgraph}
+\end{center}
+\end{figure}
+
+
+\index{file\+\_\+ooooooo.\+c@{file\+\_\+ooooooo.\+c}!initialize\+\_\+\+CC@{initialize\+\_\+\+CC}}
+\index{initialize\+\_\+\+CC@{initialize\+\_\+\+CC}!file\+\_\+ooooooo.\+c@{file\+\_\+ooooooo.\+c}}
+\subsubsection[{\texorpdfstring{initialize\+\_\+\+C\+C(char $\ast$name, char $\ast$addcc)}{initialize_CC(char *name, char *addcc)}}]{\setlength{\rightskip}{0pt plus 5cm}void initialize\+\_\+\+CC (
+\begin{DoxyParamCaption}
+\item[{char $\ast$}]{name, }
+\item[{char $\ast$}]{addcc}
+\end{DoxyParamCaption}
+)}\hypertarget{file__ooooooo_8c_a34db6eebcff8ed521a90fb5baf465c79}{}\label{file__ooooooo_8c_a34db6eebcff8ed521a90fb5baf465c79}
+
+
+Definition at line 395 of file file\+\_\+ooooooo.\+c.
+
+
+
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{file__ooooooo_8c_a34db6eebcff8ed521a90fb5baf465c79_cgraph}
+\end{center}
+\end{figure}
+
+
+
+
+\subsection{Variable Documentation}
+\index{file\+\_\+ooooooo.\+c@{file\+\_\+ooooooo.\+c}!config@{config}}
+\index{config@{config}!file\+\_\+ooooooo.\+c@{file\+\_\+ooooooo.\+c}}
+\subsubsection[{\texorpdfstring{config}{config}}]{\setlength{\rightskip}{0pt plus 5cm}double$\ast$ config}\hypertarget{file__ooooooo_8c_abce05fe606872153d57b0321d0a7e46a}{}\label{file__ooooooo_8c_abce05fe606872153d57b0321d0a7e46a}
+\index{file\+\_\+ooooooo.\+c@{file\+\_\+ooooooo.\+c}!P@{P}}
+\index{P@{P}!file\+\_\+ooooooo.\+c@{file\+\_\+ooooooo.\+c}}
+\subsubsection[{\texorpdfstring{P}{P}}]{\setlength{\rightskip}{0pt plus 5cm}double$\ast$ P}\hypertarget{file__ooooooo_8c_aa3d96144cd3ae7dbbc31710932fbf845}{}\label{file__ooooooo_8c_aa3d96144cd3ae7dbbc31710932fbf845}
+\index{file\+\_\+ooooooo.\+c@{file\+\_\+ooooooo.\+c}!P\+HI@{P\+HI}}
+\index{P\+HI@{P\+HI}!file\+\_\+ooooooo.\+c@{file\+\_\+ooooooo.\+c}}
+\subsubsection[{\texorpdfstring{P\+HI}{PHI}}]{\setlength{\rightskip}{0pt plus 5cm}double$\ast$ P\+HI}\hypertarget{file__ooooooo_8c_a2dbb1cf6f46f0b7f077c610cfe634a6a}{}\label{file__ooooooo_8c_a2dbb1cf6f46f0b7f077c610cfe634a6a}
+\index{file\+\_\+ooooooo.\+c@{file\+\_\+ooooooo.\+c}!R\+HO@{R\+HO}}
+\index{R\+HO@{R\+HO}!file\+\_\+ooooooo.\+c@{file\+\_\+ooooooo.\+c}}
+\subsubsection[{\texorpdfstring{R\+HO}{RHO}}]{\setlength{\rightskip}{0pt plus 5cm}double$\ast$ R\+HO}\hypertarget{file__ooooooo_8c_a60adfcb91199d9957fc2a388d97743cc}{}\label{file__ooooooo_8c_a60adfcb91199d9957fc2a388d97743cc}
+\index{file\+\_\+ooooooo.\+c@{file\+\_\+ooooooo.\+c}!U@{U}}
+\index{U@{U}!file\+\_\+ooooooo.\+c@{file\+\_\+ooooooo.\+c}}
+\subsubsection[{\texorpdfstring{U}{U}}]{\setlength{\rightskip}{0pt plus 5cm}double$\ast$ U}\hypertarget{file__ooooooo_8c_aa4eca6bbf61516707d8c0fb8cae547bb}{}\label{file__ooooooo_8c_aa4eca6bbf61516707d8c0fb8cae547bb}
+\index{file\+\_\+ooooooo.\+c@{file\+\_\+ooooooo.\+c}!V@{V}}
+\index{V@{V}!file\+\_\+ooooooo.\+c@{file\+\_\+ooooooo.\+c}}
+\subsubsection[{\texorpdfstring{V}{V}}]{\setlength{\rightskip}{0pt plus 5cm}double$\ast$ V}\hypertarget{file__ooooooo_8c_ac2961263bd9c86f683fee9eb17d3dffe}{}\label{file__ooooooo_8c_ac2961263bd9c86f683fee9eb17d3dffe}
