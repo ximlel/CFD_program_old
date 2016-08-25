@@ -5,6 +5,7 @@
 4	the largest value can be seen as zero
 5	the maximum number of time steps
 6	the polytropic index	//gamma
+7	CFL
 	
 
 10	the spatial grid size in x direction	//s_x
@@ -16,7 +17,9 @@
 
 
 
-#./FLUID_SRC.out 输入 输出 网格 solver 维数 步数
+#./FLUID_SRC.out 输入 输出 维数 solver (网格 步数)
+
+solver形式(1_Godunov, 2_ROE)
 
 步数
 >0

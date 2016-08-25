@@ -16,7 +16,7 @@ int CreateDir(const char* pPath)
 	if(-1 != access(pPath,0))
 		return -1;
 
-	char tmpPath[PATH_MAX];
+	char tmpPath[FILENAME_MAX];
 	const char* pCur = pPath;
 
 	memset(tmpPath,0,sizeof(tmpPath));

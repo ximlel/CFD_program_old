@@ -3,8 +3,8 @@
  and check whether they are qualified. 
 */
 
-#include <string.h>
 #include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
 #include <math.h>
 #include <ctype.h>
@@ -22,18 +22,18 @@
  */
 
 #define STR_FLU_INI(sfv)							\
-	do {										\
-		strcpy(add, add_mkdir);					\
-		strcat(add, #sfv ".txt");				\
-		flu_var_init(add, FV.sfv);				\
+	do {											\
+		strcpy(add, add_mkdir);						\
+		strcat(add, "/" #sfv ".txt");				\
+		flu_var_init(add, FV.sfv);					\
 	} while(0)
 
-struct flu_var flu_conf_load(char *example)
+void flu_conf_load(char *example)
 {
-	int DIM = (int)config[0];
+	const int DIM = (int)config[0];
 	
 	// Find the directory of input data.
-	char add_mkdir[PATH_MAX];
+	char add_mkdir[FILENAME_MAX];
 	switch(DIM)
 		{
 		case 1 :
@@ -56,20 +56,21 @@ struct flu_var flu_conf_load(char *example)
 			exit(1);
 		}
 	closedir(dir_test);
-	
 
 	// We read the initial data file. 
-	char add[PATH_MAX];
+	char add[FILENAME_MAX];
 	strcpy(add, add_mkdir);
 	strcat(add, "/config.txt");
 	configurate(add);
-	printf("%s is configurated.\n", example);
 
- 	struct flu_var FV;
-		strcpy(add, add_mkdir);
-		strcat(add, "RHO" ".txt");
-		flu_var_init(add, FV.RHO);	
-//	STR_FLU_INI(RHO);
+	printf("%s is configurated, dimension = %d .\n", example, DIM);
+
+
+			strcpy(add, add_mkdir);					
+		strcat(add, "/RHO.txt");				
+		flu_var_init(add, FV.RHO);
+
+		//STR_FLU_INI(RHO);
 	STR_FLU_INI(U);
 	STR_FLU_INI(P);	
 	if(DIM > 1)
@@ -84,7 +85,6 @@ struct flu_var flu_conf_load(char *example)
 				break;				
 			}	
 	printf("%s is initialized, grid number = %d .\n", example, (int)config[3]);
-	return FV;
 }
 
 static int flu_var_count(FILE * fp, const char * add)
@@ -148,10 +148,15 @@ static void flu_var_read(FILE * fp, double * F, char * add)
 			// Test whether the total number of data is matched.
 			else if (num_all != (int)n_x * (int)n_y * (isinf(n_z) ? 1 : (int)n_z))
 				{
-					fprintf(stderr, "Data number is't matched to the structural mesh in the file '%s'!\n", add);
+					fprintf(stderr, "Data number is't matched to the structural mesh!\n");
 					exit(2);
 				}
 			D = isinf(n_z) ? 2 : 3;
+			if (D != (int)config[0])
+				{
+					fprintf(stderr, "Dimension is't matched to the structural mesh!\n");
+					exit(2);
+				}
 		}
 	
 
@@ -195,7 +200,7 @@ static void flu_var_read(FILE * fp, double * F, char * add)
 					F[num++] = strtod(flo_num, &endptr);
 					if (strlen(endptr) != 0)
 						{
-							fprintf(stderr,"Reading Sth. that isn't a floating number in the file '%s'!", add);
+							fprintf(stderr,"Reading Sth. that isn't a floating number in the file '%s'!\n", add);
 							exit(2);
 						}
 					flag = 0;
@@ -233,8 +238,6 @@ static void flu_var_read(FILE * fp, double * F, char * add)
 void flu_var_init(char * add, double * F)
 {
 	FILE * fp;
-	int num;
-
 
 	// Open the initial data file.
 	if ((fp = fopen(add, "r")) == NULL)
@@ -247,11 +250,13 @@ void flu_var_init(char * add, double * F)
 		config[3] = (double)flu_var_count(fp, add);
 	else if (config[3] < 1.0)
 		CONF_ERR(3);
+	
+	F = malloc((int)config[3] * sizeof(double));
 
-	free(F);
-	F = NULL;	
-	F = malloc(num * sizeof(double));
 	flu_var_read(fp, F, add);
+	for (int i = 0; i<30; i++)
+		printf("%d,%lf\n",i, F[i]);
+	printf("ASAA:%s\n", add);
 	fclose(fp);
 }
 
@@ -281,7 +286,7 @@ static void config_read(FILE * fp)
 }
 
 
-int configurate(char * add)
+void configurate(char * add)
 {
 	FILE * fp;
 
@@ -289,12 +294,11 @@ int configurate(char * add)
 	if((fp = fopen(add, "r")) == NULL)
 		{
 			perror(add);
-			return 1; //Can't open the configuration file.
+			exit(1);
 		}
 	
 	config_read(fp);
 	fclose(fp);
-	return 0;
 }
 
 

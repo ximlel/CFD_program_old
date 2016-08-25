@@ -12,26 +12,34 @@
 
 #include "./include/var_struc.h"
 #include "./include/tools.h"
-#include "./include/Riemann_solver.h"
+//#include "./include/Riemann_solver.h"
 #include "./include/file_io.h"
-#include "./include/meshing.h"
-#include "./include/finite_volume.h"
+//#include "./include/meshing.h"
+//#include "./include/finite_volume.h"
 
 
 
 /*The global primitive variable and configuration array.
  */
 
-double config[N_CONF] = {1.0/0.0};
+double config[N_CONF];
 
+struct flu_var FV = {
+	NULL, NULL, NULL, NULL, NULL, NULL, NULL
+};
 
 int main(int argc, char *argv[])
 {
 
-	// Set dimension.
-	config[0] = (double)atoi(argv[5]);
-	struct flu_var FV = flu_conf_load(argv[1]);
+	for (int i = 0; i < N_CONF; i++)
+			config[i] = 1.0/0.0;
 
+	// Set dimension.
+	config[0] = (double)atoi(argv[3]);
+
+
+	flu_conf_load(argv[1]);
+	
 	/*  
 	double cpu_time[N];
 	cpu_time[0] = 0.0;
@@ -47,7 +55,7 @@ int main(int argc, char *argv[])
 	double gamma[NUM_CELL];
 	*/
 
-	printf("Output: %s .\n", argv[2]);
+	printf("Output: %s.\n", argv[2]);
 
 	/*
 	if(strcmp(argv[3],"Sod_mesh")==0)
@@ -114,6 +122,15 @@ int main(int argc, char *argv[])
 			file_write_TEC(NUM_POINT, X, Y, NUM_CELL, CELL_POINT, RHO_t, U_t, V_t, P_t, cpu_time, config, argv[2], address);  
 		}
 	*/
+
+
+
+/*
+	for (int i = 0; i < 20; i++)
+			printf("%d,%lf\n",i, config[i]);
+*/
+	for (int i = 0; i < 30; i++)
+			printf("%d,%lf\n",i, FV.RHO[i]);
 	
 	return 0;	
 }

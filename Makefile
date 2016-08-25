@@ -25,7 +25,7 @@ modules:
 #Enter each subdirectory
 #Call the Makefile in the subdirectory
 	@for n in $(HEAD); do \
-	( make -f Makefile_sub --directory=$(SRC)/$$n )  \
+	( make -f Makefile.sub --directory=$(SRC)/$$n )  \
 	done;
 .PHONYP:modules
 
@@ -33,6 +33,6 @@ clean:
 #Clean in the subdirectory
 	@$(RM) $(SRC)/$(SOURCE).o
 	@for n in $(HEAD); do \
-	( make -f Makefile_sub --directory=$(SRC)/$$n clean ) \
+	( make -f Makefile.sub --directory=$(SRC)/$$n clean ) \
 	done;
 .PHONYP:clean
