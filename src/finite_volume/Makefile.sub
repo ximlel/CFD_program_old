@@ -1,7 +1,7 @@
 CC = gcc
 CFLAGS += -std=c99 -c
-INC = ../include
-#Inclued folder
+INCLUDE = -I ../include
+
 AR = ar
 #Archive : creat static libs
 ARFLAGS = crv
@@ -15,7 +15,7 @@ FILES_C = $(shell ls *.c)
 
 define compile_c_file #Compile all .c files
 @for file in $(FILES_C); do \
-( echo "$(CC) $(CFLAGS) $$file -I $(INC)" && $(CC) $(CFLAGS) $$file -I $(INC) ) \
+( echo "$(CC) $(CFLAGS) $$file $(INCLUDE)" && $(CC) $(CFLAGS) $$file $(INCLUDE) ) \
 done;
 endef
 

@@ -1,17 +1,18 @@
-0	the polytropic index
-1	the total time
+0	DIM(不可修改)
+1	the total time		//t_all
 2	species(muti-fluid)	2
-3	总网格数
+3	总网格数	//num_all
 4	the largest value can be seen as zero
 5	the maximum number of time steps
+6	the polytropic index	//gamma
 	
 
-10	the spatial grid size in x direction
-11	the spatial grid size in y direction
-12	the spatial grid size in z direction
-13	the grid number in x direction     //n
-14	the grid number in y direction     //m
-15	the grid number in z direction
+10	the spatial grid size in x direction	//s_x
+11	the spatial grid size in y direction	//s_y
+12	the spatial grid size in z direction	//s_z
+13	the grid number in x direction     //n_x
+14	the grid number in y direction     //n_y
+15	the grid number in z direction     //n_z
 
 
 

@@ -1,239 +1,324 @@
 /*!\file file_in.c
- * \author Du Zhifang, Lei Xin
  * \brief This file is a collection of functions used to read files
  and check whether they are qualified. 
- */
+*/
 
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include <ctype.h>
-#include <stdbool.h>
-
-#include <sys/types.h>
-#include <sys/stat.h>
 #include <dirent.h>
 
 #include "../include/var_struc.h"
 #include "../include/file_io.h"
 
-
-#ifndef N_CONF
-#define N_CONF 400 
-#endif
+#define EPS 0.0000000001
 
 
+/*!\brief This function counts how many numbers are there in the initial data file. 
+ * \param[in] fp The pointer of the file to read in.
+ * \return The number of the numbers in the initial data file.
+ */
 
-static int file_pre_read(FILE * fp, char * add, _Bool rc)
+#define STR_FLU_INI(sfv)							\
+	do {										\
+		strcpy(add, add_mkdir);					\
+		strcat(add, #sfv ".txt");				\
+		flu_var_init(add, FV.sfv);				\
+	} while(0)
+
+struct flu_var flu_conf_load(char *example)
 {
-	double n_x = config[13], n_y = config[14], n_z = config[15];
-
+	int DIM = (int)config[0];
 	
-	int num = 0;
-	
-	/* "flag" helps us to count.
-	 *
-	 * - flase: when we read a number-using character (0, 1, 2, ..., e, E, minus sign and dot).
-	 * -  true: when we read a non-number-using character.
-	 */
-	_Bool flag = false;
+	// Find the directory of input data.
+	char add_mkdir[PATH_MAX];
+	switch(DIM)
+		{
+		case 1 :
+			strcpy(add_mkdir, "../data_in/one-dim/");
+			break;
+		case 2 :
+			strcpy(add_mkdir, "../data_in/two-dim/");
+			break;
+		default :
+			fprintf(stderr, "Strange computational dimension!\n");
+			break;
+		}	
+	DIR * dir_test = NULL;
+	strcat(add_mkdir, example);
 
-	int r_count, c_count;
+	dir_test = opendir(add_mkdir);
+	if(dir_test == NULL)
+		{
+			fprintf(stderr, "Input directory is not exist!\n");
+			exit(1);
+		}
+	closedir(dir_test);
+	
+
+	// We read the initial data file. 
+	char add[PATH_MAX];
+	strcpy(add, add_mkdir);
+	strcat(add, "/config.txt");
+	configurate(add);
+	printf("%s is configurated.\n", example);
+
+ 	struct flu_var FV;
+		strcpy(add, add_mkdir);
+		strcat(add, "RHO" ".txt");
+		flu_var_init(add, FV.RHO);	
+//	STR_FLU_INI(RHO);
+	STR_FLU_INI(U);
+	STR_FLU_INI(P);	
+	if(DIM > 1)
+		{		
+			STR_FLU_INI(V);
+		}	
+	if(!isinf(config[2]))
+		switch((int)config[2])
+			{
+			case 2 :			 							
+				STR_FLU_INI(PHI);
+				break;				
+			}	
+	printf("%s is initialized, grid number = %d .\n", example, (int)config[3]);
+	return FV;
+}
+
+static int flu_var_count(FILE * fp, const char * add)
+{	
+	int num = 0; // Data number.
+	
+	// "flag" helps us to count.	
+	// - flase: when we read a number-using character (0, 1, 2, ..., e, E, minus sign and dot).
+	// -  true: when we read a non-number-using character.
+	int flag = 0;
 
 	int ch;
 
+
 	while ((ch = getc(fp)) != EOF)
-		{		   
-			if (rc && ch == '\n' && !isinf(n_x) && !isinf(n_y))
-				{
-					if (num%(int)n_x == 0)
-						{
-							if(num/(int)n_x == r_count || num/(int)n_x == (r_count+1))
-								r_count = num/(int)config[13];
-							else
-								{
-									fprintf(stderr, "Row test is failed in the file '%s'!\n", add);
-									exit(2);
-								}
-						}
-					else
-						{
-							fprintf(stderr,"Row test is failed in the file '%s'!\n", add);
-							exit(2);
-						}
-				}
-			
-			if( isspace(ch)&&flag )
-				{
-					++num;
-					flag = 0;
-				}			
-			else if((ch == 46||ch == 45||ch == 69||ch == 101||isdigit(ch)) && (!flag))
+		{		
+			// Count the data number.
+			if (ch == 45 || ch == 46 || ch == 69 || ch == 101 || isdigit(ch))
 				flag = 1;
-			else if(isspace(ch)&&(!flag))
-				continue;
-			else if((ch == 46||ch == 45||ch == 69||ch == 101||isdigit(ch)) && (flag) )
-				continue;
-			else
+			else if (!isspace(ch))
 				{
-					fprintf(stderr, "Input contains illegal character(ASCII=%d, num=%d)!\n", ch, num);
+					fprintf(stderr, "Input contains illegal character(ASCII=%d) in the file '%s'!\n", ch, add);
 					exit(2);
 				}
+			else if (flag)
+				{
+					num++;
+					flag = 0;
+				}				
 		}
+	
+	rewind(fp);
 	
 	return num;
 }
 
 
-void initialize(char * add, double * F)
+#define RANGE_WRONG														\
+	do {																\
+		fprintf(stderr,"Data range is irregular in the file '%s'!\n", add); \
+		exit(2);														\
+	} while(0)
+
+/*!\brief This function counts how many numbers are there in the initial data file. 
+ * \param[in] fp The pointer of the file to read in.
+ */
+static void flu_var_read(FILE * fp, double * F, char * add)
+{
+	const int num_all = (int)config[3];
+	const double n_x = config[13], n_y = config[14], n_z = config[15];
+
+	static int D = 0;
+	
+	if (D == 0 && !isinf(n_x) && !isinf(n_y))
+		{
+			if (n_x < 1.0 || n_y < 1.0 || n_z < 1.0)
+				{
+					fprintf(stderr, "For the structural mesh, data number in some dimension < 1!\n");
+					exit(2);
+				}
+			// Test whether the total number of data is matched.
+			else if (num_all != (int)n_x * (int)n_y * (isinf(n_z) ? 1 : (int)n_z))
+				{
+					fprintf(stderr, "Data number is't matched to the structural mesh in the file '%s'!\n", add);
+					exit(2);
+				}
+			D = isinf(n_z) ? 2 : 3;
+		}
+	
+
+	int r_count = 0, c_count = 0;
+	div_t r_div, c_div;
+
+	
+	int num = 0;
+
+	int idx = 0;
+	char flo_num[50]; // String to store floating numbers.
+	char *endptr;
+	
+	int flag = 0;
+
+	int ch;
+
+
+	while ((ch = getc(fp)) != EOF)
+		{			
+			// Read the data number.
+			if (ch == 45 || ch == 46 || ch == 69 || ch == 101 || isdigit(ch))
+				{							
+					flo_num[idx++] = (char)ch;
+					flag = 1;
+				}
+			else if (!isspace(ch))
+				{
+					fprintf(stderr, "Input contains illegal character(ASCII=%d) in the file '%s'!\n", ch, add);
+					exit(2);
+				}
+			else if (flag)
+				{
+					flo_num[idx] = '\0';
+					idx = 0;
+					if (num >= num_all)
+						{
+							num++;
+							break;
+						}											
+					F[num++] = strtod(flo_num, &endptr);
+					if (strlen(endptr) != 0)
+						{
+							fprintf(stderr,"Reading Sth. that isn't a floating number in the file '%s'!", add);
+							exit(2);
+						}
+					flag = 0;
+				}
+
+			// Test whether the data range is regular and matched to the structual mesh.
+			if (ch == '\n' && D > 0)
+				{
+					r_div = div(num, (int)n_x);
+					c_div = div(num, (int)n_x * (int)n_y);
+					if (r_div.rem != 0)
+						RANGE_WRONG;
+					else if (r_div.quot == (r_count+1))								
+						r_count = r_div.quot;
+					else if (r_div.quot != r_count)
+						RANGE_WRONG;
+					else if (D == 2)
+						; 
+					else if (c_div.rem == 0 && (c_div.quot == c_count || c_div.quot == (c_count+1)))
+						c_count = c_div.quot;
+					else						
+						RANGE_WRONG;
+				}		
+		}
+	
+	// Test whether the total number of data is matched.
+	if (num != num_all)
+		{
+			fprintf(stderr, "Data number isn't equal to the given total number in the file '%s'!\n", add);
+			exit(2);
+		}	
+}
+
+
+void flu_var_init(char * add, double * F)
 {
 	FILE * fp;
-	int num;  
-	int file_read_state;
+	int num;
 
 
 	// Open the initial data file.
-	if((fp = fopen(add, "r")) == NULL)
+	if ((fp = fopen(add, "r")) == NULL)
 		{
-			fprintf(stderr, "Can't open initial data file: %s!\n", add);
+			perror(add);
 			exit(1);
 		}
-	if(isinf(config[3]))
-		config[3] = num;
-	else if((num = file_pre_read(fp, add, 2)) != (int)config[3])
-		{
-			printf("Unequal! number of grid in '%s' is %d, but in config is %d.", add, num, (int)config[3]);
-			exit(3);
-		}
-	fseek(fp, 0L, SEEK_SET); 
-  
+	
+	if (isinf(config[3]))		
+		config[3] = (double)flu_var_count(fp, add);
+	else if (config[3] < 1.0)
+		CONF_ERR(3);
 
-	F = (double *)malloc(num * sizeof(double));
-	file_read_state = file_read(fp, F, num);
+	free(F);
+	F = NULL;	
+	F = malloc(num * sizeof(double));
+	flu_var_read(fp, F, add);
 	fclose(fp);
-	if(file_read_state)
-		{
-			if(file_read_state == num)
-				printf("Error on file reading!\n");
-			else
-				printf("The %d-th entry in the file '%s' is not a number.\n", file_read_state, add);
-			exit(2);
-		}
-
 }
 
 
-/* This function read the configuration data file,
- * and store the configuration data in the array
- * "config".
- * config[0] is the polytropic index
- * config[1] is the total time
- * config[2] is the spatial grid size
- * config[3] is the largest value can be seen as zero
- * config[4] is the maximum number of time steps
- */
-void configurate(char * add)
-{
-	double config_pre[N_CONF*2];		
-	FILE * fp_data;
+static void config_read(FILE * fp)
+{	
+	char one_line[200]; // String to store one line.
+	char *endptr;
 
-	//open the configuration data file.
-	if((fp_data = fopen(add, "r")) == 0)
+	int i; // Index of config[*].
+	
+	double temp;
+
+	while (fgets(one_line, sizeof(one_line), fp) != NULL)
 		{
-			fprintf(stderr,"Cannot open configuration file!\n");
-			exit(1);
-		}
-
-	int num, state;
-
-	//read the configuration data file.
-	if((num = file_pre_read(fp_data, add, 0)) == 0||num > N_CONF*2)
-		{
-			printf("Configuration file error.\n");
-			exit(2);
-		}
-	else if (num%2)
-		{
-			printf("Number of the configuration file is not even.");
-			exit(2);
-		}
-
-	fseek(fp_data, 0L, SEEK_SET);
-	state = file_read(fp_data, config_pre, num);
-	fclose(fp_data);
-
-
-	int n;  
-	if(state)
-		{
-			if(state == num)
-				printf("Error on configuration data file reading!\n");
-			else
-				printf("The %d-th entry in the configuration file is not a number.\n", state);
-			exit(2);
-		}
-	else
-		{
-			for(int i=0; i<num/2; i+=2)  
+			// A line that doesn't begin with digits is a comment.
+			i =strtol(one_line, &endptr, 10);			
+			// If the value of config[i] doesn't exit, it is 0 by default.
+			if (0 < i && i < N_CONF)
 				{
-					if((n = (int)config_pre[i])>200 || n<0)
-						{
-							printf("The configuration file index bounds.");
-							exit(2);
-						}
-					else if(!isinf(config[n]))
-						{
-							printf("The configuration file index repeats.");
-							exit(2);
-						}
-					else
-						{
-							config[n] = config_pre[i+1];
-						}
+					temp = strtod(endptr, NULL);
+					if(fabs(config[i] - temp) > EPS)
+						CONF_INI(i,temp);
+					config[i] = temp;
 				}
 		}
-
-	config_check;
 }
 
 
-int config_check(void)
+int configurate(char * add)
 {
-	if(isinf(config[1])||isinf(config[5]))
+	FILE * fp;
+
+	//open the configuration data file.
+	if((fp = fopen(add, "r")) == NULL)
 		{
-			printf("The total time and the maximum number of time steps must be set.");
-			exit(2);
+			perror(add);
+			return 1; //Can't open the configuration file.
 		}
 	
-	// The default largest value can be seen as zero is set as 1e-9.
-	if(isinf(config[4]))
-		config[4] = pow(0.1,9);
-	else if(config[4] < 0)
-		{
-			printf("eps(%lf) should be positive.\n", config[4]);
-			exit(2);
-		}
-
-	// The default largest value can be seen as zero is set as 1e-9.	
-	if(isinf(config[0]))
-		config[0] = 1.4;	
-	else if(config[0] < (1.0 + config[4]))
-		{
-			printf("The constant of the perfect gas(%lf) should be larger than 1.0.\n", config[0]);
-			exit(2);
-		}
-
-	printf("t_all         = %g\n", config[1]);
-	printf("max_tim_step  = %d\n", (int)config[5]);
-	printf("eps           = %g\n", config[4]);
-	printf("gamma         = %g\n", config[0]);
-
-
-	if((!isinf(config[13]))&&(!isinf(config[14])))
-		{
-			printf("n_x, n_y      =  %d, %d\n", (int)config[13], (int)config[14]);
-		}
-	
+	config_read(fp);
+	fclose(fp);
 	return 0;
+}
+
+
+void config_check(void)
+{
+	if(isinf(config[1]) && isinf(config[5]))
+		{
+			printf("The total time or the maximum number of time steps must be setted!\n");
+			exit(2);
+		}
+
+	if(isinf(config[4]))
+		config[4] = EPS;
+	else if(config[4] < 0.0 || config[4] > 0.1)
+		{
+			printf("eps(%lf) should in (0, 0.1) !\n", config[4]);
+			exit(2);
+		}
+	
+	if(isinf(config[6]))
+		config[6] = 1.4;	
+	else if(config[6] < (1.0 + config[4]))
+		{
+			printf("The constant of the perfect gas(%lf) should be larger than 1.0 !\n", config[6]);
+			exit(2);
+		}	
 }
