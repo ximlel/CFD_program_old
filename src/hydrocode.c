@@ -24,13 +24,10 @@
 
 double config[N_CONF];
 
-struct flu_var FV = {
-	NULL, NULL, NULL, NULL, NULL, NULL, NULL
-};
+
 
 int main(int argc, char *argv[])
 {
-
 	for (int i = 0; i < N_CONF; i++)
 			config[i] = 1.0/0.0;
 
@@ -38,7 +35,7 @@ int main(int argc, char *argv[])
 	config[0] = (double)atoi(argv[3]);
 
 
-	flu_conf_load(argv[1]);
+	struct flu_var FV = flu_conf_load(argv[1]);
 	
 	/*  
 	double cpu_time[N];
@@ -128,9 +125,9 @@ int main(int argc, char *argv[])
 /*
 	for (int i = 0; i < 20; i++)
 			printf("%d,%lf\n",i, config[i]);
-*/
-	for (int i = 0; i < 30; i++)
-			printf("%d,%lf\n",i, FV.RHO[i]);
-	
+
+	for (int i = 0; i < 1000; i++)
+			printf("%d,%lf\n",i, FV.V[i]);
+*/	
 	return 0;	
 }

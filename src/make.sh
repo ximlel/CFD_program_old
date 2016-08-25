@@ -8,7 +8,7 @@ INITIAL_PATH=$PWD
 #Compile
 
 cd ./file_io
-gcc -std=c99 -c -Wall ./file_in.c -I ../include
+gcc -std=c99 -c ./file_in.c -I ../include
 ar crv file_io.a file_in.o
 
 cd ../tools
@@ -17,8 +17,8 @@ gcc -std=c99 -c ./memory_manage.c
 ar crv tools.a math_algo.o memory_manage.o
 
 cd ../
-gcc -std=c99 -c -Wall ./hydrocode.c -I ./include
-gcc -std=c99 -o -Wall hydrocode.out ./hydrocode.o ./file_io/file_io.a ./tools/tools.a -lm
+gcc -std=c99 -c ./hydrocode.c -I ./include
+gcc -std=c99 -o hydrocode.out ./hydrocode.o ./file_io/file_io.a ./tools/tools.a -lm
 
 ./hydrocode.out Sod_10_test Sod_10_test/Sod_10_test_ROE 2 ROE
 

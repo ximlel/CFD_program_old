@@ -21,16 +21,18 @@
  * \return The number of the numbers in the initial data file.
  */
 
-#define STR_FLU_INI(sfv)							\
-	do {											\
-		strcpy(add, add_mkdir);						\
-		strcat(add, "/" #sfv ".txt");				\
-		flu_var_init(add, FV.sfv);					\
+#define STR_FLU_INI(sfv)									\
+	do {													\
+		FV.sfv = malloc((int)config[3] * sizeof(double));	\
+		strcpy(add, add_mkdir);								\
+		strcat(add, "/" #sfv ".txt");						\
+		flu_var_init(add, FV.sfv, 1);						\
 	} while(0)
 
-void flu_conf_load(char *example)
+struct flu_var flu_conf_load(char *example)
 {
 	const int DIM = (int)config[0];
+	struct flu_var FV;
 	
 	// Find the directory of input data.
 	char add_mkdir[FILENAME_MAX];
@@ -65,18 +67,20 @@ void flu_conf_load(char *example)
 
 	printf("%s is configurated, dimension = %d .\n", example, DIM);
 
-
-			strcpy(add, add_mkdir);					
-		strcat(add, "/RHO.txt");				
-		flu_var_init(add, FV.RHO);
-
-		//STR_FLU_INI(RHO);
+	strcpy(add, add_mkdir);								
+	strcat(add, "/P.txt");						
+	flu_var_init(add, FV.P, 0); // pre read.
+		
+	STR_FLU_INI(P);
+	STR_FLU_INI(RHO);
 	STR_FLU_INI(U);
 	STR_FLU_INI(P);	
+
 	if(DIM > 1)
-		{		
 			STR_FLU_INI(V);
-		}	
+	if(DIM > 2)		
+			STR_FLU_INI(W);
+	
 	if(!isinf(config[2]))
 		switch((int)config[2])
 			{
@@ -85,6 +89,8 @@ void flu_conf_load(char *example)
 				break;				
 			}	
 	printf("%s is initialized, grid number = %d .\n", example, (int)config[3]);
+
+	return FV;
 }
 
 static int flu_var_count(FILE * fp, const char * add)
@@ -235,7 +241,7 @@ static void flu_var_read(FILE * fp, double * F, char * add)
 }
 
 
-void flu_var_init(char * add, double * F)
+void flu_var_init(char * add, double * F, const int r_or_c)
 {
 	FILE * fp;
 
@@ -250,13 +256,9 @@ void flu_var_init(char * add, double * F)
 		config[3] = (double)flu_var_count(fp, add);
 	else if (config[3] < 1.0)
 		CONF_ERR(3);
-	
-	F = malloc((int)config[3] * sizeof(double));
+	else if (r_or_c)				   		
+		flu_var_read(fp, F, add);					
 
-	flu_var_read(fp, F, add);
-	for (int i = 0; i<30; i++)
-		printf("%d,%lf\n",i, F[i]);
-	printf("ASAA:%s\n", add);
 	fclose(fp);
 }
 

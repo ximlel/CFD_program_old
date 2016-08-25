@@ -1,4 +1,4 @@
-void flu_conf_load(char *example);
+struct flu_var flu_conf_load(char *example);
 
 /* This function reads the initial data file. The function 
  * initialize return a pointer pointing to the position of
@@ -6,7 +6,7 @@ void flu_conf_load(char *example);
  * double. The value of first of these variables is m.
  * The following m variables are the initial value.
  */
-void flu_var_init(char * add, double * F);
+void flu_var_init(char * add, double * F, const int r_or_c);
 
 /* This function read the configuration data file,
  * and store the configuration data in the array "config".
