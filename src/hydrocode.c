@@ -127,7 +127,7 @@ int main(int argc, char *argv[])
 			printf("%d,%lf\n",i, config[i]);
 
 	for (int i = 0; i < 1000; i++)
-			printf("%d,%lf\n",i, FV.V[i]);
+			printf("%d,%lf\n",i, FV.P[i]);
 */	
 	return 0;	
 }

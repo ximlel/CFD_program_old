@@ -1,121 +1,128 @@
-#include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-#include <time.h>
 
+#include "../include/var_struc.h"
+#include "../include/file_io.h"
 
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <dirent.h>
-
-#include "../file_io.h"
-#include "../tools.h"
+#define MAX(a,b) ((a) > (b) ? (a) : (b))
 
 
 
-extern double * RHO;
-extern double * U;
-extern double * P;
-extern double * V;
-extern double * PHI;
+#define PRINT_LINE(v)														\
+	do {																\
+		for(k = 0; k < num_cell; ++k)									\
+			fprintf(fp, "\t%.15g", v[k]);								\
+		fprintf(fp,"\n");												\
+	} while (0)
 
-extern double config[200];
-
-
-
-
-/* This function write the solution into an output file.
- * It is quite simple so there will be no more comments.
- */
-void _1D_file_write_TEC(int m, int N, double * RHO[], double * U[], double * P[], double * X, double * cpu_time, double * config, char * example, char * problem)
+void file_write_TEC(const struct flu_var FV, const struct mesh_var mv, const char * problem)
 {
-  FILE * fp_write;
-  char file_data[100] = "";
+	int k;
+	
+	const int dim = (int)config[0], num_cell = (int)config[3];
 
+	int cell_type = 0;
+	for (k = 0; k < num_cell; k++)
+		cell_type= MAX(mv.cell_pt[0][0], cell_type);
+	
+	FILE * fp;
+  
+	char file_data[FILENAME_MAX];	
+	example_io(problem, file_data, 0);	
 
-//===================Write solution File=========================
-  strcat(file_data, "../../../data_out/one-dim/");
-  strcat(file_data, problem);
-  strcat(file_data, "/\0");
+	strcat(file_data, "/FLU_VAR.tec");
 
-  int stat_mkdir = 0;
-  DIR * dir_test = NULL;
+	//===================Write solution File=========================
+	
+	if ((fp = fopen(file_data, "w")) == NULL)
+		{
+			fprintf(stderr, "Cannot open solution output file!\n");
+			exit(1);
+		}
+  
+	fprintf(fp, "TITLE = \"FE-Volume Brick Data\"\n");
+	fprintf(fp, "VARIABLES = \"X\"");
+	if (dim > 1)
+		fprintf(fp, ", \"Y\"");
+	if (dim > 2)
+		fprintf(fp, ", \"Z\"");
+	fprintf(fp, ", \"P\", \"RHO\", \"U\"");
+	if (dim > 1)
+		fprintf(fp, ", \"V\"");
+	if (dim > 2)
+		fprintf(fp, ", \"W\"");
+	if (!isinf(config[2]))
+		switch((int)config[2])
+			{
+			case 2 :
+				fprintf(fp, ", \"PHI\"");
+				break;				
+			}
+	fprintf(fp, "\n");
+					
+	fprintf(fp, "ZONE  NODES=%d , ELEMENTS=%d , DATAPACKING=BLOCK, ", mv.num_pt, num_cell);
+	
+	if (cell_type < 2)
+		{
+			printf("NON ZONETYPE!");
+			fclose(fp);
+			remove(file_data);
+			exit(2);
+		}
+	else if (cell_type <= 2 && dim == 1)
+		fprintf(fp, "ZONETYPE=FELINESEG\n");
+	else if (cell_type <= 3 && dim == 2)
+		fprintf(fp, "ZONETYPE=FETETRAHEDRON\n");
+	else if (cell_type <= 4 && dim == 2)
+		fprintf(fp, "ZONETYPE=FEQUADRILATERAL\n");
+	else if (cell_type <= 4 && dim == 3)
+		fprintf(fp, "ZONETYPE=FETETRAHEDRON\n");
+	else if (cell_type <= 8 && dim == 3)
+		fprintf(fp, "ZONETYPE=FEBRICK\n");
+	else
+		{
+			printf("NON ZONETYPE!");
+			fclose(fp);
+			remove(file_data);
+			exit(2);
+		}	
 
-  strcat(file_data, example);
+	PRINT_LINE(mv.X);
+	if (dim > 1)
+		PRINT_LINE(mv.Y);
+	if (dim > 2)
+		PRINT_LINE(mv.Z);
+	PRINT_LINE(FV.P);
+	PRINT_LINE(FV.RHO);
+	PRINT_LINE(FV.U);
+	if (dim > 1)
+		PRINT_LINE(FV.V);
+	if (dim > 2)
+		PRINT_LINE(FV.W);
+	if (!isinf(config[2]))
+		switch((int)config[2])
+			{
+			case 2 :
+				PRINT_LINE(FV.PHI);
+				break;				
+			}									
+	
+	for(k = 0; k < num_cell; ++k)
+		{
+			if (mv.cell_pt[k][0] == cell_type)
+				for(int i = 1; i <= cell_type; i++)
+					{
+						if (i <= mv.cell_pt[k][0])
+							fprintf(fp, "\t%d", mv.cell_pt[k][i]+1);
+						else
+							fprintf(fp, "\t%d", mv.cell_pt[k][mv.cell_pt[k][0]]+1);
+					}
+			fprintf(fp, "\n");
+		}
 
-
-  dir_test = opendir(file_data);
-  if(dir_test != NULL)
-    printf("Output directory \"%s\" already exists.\n", file_data);
-  else
-  {
-    stat_mkdir = CreateDir(file_data);
-    if(stat_mkdir)
-    {
-      printf("Output directory \"%s\" construction failed.\n", file_data);
-      exit(9);
-    }
-    else
-      printf("Output directory \"%s\" constructed.\n", file_data);
-  }
-  closedir(dir_test);
-
- char rho_data[100] = "";
-  strcpy(rho_data, file_data);
-  strcat(rho_data, "/\0");
-  strcat(rho_data, "RHO.tec\0");
- char u_data[100] = "";
-  strcpy(u_data, file_data);
-  strcat(u_data, "/\0");
-  strcat(u_data, "U.tec\0");
- char p_data[100] = "";
-  strcpy(p_data, file_data);
-  strcat(p_data, "/\0");
-  strcat(p_data, "P.tec\0");
-
-
-
-  int j;
-
-
-  if((fp_write = fopen(rho_data, "w")) == 0)
-  {
-    printf("Cannot open solution output file!\n");
-    exit(1);
-  }
-  fprintf(fp_write, "VARIABLES = \"X\",  \"RHO\"\n");
-  fprintf(fp_write, "ZONE  I= %d , f=point\n",m);
-
-    for(j = 0; j < m; ++j)
-      fprintf(fp_write, "%.18lf\t %.18lf\n", 0.5 * (X[j] + X[j+1]), RHO[N][j]);
-  fclose(fp_write);
-
-
-  if((fp_write = fopen(u_data, "w")) == 0)
-  {
-    printf("Cannot open solution output file!\n");
-    exit(1);
-  }
-  fprintf(fp_write, "VARIABLES = \"X\",  \"U\"\n");
-  fprintf(fp_write, "ZONE  I= %d , f=point\n",m);
-
-    for(j = 0; j < m; ++j)
-      fprintf(fp_write, "%.18lf\t %.18lf\n", 0.5 * (X[j] + X[j+1]), U[N][j]);
-  fclose(fp_write);
-
-
-  if((fp_write = fopen(p_data, "w")) == 0)
-  {
-    printf("Cannot open solution output file!\n");
-    exit(1);
-  }
-  fprintf(fp_write, "VARIABLES = \"X\",  \"P\"\n");
-  fprintf(fp_write, "ZONE  I= %d , f=point\n",m);
-
-    for(j = 0; j < m; ++j)
-      fprintf(fp_write, "%.18lf\t %.18lf\n", 0.5 * (X[j] + X[j+1]), P[N][j]);
-  fclose(fp_write);
-
+	fclose(fp);
 }
+
+

@@ -1,12 +1,13 @@
 0	DIM(不可修改)
 1	the total time		//t_all
 2	species(muti-fluid)	2
-3	总网格数	//num_all
+3	总网格数	//num_cell
 4	the largest value can be seen as zero
 5	the maximum number of time steps
 6	the polytropic index	//gamma
 7	CFL
-	
+8	EUL/LAG	(默认EUL:0)
+9	order (默认1:1)
 
 10	the spatial grid size in x direction	//s_x
 11	the spatial grid size in y direction	//s_y
@@ -17,7 +18,7 @@
 
 
 
-#./FLUID_SRC.out 输入 输出 维数 solver (网格 步数)
+#./FLUID_SRC.out 输入 输出 维数 solver EUL (网格 步数)
 
 solver形式(1_Godunov, 2_ROE)
 
