@@ -9,8 +9,9 @@ INITIAL_PATH=$PWD
 
 cd ./file_io
 gcc -std=c99 -c ./file_in.c -I ../include
+gcc -std=c99 -c ./file_out.c -I ../include
 gcc -std=c99 -c ./io_control.c -I ../include
-ar crv file_io.a file_in.o io_control.o
+ar crv file_io.a file_in.o io_control.o file_out.o
 
 cd ../tools
 gcc -std=c99 -c ./math_algo.c
