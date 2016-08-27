@@ -14,7 +14,7 @@ static void config_check()
 {
 	if(isinf(config[1]) && isinf(config[5]))
 		{
-			printf("The total time or the maximum number of time steps must be setted!\n");
+			fprintf(stderr, "The total time or the maximum number of time steps must be setted!\n");
 			exit(2);
 		}
 
@@ -22,7 +22,7 @@ static void config_check()
 		config[4] = EPS;
 	else if(config[4] < 0.0 || config[4] > 0.1)
 		{
-			printf("eps(%lf) should in (0, 0.1) !\n", config[4]);
+			fprintf(stderr, "eps(%lf) should in (0, 0.1)!\n", config[4]);
 			exit(2);
 		}
 	
@@ -30,7 +30,7 @@ static void config_check()
 		config[6] = 1.4;	
 	else if(config[6] < (1.0 + config[4]))
 		{
-			printf("The constant of the perfect gas(%lf) should be larger than 1.0 !\n", config[6]);
+			fprintf(stderr, "The constant of the perfect gas(%lf) should be larger than 1.0!\n", config[6]);
 			exit(2);
 		}	
 }
@@ -43,7 +43,7 @@ void example_io(const char *example, char *add_mkdir, const int i_or_o)
 	const int el = isinf(config[8]) ? 0 : (int)config[8];
 	const int order = isinf(config[9]) ? 1 : (int)config[9];
 
-	char temp[15];
+	char tmp[15];
 	
 	if (i_or_o == 0)
 		{
@@ -79,8 +79,8 @@ void example_io(const char *example, char *add_mkdir, const int i_or_o)
 					exit(2);
 					break;
 				}
-			sprintf(temp, "%d_order/", order);
-			strcpy(add_mkdir, temp);
+			sprintf(tmp, "%d_order/", order);
+			strcpy(add_mkdir, tmp);
 		}
 	else
 		{		
@@ -127,18 +127,23 @@ void example_io(const char *example, char *add_mkdir, const int i_or_o)
 
 
 
-#define STR_FLU_INI(sfv)									\
-	do {													\
-		FV.sfv = malloc((int)config[3] * sizeof(double));	\
-		strcpy(add, add_mkdir);								\
-		strcat(add, #sfv ".txt");						\
+#define STR_FLU_INI(sfv)										\
+	do {														\
+		FV.sfv = malloc((int)config[3] * sizeof(double));		\
+		if(FV.sfv = NULL)										\
+			{													\
+				fprintf(stderr, "Initialize memory fail!\n");	\
+				exit(5);										\
+			}													\
+		strcpy(add, add_mkdir);									\
+		strcat(add, #sfv ".txt");								\
 		r = flu_var_init(add, FV.sfv, 1) ? r : 0;				\
 	} while(0)
 
-struct flu_var flu_conf_load(char *example)
+struct flu_var flu_conf_load(const char *example)
 {
 	const int dim = (int)config[0];
-	struct flu_var FV;
+	struct flu_var FV = {NULL, NULL, NULL, NULL, NULL, NULL, NULL};
 
 	int r = 1;
 	
@@ -164,8 +169,26 @@ struct flu_var flu_conf_load(char *example)
 	STR_FLU_INI(P);	
 	if (dim > 1)
 			STR_FLU_INI(V);
+	else if(!isinf(config[30]))
+		{		
+			FV.V = calloc((int)config[3], sizeof(double));
+			if(FV.V = NULL)									
+				{												
+					fprintf(stderr, "Initialize memory fail!\n");		
+					exit(5);							
+				}
+		}
 	if (dim > 2)		
 			STR_FLU_INI(W);
+	else if(!isinf(config[30]))
+		{		
+			FV.W = calloc((int)config[3], sizeof(double));
+			if(FV.W = NULL)									
+				{												
+					fprintf(stderr, "Initialize memory fail!\n");		
+					exit(5);							
+				}
+		}
 	if (!isinf(config[2]))
 		switch((int)config[2])
 			{

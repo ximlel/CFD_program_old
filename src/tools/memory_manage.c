@@ -49,7 +49,7 @@ void initialize_memory(double * p[],int N,int * CELL_POINT[])
 			p[k] = (double *)malloc(CELL_POINT[k][0] * sizeof(double));
 			if(p[k] == NULL)
 				{
-					printf("Initialize memory fail.\n");
+					printf("Initialize memory fail!\n");
 					exit(5);
 				}
 		}
@@ -63,7 +63,7 @@ void initialize_memory_int(int * p[],int N,int * CELL_POINT[])
 			p[k] = (int *)malloc(CELL_POINT[k][0] * sizeof(int));
 			if(p[k] == NULL)
 				{
-					printf("Initialize memory fail.\n");
+					printf("Initialize memory fail!\n");
 					exit(5);
 				}
 		}

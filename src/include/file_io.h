@@ -14,9 +14,9 @@ int configurate(char * add);
 
 void example_io(const char *example, char *add_mkdir, const int i_or_o);
 
-struct flu_var flu_conf_load(char *example);
+struct flu_var flu_conf_load(const char *example);
 
 
-void file_write_TEC(const struct flu_var FV, const struct mesh_var mv, const char * problem);
+void file_write_TEC(const struct flu_var FV, const struct mesh_var mv, const char * problem, const double time, const int dim);
 
 void file_write_VTK_3D(const struct flu_var FV, const struct mesh_var mv, const char * problem);

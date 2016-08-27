@@ -9,25 +9,25 @@
 #define MAX(a,b) ((a) > (b) ? (a) : (b))
 
 
-#define PRINT_NP(v)														\
-	do {																\
-		for(k = 0; k < mv.num_pt; k++)									\
-			fprintf(fp, "\t%.15g", mv.v[k]);								\
-		fprintf(fp,"\n");												\
+#define PRINT_NP(v)								\
+	do {										\
+		for(k = 0; k < mv.num_pt; k++)			\
+			fprintf(fp, "\t%.15g", mv.v[k]);	\
+		fprintf(fp,"\n");						\
 	} while (0)
 
-#define PRINT_NC(v)														\
-	do {																\
-		for(k = 0; k < num_cell; k++)									\
-			fprintf(fp, "\t%.15g", FV.v[k]);								\
-		fprintf(fp,"\n");												\
+#define PRINT_NC(v)								\
+	do {										\
+		for(k = 0; k < num_cell; k++)			\
+			fprintf(fp, "\t%.15g", FV.v[k]);	\
+		fprintf(fp,"\n");						\
 	} while (0)
 
-void file_write_TEC(const struct flu_var FV, const struct mesh_var mv, const char * problem)
+void file_write_TEC(const struct flu_var FV, const struct mesh_var mv, const char * problem, const double time, const int dim)
 {
 	int k;
 	
-	const int dim = (int)config[0], num_cell = (int)config[3];
+	const int num_cell = (int)config[3];
 
 	int cell_type = 0;
 	for (k = 0; k < num_cell; k++)
@@ -38,7 +38,9 @@ void file_write_TEC(const struct flu_var FV, const struct mesh_var mv, const cha
 	char file_data[FILENAME_MAX];	
 	example_io(problem, file_data, 0);	
 
-	strcat(file_data, "/FLU_VAR.tec");
+	char tmp[30];
+	sprintf(tmp, "/FLU_VAR_%15g.tec/", time);
+	strcat(file_data, tmp);
 
 	//===================Write solution File=========================
 	
@@ -68,7 +70,8 @@ void file_write_TEC(const struct flu_var FV, const struct mesh_var mv, const cha
 			}
 	fprintf(fp, "\n");
 					
-	fprintf(fp, "ZONE  NODES=%d , ELEMENTS=%d , DATAPACKING=BLOCK, ", mv.num_pt, num_cell);
+	fprintf(fp, "ZONE T=\"Fluid Region\", SOLUTIONTIME=%.15g \n", time);
+	fprintf(fp, "NODES=%d, ELEMENTS=%d, DATAPACKING=BLOCK, ", mv.num_pt, num_cell);
 	
 	if (cell_type < 2)
 		{
@@ -145,11 +148,7 @@ void file_write_VTK_3D(const struct flu_var FV, const struct mesh_var mv, const 
 {
 	int k;
 	
-	const int dim = (int)config[0], num_cell = (int)config[3];
-
-	int cell_type = 0;
-	for (k = 0; k < num_cell; k++)
-		cell_type= MAX(mv.cell_pt[0][0], cell_type);
+	const int num_cell = (int)config[3];
 	
 	FILE * fp;
   
@@ -186,22 +185,23 @@ void file_write_VTK_3D(const struct flu_var FV, const struct mesh_var mv, const 
 
 	int size = 0;
 	for(k = 0; k < num_cell; k++)
-			size = size + mv.cell_pt[k][0]+1;
-	
+		size = size + mv.cell_pt[k][0]+1;	
     fprintf(fp, "CELLS %d %d\n", num_cell, size);
 	for(k = 0; k < num_cell; k++)
 		{
 			for(int i = 0; i <= mv.cell_pt[k][0]; i++)
-					fprintf(fp, "\t%d", mv.cell_pt[k][i]);
+				fprintf(fp, "\t%d", mv.cell_pt[k][i]);
 			fprintf(fp, "\n");
 		}
 	fprintf(fp, "\n");
 
 	fprintf(fp, "CELL_TYPES %d\n",num_cell);
-	for(k = 0; k < num_cell; k++)
-		{
+	if (mv.cell_type == NULL)
+		for(k = 0; k < num_cell; k++)
 			fprintf(fp, "\t7\n");
-		}
+	else
+		for(k = 0; k < num_cell; k++)
+			fprintf(fp, "\t%d\n", mv.cell_type[k]);	
 	fprintf(fp, "\n");
 
 	fprintf(fp, "CELL_DATA %d\n",num_cell);
@@ -222,4 +222,3 @@ void file_write_VTK_3D(const struct flu_var FV, const struct mesh_var mv, const 
 
 	fclose(fp);
 }
-

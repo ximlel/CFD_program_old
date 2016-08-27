@@ -24,7 +24,7 @@ struct flu_var {
 
 
 struct mesh_var {
-	int num_pt, **border, **cell_pt;
+	int num_pt, num_border, *cell_type, **border, **cell_pt;
 	double *X, *Y, *Z;
 };
 

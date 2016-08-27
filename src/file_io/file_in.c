@@ -21,10 +21,10 @@ static int flu_var_count(FILE * fp, const char * add)
 {	
 	int num = 0; // Data number.
 	
-	// "flag" helps us to count.	
+	// "flg" helps us to count.	
 	// - flase: when we read a number-using character (0, 1, 2, ..., e, E, minus sign and dot).
 	// -  true: when we read a non-number-using character.
-	int flag = 0;
+	int flg = 0;
 
 	int ch;
 
@@ -33,16 +33,16 @@ static int flu_var_count(FILE * fp, const char * add)
 		{		
 			// Count the data number.
 			if (ch == 45 || ch == 46 || ch == 69 || ch == 101 || isdigit(ch))
-				flag = 1;
+				flg = 1;
 			else if (!isspace(ch))
 				{
 					fprintf(stderr, "Input contains illegal character(ASCII=%d) in the file '%s'!\n", ch, add);
 					return 0;
 				}
-			else if (flag)
+			else if (flg)
 				{
 					num++;
-					flag = 0;
+					flg = 0;
 				}				
 		}
 	
@@ -101,7 +101,7 @@ static int flu_var_read(FILE * fp, const char * add, double * F)
 	char flo_num[50]; // String to store floating numbers.
 	char *endptr;
 	
-	int flag = 0;
+	int flg = 0;
 
 	int ch;
 
@@ -112,14 +112,14 @@ static int flu_var_read(FILE * fp, const char * add, double * F)
 			if (ch == 45 || ch == 46 || ch == 69 || ch == 101 || isdigit(ch))
 				{							
 					flo_num[idx++] = (char)ch;
-					flag = 1;
+					flg = 1;
 				}
 			else if (!isspace(ch))
 				{
 					fprintf(stderr, "Input contains illegal character(ASCII=%d) in the file '%s'!\n", ch, add);
 					return 0;
 				}
-			else if (flag)
+			else if (flg)
 				{
 					flo_num[idx] = '\0';
 					idx = 0;
@@ -134,7 +134,7 @@ static int flu_var_read(FILE * fp, const char * add, double * F)
 							fprintf(stderr,"Reading Sth. that isn't a floating number in the file '%s'!\n", add);
 							return 0;
 						}
-					flag = 0;
+					flg = 0;
 				}
 
 			// Test whether the data range is regular and matched to the structual mesh.
@@ -202,7 +202,7 @@ static int config_read(FILE * fp)
 
 	int i; // Index of config[*].
 	
-	double temp;
+	double tmp;
 
 	while (fgets(one_line, sizeof(one_line), fp) != NULL)
 		{
@@ -211,10 +211,10 @@ static int config_read(FILE * fp)
 			// If the value of config[i] doesn't exit, it is 0 by default.
 			if (0 < i && i < N_CONF)
 				{
-					temp = strtod(endptr, NULL);
-					if(fabs(config[i] - temp) > EPS)
-						CONF_INI(i,temp);
-					config[i] = temp;
+					tmp = strtod(endptr, NULL);
+					if(fabs(config[i] - tmp) > EPS)
+						CONF_INI(i,tmp);
+					config[i] = tmp;
 				}
 		}
 	return 1;

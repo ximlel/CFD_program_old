@@ -2,6 +2,18 @@
 #include <math.h>
 #include <stdlib.h>
 
+#include "../include/var_struc.h"
+
+struct mesh_var mesh_load(char *mesh_name)
+{
+	struct mesh_var mv = {0, 0, NULL, NULL,	NULL, NULL, NULL, NULL};
+	
+}
+
+int msh_read(FILE * fp, const char * add)
+{
+	
+}
 
 int Sod_mesh
 (int * CELL_POINT[], double * X, double * Y, int * BOUNDARY_POINT[],
