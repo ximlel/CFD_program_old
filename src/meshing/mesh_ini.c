@@ -12,6 +12,17 @@ struct mesh_var mesh_load(char *mesh_name)
 
 int msh_read(FILE * fp, const char * add)
 {
+	char comment[25];
+	int ch;
+
+	while ((ch = getc(fp)) != EOF)
+		{
+			if (ch == '$')
+				{
+					if (fgets(comment, sizeof(comment), fp) = NULL)
+				}
+		}
+	
 	
 }
 

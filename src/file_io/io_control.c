@@ -129,14 +129,14 @@ void example_io(const char *example, char *add_mkdir, const int i_or_o)
 
 #define STR_FLU_INI(sfv)										\
 	do {														\
+		strcpy(add, add_mkdir);									\
+		strcat(add, #sfv ".txt");								\
 		FV.sfv = malloc((int)config[3] * sizeof(double));		\
-		if(FV.sfv = NULL)										\
+		if(FV.sfv == NULL)										\
 			{													\
 				fprintf(stderr, "Initialize memory fail!\n");	\
 				exit(5);										\
 			}													\
-		strcpy(add, add_mkdir);									\
-		strcat(add, #sfv ".txt");								\
 		r = flu_var_init(add, FV.sfv, 1) ? r : 0;				\
 	} while(0)
 
@@ -160,19 +160,18 @@ struct flu_var flu_conf_load(const char *example)
 	printf("%s is configurated, dimension = %d .\n", example, dim);
 
 	strcpy(add, add_mkdir);								
-	strcat(add, "/P.txt");						
-	flu_var_init(add, FV.P, 0); // pre read.
+	strcat(add, "P.txt");	
+	flu_var_init(add, config, 0); // pre read.
 		
 	STR_FLU_INI(P);
 	STR_FLU_INI(RHO);
-	STR_FLU_INI(U);
-	STR_FLU_INI(P);	
+	STR_FLU_INI(U);	
 	if (dim > 1)
 			STR_FLU_INI(V);
 	else if(!isinf(config[30]))
 		{		
 			FV.V = calloc((int)config[3], sizeof(double));
-			if(FV.V = NULL)									
+			if(FV.V == NULL)									
 				{												
 					fprintf(stderr, "Initialize memory fail!\n");		
 					exit(5);							
@@ -183,7 +182,7 @@ struct flu_var flu_conf_load(const char *example)
 	else if(!isinf(config[30]))
 		{		
 			FV.W = calloc((int)config[3], sizeof(double));
-			if(FV.W = NULL)									
+			if(FV.W == NULL)									
 				{												
 					fprintf(stderr, "Initialize memory fail!\n");		
 					exit(5);							

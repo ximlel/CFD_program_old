@@ -47,7 +47,7 @@ static int flu_var_count(FILE * fp, const char * add)
 		}
 	
 	rewind(fp);
-	
+
 	return num;
 }
 
@@ -182,14 +182,28 @@ int flu_var_init(const char * add, double * F, const int r_or_c)
 	
 	if (isinf(config[3]))		
 		config[3] = (double)flu_var_count(fp, add);
-
-	if (config[3] < 1.0)
-		CONF_ERR(3);
+	else if (config[3] < 1.0)
+		{					
+			fprintf(stderr, "Error in the 3-th value of the configuration!\n");
+			fclose(fp);
+			exit(2);
+		}
+	else if (F == NULL)
+		{
+printf("%s\n",add);					
+			fprintf(stderr, "Warning: the incoming pointer is NULL!\n");
+			fclose(fp);
+			return 0;
+		}
 	else if (r_or_c)				   		
 		if (flu_var_read(fp, add, F) == 0)
-			exit(2);					
+			{
+				fclose(fp);
+				exit(2);							
+			}
 
 	fclose(fp);
+
 	return 1;
 }
 
@@ -207,7 +221,8 @@ static int config_read(FILE * fp)
 	while (fgets(one_line, sizeof(one_line), fp) != NULL)
 		{
 			// A line that doesn't begin with digits is a comment.
-			i =strtol(one_line, &endptr, 10);			
+			i =strtol(one_line, &endptr, 10);
+			for ( ;isspace(*endptr) ; endptr++);
 			// If the value of config[i] doesn't exit, it is 0 by default.
 			if (0 < i && i < N_CONF)
 				{
@@ -216,6 +231,13 @@ static int config_read(FILE * fp)
 						CONF_INI(i,tmp);
 					config[i] = tmp;
 				}
+			else if (i != 0 || (*endptr != '#'&& *endptr != '\0'))			   
+				fprintf(stderr, "Warning: unknown row occurrs in configuration file!\n");
+		}
+	if (ferror(fp))
+		{
+			fprintf(stderr, "Read error occurrs in configuration file!\n");
+			return 0;
 		}
 	return 1;
 }
@@ -234,7 +256,10 @@ int configurate(char * add)
 		}
 	
 	if(config_read(fp) == 0)
-		exit(2);	
+		{
+			fclose(fp);
+			exit(2);
+		}
 	fclose(fp);
 	return 1;
 }
