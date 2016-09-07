@@ -7,22 +7,29 @@ INITIAL_PATH=$PWD
 
 #Compile
 
-cd ./file_io
+cd ./tools
+gcc -std=c99 -c ./math_algo.c
+gcc -std=c99 -c ./memory_manage.c
+ar crv tools.a math_algo.o memory_manage.o
+
+cd ../file_io
 gcc -std=c99 -c ./file_in.c -I ../include
 gcc -std=c99 -c ./file_out.c -I ../include
 gcc -std=c99 -c ./io_control.c -I ../include
 ar crv file_io.a file_in.o io_control.o file_out.o
 
-cd ../tools
-gcc -std=c99 -c ./math_algo.c
-gcc -std=c99 -c ./memory_manage.c
-ar crv tools.a math_algo.o memory_manage.o
+cd ../meshing
+gcc -std=c99 -c ./mesh_init.c -I ../include
+gcc -std=c99 -c ./msh_load.c -I ../include
+gcc -std=c99 -c ./square_mesh.c -I ../include
+ar crv meshing.a mesh_init.o msh_load.o square_mesh.o
+
 
 cd ../
 gcc -std=c99 -c ./hydrocode.c -I ./include
-gcc -std=c99 -o hydrocode.out ./hydrocode.o ./file_io/file_io.a ./tools/tools.a -lm
+gcc -std=c99 -o hydrocode.out ./hydrocode.o ./meshing/meshing.a ./file_io/file_io.a ./tools/tools.a -lm
 
-./hydrocode.out Sod_10_test Sod_10_test/Sod_10_test_ROE 2 ROE
+./hydrocode.out Sod_10_test Sod_10_test/Sod_10_test_ROE 2 ROE t1
 
 ## first order
 

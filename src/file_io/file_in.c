@@ -189,8 +189,7 @@ int flu_var_init(const char * add, double * F, const int r_or_c)
 			exit(2);
 		}
 	else if (F == NULL)
-		{
-printf("%s\n",add);					
+		{					
 			fprintf(stderr, "Warning: the incoming pointer is NULL!\n");
 			fclose(fp);
 			return 0;
@@ -222,7 +221,8 @@ static int config_read(FILE * fp)
 		{
 			// A line that doesn't begin with digits is a comment.
 			i =strtol(one_line, &endptr, 10);
-			for ( ;isspace(*endptr) ; endptr++);
+			for ( ;isspace(*endptr) ; endptr++) ;
+
 			// If the value of config[i] doesn't exit, it is 0 by default.
 			if (0 < i && i < N_CONF)
 				{

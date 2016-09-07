@@ -69,10 +69,10 @@ void example_io(const char *example, char *add_mkdir, const int i_or_o)
 					strcat(add_mkdir, "EUL_");
 					break;
 				case 1 :
-					strcpy(add_mkdir, "LAG_");
+					strcat(add_mkdir, "LAG_");
 					break;
 				case 2 :
-					strcpy(add_mkdir, "ALE_");
+					strcat(add_mkdir, "ALE_");
 					break;
 				default :
 					fprintf(stderr, "Strange description method of fluid motion!\n");
@@ -80,7 +80,7 @@ void example_io(const char *example, char *add_mkdir, const int i_or_o)
 					break;
 				}
 			sprintf(tmp, "%d_order/", order);
-			strcpy(add_mkdir, tmp);
+			strcat(add_mkdir, tmp);
 		}
 	else
 		{		

@@ -9,29 +9,40 @@
 #define MAX(a,b) ((a) > (b) ? (a) : (b))
 
 
-#define PRINT_NP(v)								\
-	do {										\
-		for(k = 0; k < mv.num_pt; k++)			\
-			fprintf(fp, "\t%.15g", mv.v[k]);	\
-		fprintf(fp,"\n");						\
+#define PRINT_NP(v)									\
+	do {											\
+		if (mv.v == NULL)							\
+			for(k = 0; k < mv.num_pt; k++)			\
+				fprintf(fp, "\t%.15g", 0.0);		\
+		else										\
+			for(k = 0; k < mv.num_pt; k++)			\
+				fprintf(fp, "\t%.15g", mv.v[k]);	\
+		fprintf(fp,"\n");							\
 	} while (0)
 
-#define PRINT_NC(v)								\
-	do {										\
-		for(k = 0; k < num_cell; k++)			\
-			fprintf(fp, "\t%.15g", FV.v[k]);	\
-		fprintf(fp,"\n");						\
+#define PRINT_NC(v)									\
+	do {											\
+		if (FV.v == NULL)							\
+			for(k = 0; k < num_cell; k++)			\
+				fprintf(fp, "\t%.15g", 0.0);		\
+		else										\
+			for(k = 0; k < num_cell; k++)			\
+				fprintf(fp, "\t%.15g", FV.v[k]);	\
+		fprintf(fp,"\n");							\
 	} while (0)
 
-void file_write_TEC(const struct flu_var FV, const struct mesh_var mv, const char * problem, const double time, const int dim)
+void file_write_TEC(const struct flu_var FV, const struct mesh_var mv, const char * problem, const double time, const int dim_plot)
 {
 	int k;
 	
 	const int num_cell = (int)config[3];
+	const int dim = (int)config[0];
 
 	int cell_type = 0;
 	for (k = 0; k < num_cell; k++)
 		cell_type= MAX(mv.cell_pt[0][0], cell_type);
+
+	int num_data;
 	
 	FILE * fp;
   
@@ -39,7 +50,7 @@ void file_write_TEC(const struct flu_var FV, const struct mesh_var mv, const cha
 	example_io(problem, file_data, 0);	
 
 	char tmp[30];
-	sprintf(tmp, "/FLU_VAR_%15g.tec/", time);
+	sprintf(tmp, "/FLU_VAR_%.15g.tec", time);
 	strcat(file_data, tmp);
 
 	//===================Write solution File=========================
@@ -52,14 +63,14 @@ void file_write_TEC(const struct flu_var FV, const struct mesh_var mv, const cha
   
 	fprintf(fp, "TITLE = \"FE-Volume Brick Data\"\n");
 	fprintf(fp, "VARIABLES = \"X\"");
-	if (dim > 1)
+	if (dim_plot > 1)
 		fprintf(fp, ", \"Y\"");
-	if (dim > 2)
+	if (dim_plot > 2)
 		fprintf(fp, ", \"Z\"");
 	fprintf(fp, ", \"P\", \"RHO\", \"U\"");
-	if (dim > 1)
+	if (dim_plot > 1)
 		fprintf(fp, ", \"V\"");
-	if (dim > 2)
+	if (dim_plot > 2)
 		fprintf(fp, ", \"W\"");
 	if (!isinf(config[2]))
 		switch((int)config[2])
@@ -83,7 +94,7 @@ void file_write_TEC(const struct flu_var FV, const struct mesh_var mv, const cha
 	else if (cell_type <= 2 && dim == 1)
 		fprintf(fp, "ZONETYPE=FELINESEG\n");
 	else if (cell_type <= 3 && dim == 2)
-		fprintf(fp, "ZONETYPE=FETETRAHEDRON\n");
+		fprintf(fp, "ZONETYPE=FETRIANGLE\n");
 	else if (cell_type <= 4 && dim == 2)
 		fprintf(fp, "ZONETYPE=FEQUADRILATERAL\n");
 	else if (cell_type <= 4 && dim == 3)
@@ -96,19 +107,30 @@ void file_write_TEC(const struct flu_var FV, const struct mesh_var mv, const cha
 			fclose(fp);
 			remove(file_data);
 			exit(2);
-		}	
+		}
+	
+	if (isinf(config[2]))
+		num_data = dim_plot + 2 + dim_plot;
+	else
+		switch((int)config[2])
+			{
+			case 2 :
+				num_data = dim_plot + 2 + dim_plot + 1;
+				break;				
+			}
+	fprintf(fp, "VARLOCATION=([%d-%d]=CELLCENTERED)\n", dim_plot + 1, num_data);
 
 	PRINT_NP(X);
-	if (dim > 1)
+	if (dim_plot > 1)
 		PRINT_NP(Y);
-	if (dim > 2)
+	if (dim_plot > 2)
 		PRINT_NP(Z);
 	PRINT_NC(P);
 	PRINT_NC(RHO);
 	PRINT_NC(U);
-	if (dim > 1)
+	if (dim_plot > 1)
 		PRINT_NC(V);
-	if (dim > 2)
+	if (dim_plot > 2)
 		PRINT_NC(W);
 	if (!isinf(config[2]))
 		switch((int)config[2])
@@ -120,14 +142,13 @@ void file_write_TEC(const struct flu_var FV, const struct mesh_var mv, const cha
 	
 	for(k = 0; k < num_cell; k++)
 		{
-			if (mv.cell_pt[k][0] == cell_type)
-				for(int i = 1; i <= cell_type; i++)
-					{
-						if (i <= mv.cell_pt[k][0])
-							fprintf(fp, "\t%d", mv.cell_pt[k][i]+1);
-						else
-							fprintf(fp, "\t%d", mv.cell_pt[k][mv.cell_pt[k][0]]+1);
-					}
+			for(int i = 1; i <= cell_type; i++)
+				{
+					if (i <= mv.cell_pt[k][0])
+						fprintf(fp, "\t%d", mv.cell_pt[k][i]+1);
+					else
+						fprintf(fp, "\t%d", mv.cell_pt[k][mv.cell_pt[k][0]]+1);
+				}
 			fprintf(fp, "\n");
 		}
 
@@ -165,11 +186,6 @@ void file_write_VTK_3D(const struct flu_var FV, const struct mesh_var mv, const 
 			exit(1);
 		}
 
-	if((fp = fopen(file_data, "w")) == NULL)
-		{
-			printf("Cannot open solution output file!\n");
-			exit(1);
-		}
 	fprintf(fp, "# vtk DataFile Version 2.0\n");
 	fprintf(fp, "FE-Volume Brick Data\n");
 	fprintf(fp, "ASCII\n\n");
@@ -179,7 +195,10 @@ void file_write_VTK_3D(const struct flu_var FV, const struct mesh_var mv, const 
 		{
 			fprintf(fp, "\t%.15g", mv.X[k]);
 			fprintf(fp, "\t%.15g", mv.Y[k]);
-			fprintf(fp, "\t%.15g\n", mv.Z[k]);
+			if (mv.Z == NULL)
+				fprintf(fp, "\t%.15g\n", 0.0);
+			else
+				fprintf(fp, "\t%.15g\n", mv.Z[k]);
 		}
     fprintf(fp, "\n");
 
@@ -201,7 +220,8 @@ void file_write_VTK_3D(const struct flu_var FV, const struct mesh_var mv, const 
 			fprintf(fp, "\t7\n");
 	else
 		for(k = 0; k < num_cell; k++)
-			fprintf(fp, "\t%d\n", mv.cell_type[k]);	
+			fprintf(fp, "\t7\n");
+//			fprintf(fp, "\t%d\n", mv.cell_type[k]);	
 	fprintf(fp, "\n");
 
 	fprintf(fp, "CELL_DATA %d\n",num_cell);
@@ -215,9 +235,16 @@ void file_write_VTK_3D(const struct flu_var FV, const struct mesh_var mv, const 
 				break;				
 			}
 
-	fprintf(fp, "VECTORS velocity double\n");	
+	fprintf(fp, "VECTORS velocity double\n");
+	
+			
 	for(k = 0; k < num_cell; k++)
-		fprintf(fp, "\t%.15g %.15g %.15g", FV.U[k], FV.V[k], FV.W[k]);	
+		{			
+			if (FV.W == NULL)
+				fprintf(fp, "\t%.15g %.15g %.15g", FV.U[k], FV.V[k], 0.0);
+			else
+				fprintf(fp, "\t%.15g %.15g %.15g", FV.U[k], FV.V[k], FV.W[k]);	
+		}
 	fprintf(fp, "\n");	
 
 	fclose(fp);

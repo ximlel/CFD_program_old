@@ -20,7 +20,7 @@
 30	3D模拟(默认关闭)            V,W,Y,Z都初始化为0
 
 
-#./FLUID_SRC.out 输入 输出 维数 solver EUL (网格 步数)
+#./FLUID_SRC.out 输入 输出 维数 solver 网格 (EUL, 步数)
 
 solver形式(1_Godunov, 2_ROE)
 

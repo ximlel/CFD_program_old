@@ -14,7 +14,7 @@
 #include "./include/tools.h"
 //#include "./include/Riemann_solver.h"
 #include "./include/file_io.h"
-//#include "./include/meshing.h"
+#include "./include/meshing.h"
 //#include "./include/finite_volume.h"
 
 
@@ -36,6 +36,8 @@ int main(int argc, char *argv[])
 
 
 	struct flu_var FV = flu_conf_load(argv[1]);
+
+	struct mesh_var mv= mesh_load(argv[1], argv[5]);
 	
 	/*  
 	double cpu_time[N];
@@ -112,7 +114,7 @@ int main(int argc, char *argv[])
 		strcpy(address,"2D_EUL_first_order\0" );	
 
 	if(strcmp(argv[argc-1],"Two_species")==0)
-		file_two_species_write_TEC(NUM_POINT, X, Y, NUM_CELL, CELL_POINT, RHO_t, U_t, V_t, P_t, CC_t, cpu_time, config, argv[2], address);
+		file_two_species_write_TEC(NUM_POINT, X,x Y, NUM_CELL, CELL_POINT, RHO_t, U_t, V_t, P_t, CC_t, cpu_time, config, argv[2], address);
 	else
 		{		  
 			//file_write_VTK(NUM_POINT, X, Y, NUM_CELL, CELL_POINT, RHO_t, U_t, V_t, P_t, cpu_time, config, argv[2], address); 
@@ -120,8 +122,9 @@ int main(int argc, char *argv[])
 		}
 	*/
 
+file_write_TEC(FV, mv, argv[2], 0.0, (int)config[0]);
 
-
+file_write_VTK_3D(FV, mv, argv[2]);
 /*
 	for (int i = 0; i < 20; i++)
 			printf("%d,%lf\n",i, config[i]);

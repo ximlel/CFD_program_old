@@ -1,3 +1,9 @@
+int msh_read(FILE * fp, struct mesh_var * mv);
+
+struct mesh_var mesh_load(const char *example, const char *mesh_name);
+
+
+/*
 int Sod_mesh
 (int * CELL_POINT[], double * X, double * Y, int * BOUNDARY_POINT[],
  double * gamma, double * config, int m, int n);
@@ -22,3 +28,4 @@ int Cylinder_mesh
 int RMI_mesh
 (int * CELL_POINT[], double * X, double * Y, int * BOUNDARY_POINT[],
  double * gamma, double * config, int m, int n);
+*/
