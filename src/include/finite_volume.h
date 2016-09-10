@@ -1,3 +1,24 @@
+struct cell_var cell_mem_init(struct mesh_var * mv);
+
+void cons_qty_init(struct cell_var * cv, struct flu_var * FV);
+
+void vol_comp(struct cell_var * cv, struct mesh_var * mv);
+
+void cell_pt_clockwise(struct mesh_var * mv);
+
+void cell_rel(struct cell_var * cv, struct mesh_var * mv);
+
+
+
+
+
+
+
+
+void Euler_scheme(struct flu_var * FV, struct mesh_var * mv, char * scheme);
+
+
+/*
 void first_order_solver
 (int * STEP, double * config, int NUM_CELL, int NUM_POINT, int NUM_BOUNDARY, int * CELL_POINT[],
  int * BOUNDARY_POINT[], int m, int n, double * RHO[], double * U[], double * V[], double * P[],
@@ -40,3 +61,4 @@ void second_order_two_species_solver
 (int * STEP, double * config, int NUM_CELL, int NUM_POINT, int NUM_BOUNDARY, int * CELL_POINT[],
  int * BOUNDARY_POINT[], int m, int n, double * RHO[], double * U[], double * V[], double * P[], double * Z[],
  double * X, double * Y, double * gamma, double * cpu_time, char * scheme, double CFL, char * example);
+*/

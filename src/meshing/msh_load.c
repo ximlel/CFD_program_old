@@ -125,7 +125,7 @@ static int msh_border_build(struct mesh_var * mv, int num_bc_all)
 				}
 		}
 
-	return 1;
+	return 1;	
 }
 
 
@@ -136,7 +136,7 @@ int msh_read(FILE * fp, struct mesh_var * mv)
 	int num_of = 0, num_tag; // number of section or tags.
 	int *idx_N = NULL; // order of NODE;
 	int num_cell, num_border;
-	int b_or_c, n_bc, num_bc_all; // boundary_or_cell
+	int b_or_c, n_bc, num_bc_all = 0; // boundary_or_cell
 	int temp[30]; // store cell_point data
 	int n_c, type, phy_entity;
 
@@ -167,12 +167,12 @@ int msh_read(FILE * fp, struct mesh_var * mv)
 							if (strcmp(headptr, Endsection) != 0)
 								{
 									fprintf(stderr, "End of the section in .msh file doesn't match!\n");
-									return 0;
+									goto return_0;
 								}
 							else if (num_of > 0)
 								{
 									fprintf(stderr, "The count is not complete in the section in .msh file!\n");
-									return 0;
+									goto return_0;
 								}
 							else
 								s_now = -1;
@@ -197,24 +197,24 @@ int msh_read(FILE * fp, struct mesh_var * mv)
 					if (strtod(headptr, &headptr) - 2.2 > EPS)
 						{
 							fprintf(stderr, "Version-number isn't not equal to 2.2 in .msh file!\n");
-							return 0;
+							goto return_0;
 						}
 					if (strtol(headptr, &headptr, 10) != 0)
 						{
 							fprintf(stderr, "The .msh file isn't ASCII file format!\n");
-							return 0;
+							goto return_0;
 						}
 					if (strtol(headptr, NULL, 10) != 8)
 						{
 							fprintf(stderr, "Currently only data-size = sizeof(double) is supported in .msh file!\n");
-							return 0;
+							goto return_0;
 						}
 					num_of--;
 				}
 			else if (s_now == 0)
 				{
 					fprintf(stderr, "Not only one line in Meshformat!\n");
-					return 0;
+					goto return_0;
 				}
 			else if (s_now == 2 && num_of <= 0)
 				{
@@ -229,7 +229,7 @@ int msh_read(FILE * fp, struct mesh_var * mv)
 							if(mv->X == NULL || mv->Y == NULL || mv->Z == NULL)
 								{
 									printf("Not enough memory in msh_read!\n");
-									return 0;
+									goto return_0;
 								}
 						}
 				}
@@ -254,7 +254,7 @@ int msh_read(FILE * fp, struct mesh_var * mv)
 					if(mv->cell_type == NULL || mv->cell_pt == NULL)
 						{
 							fprintf(stderr, "Not enough memory in msh_read!\n");
-							return 0;
+							goto return_0;
 						}
 				}
 			else if (s_now == 3 && idx_N != NULL)
@@ -297,7 +297,7 @@ int msh_read(FILE * fp, struct mesh_var * mv)
 					if(mv->cell_pt[n_bc] == NULL)
 						{
 							fprintf(stderr, "Not enough memory in msh_read!\n");
-							return 0;
+							goto return_0;
 						}
 
 					mv->cell_pt[n_bc][0] = n_c;
@@ -312,7 +312,7 @@ int msh_read(FILE * fp, struct mesh_var * mv)
 	if (ferror(fp))
 		{
 			fprintf(stderr, "Read error occurrs in .msh file!\n");
-			return 0;
+			goto return_0;
 		}
 
 	if (num_cell > (int)config[3])
@@ -320,7 +320,7 @@ int msh_read(FILE * fp, struct mesh_var * mv)
 	else if (num_cell < (int)config[3])
 		{
 			fprintf(stderr,"There are not enough cell in .msh file!\n");
-			return 0;
+			goto return_0;
 		}
 
 	mv->num_border[0] = 1;
@@ -332,11 +332,35 @@ int msh_read(FILE * fp, struct mesh_var * mv)
 			mv->border_pt = NULL;
 			free(mv->border_cond);
 			mv->border_cond = NULL;
-			return 0;
+			goto return_0;
 		}
 
 	free(idx_N);
 	idx_N = NULL;
 	
 	return 1;
+
+ return_0:
+	free(idx_N);
+	idx_N = NULL;
+	free(mv->X);
+	mv->X = NULL;
+	free(mv->Y);
+	mv->Y = NULL;
+	free(mv->Z);
+	mv->Z = NULL;
+	free(mv->cell_type);
+	mv->cell_type = NULL;
+	if (mv->cell_pt != NULL)
+		{
+			for(int i = 0; i < num_bc_all; ++i)
+				{
+					free(mv->cell_pt[i]);
+					mv->cell_pt[i] = NULL;
+				}
+			free(mv->cell_pt);
+			mv->cell_pt = NULL;
+		}
+
+	return 0;
 }

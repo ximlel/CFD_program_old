@@ -27,29 +27,42 @@ struct mesh_var mesh_load(const char *example, const char *mesh_name)
 		{
 			if(msh_read(fp, &mv) == 0)
 				{
-					free(mv.X);
-					mv.X = NULL;
-					free(mv.Y);
-					mv.Y = NULL;
-					free(mv.Z);
-					mv.Z = NULL;
-					free(mv.cell_type);
-					mv.cell_type = NULL;
-					free(mv.cell_pt);
-					mv.cell_pt = NULL; // Dosen't free cell_pt[*], it is so difficult.
-					// Dosen't free idx_N.
 					fclose(fp);
 					exit(2);
 				}
 			else
 				{									
 					fclose(fp);
-					printf("Mesh file %s.msh has been read!\n", mesh_name);
+					printf("Mesh file(%s.msh) has been read!\n", mesh_name);
 					return mv;
 				}
 		}
 
-
+	if (strcmp(mesh_name,"Sod_mesh") == 0)
+		Sod_mesh(&mv);
+	else if (strcmp(mesh_name,"Shear_mesh") == 0)
+		Shear_mesh(&mv);
+	else if (strcmp(mesh_name,"freee_mesh") == 0)
+		free_mesh(&mv);
+	else if (strcmp(mesh_name,"RMI_mesh") == 0)
+		RMI_mesh(&mv);
+	else if (strcmp(mesh_name,"cylinder_mesh") == 0)
+		cylinder_mesh(&mv);
+	else if (strcmp(mesh_name,"odd_even_mesh") == 0)
+		odd_even_mesh(&mv);
+	else if (strcmp(mesh_name,"odd_even_EW_mesh") == 0)
+		odd_even_EW_mesh(&mv);
+	else if (strcmp(mesh_name,"odd_even_EW_upstream_mesh") == 0)
+		odd_even_EW_upstream_mesh(&mv);
+	else if (strcmp(mesh_name,"odd_even_all_mesh") == 0)
+		odd_even_all_mesh(&mv);
+	else if (strcmp(mesh_name,"free_1D_mesh") == 0)
+		free_1D_mesh(&mv);
+	else
+		{
+			fprintf(stderr, "No mesh setting!\n");
+			exit(2);
+		}
 	
 	return mv;
 }

@@ -17,6 +17,14 @@ static void config_check()
 			fprintf(stderr, "The total time or the maximum number of time steps must be setted!\n");
 			exit(2);
 		}
+	
+	if(isinf(config[2]))
+		config[2] = 1;
+	else if(config[2] < 0.0)
+		{
+			fprintf(stderr, "The number of phases must > 0!\n");
+			exit(2);
+		}
 
 	if(isinf(config[4]))
 		config[4] = EPS;
@@ -32,7 +40,10 @@ static void config_check()
 		{
 			fprintf(stderr, "The constant of the perfect gas(%lf) should be larger than 1.0!\n", config[6]);
 			exit(2);
-		}	
+		}
+
+	config[8] = isinf(config[8]) ? 0 : config[8];
+	config[9] = isinf(config[9]) ? 1 : config[9];	
 }
 
 
@@ -188,13 +199,8 @@ struct flu_var flu_conf_load(const char *example)
 					exit(5);							
 				}
 		}
-	if (!isinf(config[2]))
-		switch((int)config[2])
-			{
-			case 2 :			 							
-				STR_FLU_INI(PHI);
-				break;				
-			}
+	if ((int)config[2] == 2)		 							
+		STR_FLU_INI(PHI);
 	if (r == 0)
 		{
 			printf("Initial date of fluid field failed to read!\n");

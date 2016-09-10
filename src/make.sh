@@ -9,8 +9,8 @@ INITIAL_PATH=$PWD
 
 cd ./tools
 gcc -std=c99 -c ./math_algo.c
-gcc -std=c99 -c ./memory_manage.c
-ar crv tools.a math_algo.o memory_manage.o
+gcc -std=c99 -c ./sys_pro.c
+ar crv tools.a math_algo.o sys_pro.o
 
 cd ../file_io
 gcc -std=c99 -c ./file_in.c -I ../include
@@ -21,15 +21,22 @@ ar crv file_io.a file_in.o io_control.o file_out.o
 cd ../meshing
 gcc -std=c99 -c ./mesh_init.c -I ../include
 gcc -std=c99 -c ./msh_load.c -I ../include
-gcc -std=c99 -c ./square_mesh.c -I ../include
-ar crv meshing.a mesh_init.o msh_load.o square_mesh.o
+gcc -std=c99 -c ./quad_mesh.c -I ../include
+gcc -std=c99 -c ./line_mesh.c -I ../include
+ar crv meshing.a mesh_init.o msh_load.o quad_mesh.o line_mesh.o
 
+cd ../finite_volume
+gcc -std=c99 -c ./Euler_scheme.c -I ../include
+gcc -std=c99 -c ./cell_init.c -I ../include
+ar crv finite_volume.a Euler_scheme.o cell_init.o
 
 cd ../
 gcc -std=c99 -c ./hydrocode.c -I ./include
-gcc -std=c99 -o hydrocode.out ./hydrocode.o ./meshing/meshing.a ./file_io/file_io.a ./tools/tools.a -lm
+gcc -std=c99 -o hydrocode.out ./hydrocode.o ./finite_volume/finite_volume.a ./meshing/meshing.a ./file_io/file_io.a ./tools/tools.a -lm
 
-./hydrocode.out Sod_10_test Sod_10_test/Sod_10_test_ROE 2 ROE t1
+#./hydrocode.out Sod_test Sod_test/Sod_test_ROE 1 ROE free_1D_mesh
+./hydrocode.out Sod_10_test Sod_10_test/Sod_10_test_ROE 2 ROE Sod_mesh
+#./hydrocode.out Sod_10_test2 Sod_10_test2/Sod_10_test_ROE 2 ROE t1
 
 ## first order
 

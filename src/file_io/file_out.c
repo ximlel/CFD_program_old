@@ -132,13 +132,8 @@ void file_write_TEC(const struct flu_var FV, const struct mesh_var mv, const cha
 		PRINT_NC(V);
 	if (dim_plot > 2)
 		PRINT_NC(W);
-	if (!isinf(config[2]))
-		switch((int)config[2])
-			{
-			case 2 :
-				PRINT_NC(PHI);
-				break;				
-			}									
+	if ((int)config[2] == 2)
+		PRINT_NC(PHI);									
 	
 	for(k = 0; k < num_cell; k++)
 		{
@@ -227,13 +222,8 @@ void file_write_VTK_3D(const struct flu_var FV, const struct mesh_var mv, const 
 	fprintf(fp, "CELL_DATA %d\n",num_cell);
 	PRINT_SCA(P);
 	PRINT_SCA(RHO);
-	if (!isinf(config[2]))
-		switch((int)config[2])
-			{
-			case 2 :
-				PRINT_SCA(PHI);
-				break;				
-			}
+	if ((int)config[2] == 2)
+		PRINT_SCA(PHI);
 
 	fprintf(fp, "VECTORS velocity double\n");
 	

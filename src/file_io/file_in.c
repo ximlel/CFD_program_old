@@ -69,7 +69,7 @@ static int flu_var_read(FILE * fp, const char * add, double * F)
 
 	static int D = 0;
 	
-	if (D == 0 && !isinf(n_x) && !isinf(n_y))
+	if (D == 0 && !isinf(n_x))
 		{
 			if (n_x < 1.0 || n_y < 1.0 || n_z < 1.0)
 				{
@@ -77,19 +77,18 @@ static int flu_var_read(FILE * fp, const char * add, double * F)
 					return 0;
 				}
 			// Test whether the total number of data is matched.
-			else if (num_cell != (int)n_x * (int)n_y * (isinf(n_z) ? 1 : (int)n_z))
+			else if (num_cell != (int)n_x * (isinf(n_y) ? 1 : (int)n_y) * (isinf(n_z) ? 1 : (int)n_z))
 				{
 					fprintf(stderr, "Data number is't matched to the structural mesh!\n");
 					return 0;
 				}
-			D = isinf(n_z) ? 2 : 3;
+			D = isinf(n_y) ? 1 : (isinf(n_z) ? 2 : 3);
 			if (D != (int)config[0])
 				{
 					fprintf(stderr, "Dimension is't matched to the structural mesh!\n");
 					return 0;
 				}
-		}
-	
+		}		
 
 	int r_count = 0, c_count = 0;
 	div_t r_div, c_div;
@@ -138,7 +137,7 @@ static int flu_var_read(FILE * fp, const char * add, double * F)
 				}
 
 			// Test whether the data range is regular and matched to the structual mesh.
-			if (ch == '\n' && D > 0)
+			if (ch == '\n' && D > 1)
 				{
 					r_div = div(num, (int)n_x);
 					c_div = div(num, (int)n_x * (int)n_y);
@@ -162,7 +161,8 @@ static int flu_var_read(FILE * fp, const char * add, double * F)
 		{
 			fprintf(stderr, "Data number isn't equal to the given total number in the file '%s'!\n", add);
 			return 0;
-		}	
+		}
+
 	return 1;
 }
 

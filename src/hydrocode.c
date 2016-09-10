@@ -15,7 +15,7 @@
 //#include "./include/Riemann_solver.h"
 #include "./include/file_io.h"
 #include "./include/meshing.h"
-//#include "./include/finite_volume.h"
+#include "./include/finite_volume.h"
 
 
 
@@ -28,6 +28,8 @@ double config[N_CONF];
 
 int main(int argc, char *argv[])
 {
+	printf("\n%s\n", argv[2]);
+
 	for (int i = 0; i < N_CONF; i++)
 			config[i] = 1.0/0.0;
 
@@ -122,8 +124,12 @@ int main(int argc, char *argv[])
 		}
 	*/
 
+Euler_scheme(&FV, &mv, argv[4]);
+
+
 file_write_TEC(FV, mv, argv[2], 0.0, (int)config[0]);
 
+if((int)config[0] > 1)
 file_write_VTK_3D(FV, mv, argv[2]);
 /*
 	for (int i = 0; i < 20; i++)

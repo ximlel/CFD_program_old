@@ -6,9 +6,11 @@
  * \author Lei Xin
  */
 
-void initialize_memory(double * p[],int N,int * CELL_POINT[]);
+void init_mem(double * p[], int n, int * cell_pt[]);
 
-void initialize_memory_int(int * p[],int N,int * CELL_POINT[]);
+void init_mem_int(int * p[], int n, int * cell_pt[]);
+
+void DispPro(double pro, int step);
 
 int CreateDir(const char* pPath);
 

@@ -7,9 +7,6 @@ exit
 	2 读入数据错误
 	5 内存错误
 
-m=config[13];
-n=config[14];
-NUM_CELL=config[3];
-
+periodic boundary condition(-7)
 
 TEC-->paraview 3D
