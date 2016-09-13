@@ -36,6 +36,15 @@ int main(int argc, char *argv[])
 	// Set dimension.
 	config[0] = (double)atoi(argv[3]);
 
+	char * scheme;
+	config[9] = (double)strtol(argv[4], &scheme, 10);	
+	if (* scheme == '_')
+		scheme++;
+	else
+		{
+			printf("No order!\n");
+			exit(2);
+		}
 
 	struct flu_var FV = flu_conf_load(argv[1]);
 
@@ -124,13 +133,17 @@ int main(int argc, char *argv[])
 		}
 	*/
 
-Euler_scheme(&FV, &mv, argv[4]);
+	
+
+	
+	Euler_scheme(&FV, &mv, scheme);
 
 
-file_write_TEC(FV, mv, argv[2], 0.0, (int)config[0]);
+	file_write_TEC(FV, mv, argv[2], 0.0, (int)config[0]);
 
-if((int)config[0] > 1)
-file_write_VTK_3D(FV, mv, argv[2]);
+	if((int)config[0] > 1)
+		file_write_VTK_3D(FV, mv, argv[2]);
+	
 /*
 	for (int i = 0; i < 20; i++)
 			printf("%d,%lf\n",i, config[i]);

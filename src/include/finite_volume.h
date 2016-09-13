@@ -8,10 +8,11 @@ void cell_pt_clockwise(struct mesh_var * mv);
 
 void cell_rel(struct cell_var * cv, struct mesh_var * mv);
 
+void cell_centroid(struct cell_var * cv, struct mesh_var * mv);
 
 
 
-
+void slope_limiter(struct cell_var * cv, struct mesh_var * mv, struct flu_var * FV);
 
 
 

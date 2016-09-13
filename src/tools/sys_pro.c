@@ -20,8 +20,7 @@ void DispPro(double pro, int step)
         for (int j=1; j<=50-lround(pro/2); j++)  
                 putchar('-');//打印进度条上还有多少没有完成的  
         fprintf(stdout, "  %6.2f%%   STEP=%-8d", pro, step);  
-        fflush(stdout);  
-	sleep(1);
+        fflush(stdout);
 }
 
 int CreateDir(const char * pPath)

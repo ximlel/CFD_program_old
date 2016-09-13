@@ -19,6 +19,8 @@
 
 30	3D模拟(默认关闭)            V,W,Y,Z都初始化为0
 
+40	limiter			(默认1:Ven) 0:Barth
+
 
 #./FLUID_SRC.out 输入 输出 维数 solver 网格 (EUL, 步数)
 

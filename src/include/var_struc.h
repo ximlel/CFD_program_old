@@ -26,7 +26,7 @@ struct flu_var {
 struct mesh_var {
 	int num_pt, num_ghost, *cell_type, **cell_pt, num_border[10], *border_pt, *border_cond;
 	double *X, *Y, *Z;
-	void (*bc)(struct flu_var * FV, double t);
+	void (*bc)(struct flu_var * FV, int i, int **cell_pt, double t);
 };
 
 struct cell_var {
@@ -34,6 +34,7 @@ struct cell_var {
 	double **n_x, **n_y, **n_z;
 	double **F_rho, **F_e, **F_phi, **F_u, **F_v, **F_w;
 	double *U_rho, *U_e, *U_phi, *U_u, *U_v, *U_w;
+	double *X_c, *Y_c, *Z_c;
 	double *vol;
 	double *gradx_rho, *grady_rho, *gradz_rho;
 	double *gradx_phi, *grady_phi, *gradz_phi;

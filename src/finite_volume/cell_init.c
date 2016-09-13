@@ -23,7 +23,7 @@
 
 #define cp_init_mem(v, n)												\
 	do {																\
-		cv.v = malloc((n) * sizeof(double));							\
+		cv.v = malloc((n) * sizeof(void *));							\
 		if(cv.v == NULL)												\
 			{															\
 				fprintf(stderr, "Not enough memory in cell var init!\n"); \
@@ -34,7 +34,7 @@
 
 #define cp_init_mem_int(v, n)											\
 	do {																\
-		cv.v = malloc((n) * sizeof(int));								\
+		cv.v = malloc((n) * sizeof(void *));							\
 		if(cv.v == NULL)												\
 			{															\
 				fprintf(stderr, "Not enough memory in cell var init!\n"); \
@@ -47,72 +47,77 @@ struct cell_var cell_mem_init(struct mesh_var * mv)
 {
 	const int dim = (int)config[0];
 	const int order = (int)config[9];
-	const int num_cell = mv->num_ghost + (int)config[3];
+	const int num_cell_ghost = mv->num_ghost + (int)config[3];
+	const int num_cell = (int)config[3];
 
+	
 	struct cell_var cv;
 
-	cp_init_mem_int(cell_cell, num_cell);
+	cp_init_mem_int(cell_cell, num_cell_ghost);
 	cv_init_mem(vol, num_cell);
 	
 	cp_init_mem(n_x, num_cell);
-	cp_init_mem(F_u, (int)config[3]);
-	cv_init_mem(U_u, num_cell);
+	cp_init_mem(F_u, num_cell);
+	cv_init_mem(U_u, num_cell_ghost);
 
-	cp_init_mem(F_rho, (int)config[3]);
-	cv_init_mem(U_rho, num_cell);
+	cp_init_mem(F_rho, num_cell);
+	cv_init_mem(U_rho, num_cell_ghost);
 
-	cp_init_mem(F_e, (int)config[3]);
-	cv_init_mem(U_e, num_cell);
+	cp_init_mem(F_e, num_cell);
+	cv_init_mem(U_e, num_cell_ghost);
 
 	if (order > 1)
 		{
-			cv_init_mem(gradx_rho, (int)config[3]);
-			cv_init_mem(gradx_e, (int)config[3]);
-			cv_init_mem(gradx_u, (int)config[3]);			
+			cv_init_mem(X_c, num_cell_ghost);
+			cv_init_mem(gradx_rho, num_cell);
+			cv_init_mem(gradx_e, num_cell);
+			cv_init_mem(gradx_u, num_cell);			
 		}
 	
 	if (dim > 1)
 		{
 			cp_init_mem(n_y, num_cell);
-			cp_init_mem(F_v, (int)config[3]);
-			cv_init_mem(U_v, num_cell);
+			cp_init_mem(F_v, num_cell);
+			cv_init_mem(U_v, num_cell_ghost);
 			if (order > 1)
 				{
-					cv_init_mem(grady_rho, (int)config[3]);
-					cv_init_mem(grady_e, (int)config[3]);
-					cv_init_mem(grady_u, (int)config[3]);
-					cv_init_mem(grady_v, (int)config[3]);
-					cv_init_mem(gradx_v, (int)config[3]);
+					cv_init_mem(Y_c, num_cell_ghost);
+					cv_init_mem(grady_rho, num_cell);
+					cv_init_mem(grady_e, num_cell);
+					cv_init_mem(grady_u, num_cell);
+					cv_init_mem(grady_v, num_cell);
+					cv_init_mem(gradx_v, num_cell);
 				}
 		}
 	if (dim > 2)
 		{					
 			cp_init_mem(n_z, num_cell);
-			cp_init_mem(F_w, (int)config[3]);
-			cv_init_mem(U_w, num_cell);		
+			cp_init_mem(F_w, num_cell);
+			cv_init_mem(U_w, num_cell_ghost);		
 			if (order > 1)
 				{
-					cv_init_mem(gradz_rho, (int)config[3]);
-					cv_init_mem(gradz_e, (int)config[3]);
-					cv_init_mem(gradz_u, (int)config[3]);
-					cv_init_mem(gradz_v, (int)config[3]);
-					cv_init_mem(gradz_w, (int)config[3]);
-					cv_init_mem(grady_w, (int)config[3]);
-					cv_init_mem(gradx_w, (int)config[3]);
+					cv_init_mem(Z_c, num_cell_ghost);
+					cv_init_mem(gradz_rho, num_cell);
+					cv_init_mem(gradz_e, num_cell);
+					cv_init_mem(gradz_u, num_cell);
+					cv_init_mem(gradz_v, num_cell);
+					cv_init_mem(gradz_w, num_cell);
+					cv_init_mem(grady_w, num_cell);
+					cv_init_mem(gradx_w, num_cell);
 				}
 		}
 
 	if ((int)config[2] == 2)
 		{	
-			cp_init_mem(F_phi, (int)config[3]);
-			cv_init_mem(U_phi, num_cell);				
+			cp_init_mem(F_phi, num_cell);
+			cv_init_mem(U_phi, num_cell_ghost);				
 			if (order > 1)
 				{
-					cv_init_mem(gradx_phi, (int)config[3]);
+					cv_init_mem(gradx_phi, num_cell);
 					if (dim > 2)
-						cv_init_mem(grady_phi, (int)config[3]);
+						cv_init_mem(grady_phi, num_cell);
 					if (dim > 3)
-						cv_init_mem(gradz_phi, (int)config[3]);	
+						cv_init_mem(gradz_phi, num_cell);	
 				}
 		}
 
@@ -154,27 +159,36 @@ void cons_qty_init(struct cell_var * cv, struct flu_var * FV)
 //Calculate volume.
 void vol_comp(struct cell_var * cv, struct mesh_var * mv)
 {
+	const int dim = (int)config[0];
 	const int num_cell = mv->num_ghost + (int)config[3];
 	int p_p, p_n;
 
-	for(int k = 0; k < num_cell; k++)
-		{			
-			cv->vol[k] = 0.0;
-			for(int j = 1; j <= mv->cell_pt[k][0]; j++)
-				{
-					if(j == mv->cell_pt[k][0]) 
-						{
-							p_p=mv->cell_pt[k][1];
-							p_n=mv->cell_pt[k][j];
-						}				  
-					else
-						{
-							p_p=mv->cell_pt[k][j+1];
-							p_n=mv->cell_pt[k][j];
-						} 
-					cv->vol[k] = cv->vol[k] + 0.5 * (mv->X[p_n]*mv->Y[p_p] - mv->Y[p_n]*mv->X[p_p]);
-				}
-		}
+	if (dim == 1)
+		for(int k = 0; k < num_cell; k++)
+			{
+				p_p = mv->cell_pt[k][1];
+				p_n = mv->cell_pt[k][2];					
+				cv->vol[k] = fabs(mv->X[p_p] - mv->X[p_n]);						
+			}
+	else if (dim == 2)
+		for(int k = 0; k < num_cell; k++)
+			{			
+				cv->vol[k] = 0.0;
+				for(int j = 1; j <= mv->cell_pt[k][0]; j++)
+					{
+						if(j == mv->cell_pt[k][0]) 
+							{
+								p_p=mv->cell_pt[k][1];
+								p_n=mv->cell_pt[k][j];
+							}				  
+						else
+							{
+								p_p=mv->cell_pt[k][j+1];
+								p_n=mv->cell_pt[k][j];
+							} 
+						cv->vol[k] = cv->vol[k] + 0.5 * (mv->X[p_n]*mv->Y[p_p] - mv->Y[p_n]*mv->X[p_p]);
+					}
+			}
 }
 
 
@@ -227,7 +241,8 @@ void cell_pt_clockwise(struct mesh_var * mv)
 
 //Determine the normal direction and relationship between cells.
 void cell_rel(struct cell_var * cv, struct mesh_var * mv)
-{	
+{
+	const int dim = (int)config[0];
 	const int num_cell = mv->num_ghost + (int)config[3];
 	
 	int **cp = mv->cell_pt;
@@ -235,91 +250,154 @@ void cell_rel(struct cell_var * cv, struct mesh_var * mv)
 
 	int cell_rec, n_border;
 	int i, l, ts;
-	double length;	
-	for(int k = 0; k < num_cell; k++)
-		{ 						
-			for(int j = 1; j <= cp[k][0]; j++)
-				{
-					if(j == cp[k][0]) 
-						{
-							p_p=cp[k][1];
-							p_n=cp[k][j];
-						}				  
-					else
-						{
-							p_p=cp[k][j+1];
-							p_n=cp[k][j];
-						}
-					length =  sqrt((mv->Y[p_p] - mv->Y[p_n])*(mv->Y[p_p] - mv->Y[p_n])+(mv->X[p_n] - mv->X[p_p])*(mv->X[p_n] - mv->X[p_p]));
-					cv->n_x[k][j] = (mv->Y[p_p] - mv->Y[p_n]) / length;
-					cv->n_y[k][j] = (mv->X[p_n] - mv->X[p_p]) / length;
-					
-					cell_rec = 0;										
-					
-					ts = 1;
-					while (ts <= MAX(num_cell-k-1, k))
-						{
-							// seek in two side
-							i = k + ts;
-							if (ts > 0)
-								ts = -ts;
-							else
-								ts = -ts + 1;
-							if (i < 0 || i >= num_cell)
-								continue;
+	double length;
+
+	if (dim == 1)
+		for(int k = 0; k < num_cell; k++)
+			{ 						
+				for(int j = 1; j <= cp[k][0]; j++)
+					{
+						p_p = cp[k][j];
+						
+						cell_rec = 0;
+						ts = 1;
+						while (ts <= MAX(num_cell-k-1, k))
+							{
+								// seek in two side
+								i = k + ts;
+								if (ts > 0)
+									ts = -ts;
+								else
+									ts = -ts + 1;
+								if (i < 0 || i >= num_cell)
+									continue;
 								
-							for(l = 1; l <= cp[i][0]; l++)
-								{
-									if(l == cp[i][0]) 
-										{
-											p2_p=cp[i][1];
-											p2_n=cp[i][l];
-										}				  
-									else
-										{
-											p2_p=cp[i][l+1];
-											p2_n=cp[i][l];
-										}											
-									if((p_p == p2_n) && (p2_p == p_n))
-										{
-											cv->cell_cell[k][j] = i;
-											cell_rec = 1;
-											printf("%d %d %d %d\n",k, j, i, l);
-											break;
-										}
-								}
-							if (cell_rec)
-								break;
-						}
-					//					printf("%d\n",k);
-					if (cell_rec)
-						continue;								
-												printf("BC:%d\n",k);
+								for(l = 1; l <= cp[i][0]; l++)
+									{
+										p2_p = cp[i][l];	
+										if(p_p == p2_p)
+											{
+												cv->cell_cell[k][j] = i;
+												cell_rec = 1;
+												break;
+											}
+									}
+								if (cell_rec)
+									break;
+							}				
+						if (cell_rec)
+							continue;
+					}
+			}
+	else if (dim == 2)
+		for(int k = 0; k < num_cell; k++)
+			{ 						
+				for(int j = 1; j <= cp[k][0]; j++)
+					{
+						if(j == cp[k][0]) 
+							{
+								p_p = cp[k][1];
+								p_n = cp[k][j];
+							}				  
+						else
+							{
+								p_p = cp[k][j+1];
+								p_n = cp[k][j];
+							}
+						length = sqrt((mv->Y[p_p] - mv->Y[p_n])*(mv->Y[p_p] - mv->Y[p_n])+(mv->X[p_n] - mv->X[p_p])*(mv->X[p_n] - mv->X[p_p]));
+						cv->n_x[k][j] = (mv->Y[p_p] - mv->Y[p_n]) / length;
+						cv->n_y[k][j] = (mv->X[p_n] - mv->X[p_p]) / length;
 					
-					for(l = 1, i = -1; l <= mv->num_border[0]; l++)
-						{
-							i++;
-							n_border = i + mv->num_border[l]; 
-							for( ; i < n_border; i++)
-								{				
-									p2_p=mv->border_pt[i+1];
-									p2_n=mv->border_pt[i];
-									if((p_p == p2_p && p_n == p2_n) || (p_p == p2_n && p_n == p2_p))
-										{
-											cv->cell_cell[k][j] = mv->border_cond[i];
-											cell_rec = 1;
-											break;
-										}
-								}							
-							if (cell_rec)
-								break;
-						}
+						cell_rec = 0;							   		
+						ts = 1;
+						while (ts <= MAX(num_cell-k-1, k))
+							{
+								// seek in two side
+								i = k + ts;
+								if (ts > 0)
+									ts = -ts;
+								else
+									ts = -ts + 1;
+								if (i < 0 || i >= num_cell)
+									continue;
+								
+								for(l = 1; l <= cp[i][0]; l++)
+									{
+										if(l == cp[i][0]) 
+											{
+												p2_p = cp[i][1];
+												p2_n = cp[i][l];
+											}				  
+										else
+											{
+												p2_p = cp[i][l+1];
+												p2_n = cp[i][l];
+											}
+										if((p_p == p2_n) && (p2_p == p_n))
+											{
+												cv->cell_cell[k][j] = i;
+												cell_rec = 1;;
+												break;
+											}
+									}
+								if (cell_rec)
+									break;
+							}
+				
+						if (cell_rec)
+							continue;								
+					
+						for(l = 1, i = -1; l <= mv->num_border[0]; l++)
+							{
+								i++;
+								n_border = i + mv->num_border[l]; 
+								for( ; i < n_border; i++)
+									{				
+										p2_p = mv->border_pt[i+1];
+										p2_n = mv->border_pt[i];
+										if((p_p == p2_p && p_n == p2_n) || (p_p == p2_n && p_n == p2_p))
+											{
+												cv->cell_cell[k][j] = mv->border_cond[i];
+												cell_rec = 1;
+												break;
+											}
+									}							
+								if (cell_rec)
+									break;
+							}
 			
-					if(!cell_rec && k < (int)config[3])
-						{
-							fprintf(stderr, "Ther are some wrong cell relationships!\n");
-							exit(2);
-						}
-				}							
+						if(!cell_rec && k < (int)config[3])
+							{
+								fprintf(stderr, "Ther are some wrong cell relationships!\n");
+								exit(2);
+							}
+					}							
+			}
+}
+
+
+void cell_centroid(struct cell_var * cv, struct mesh_var * mv)
+{
+	const int num_cell = mv->num_ghost + (int)config[3];
+
+	int **cp = mv->cell_pt;
+	double *X = mv->X, *Y = mv->Y;
+	
+	double S, S_tri;
+	for(int k = 0; k < num_cell; ++k)
+		{
+			S = 0.0;
+			cv->X_c[k] = 0.0;
+			cv->Y_c[k] = 0.0;
+
+			for(int j = 2; j < cp[k][0]; ++j)
+				{
+					S_tri = X[cp[k][1]]*Y[cp[k][j]] + X[cp[k][j+1]]*Y[cp[k][1]] + X[cp[k][j]]*Y[cp[k][j+1]] - X[cp[k][j+1]]*Y[cp[k][j]] - X[cp[k][1]]*Y[cp[k][j+1]] - X[cp[k][j]]*Y[cp[k][1]];
+					cv->X_c[k] += (X[cp[k][1]] + X[cp[k][j]] + X[cp[k][j+1]]) * S_tri;
+					cv->Y_c[k] += (Y[cp[k][1]] + Y[cp[k][j]] + Y[cp[k][j+1]]) * S_tri;
+					S += S_tri;
+				}			 
+			cv->X_c[k] /= S/3;
+			cv->Y_c[k] /= S/3;
 		}
 }

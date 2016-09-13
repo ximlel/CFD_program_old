@@ -28,7 +28,7 @@ int rinv(double a[], int n)
 				{
 					free(is);
 					free(js);
-					printf("err**not inv\n");
+					fprintf(stderr, "Error: no inverse matrix!\n");
 					return(0);
 				}
 			if (is[k]!=k)
@@ -140,14 +140,4 @@ void Gauss_elimination(int n, double (*a)[n+1], double *x)
 				}
 			x[i]=(a[i][n]-s)/a[i][i];
 		}
-}
-
-inline double mu_BJ(double x)
-{
-	return (x<1?x:1);
-}
-
-inline double mu_Ven(double x)
-{
-	return ((x*x+2*x)/(x*x+x+2));
 }
