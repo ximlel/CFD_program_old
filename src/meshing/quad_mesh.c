@@ -5,7 +5,7 @@
 #include <time.h>
 
 #include "../include/var_struc.h"
-
+#include "../include/meshing.h"
 
 #ifndef M_PI
 #define M_PI acos(-1.0)
@@ -138,45 +138,47 @@ static void quad_border_cond(struct mesh_var * mv, int n_x, int n_y, int down, i
 	int k;
 	const int num_cell = n_x * n_y;
 	const int num_border = mv->num_border[1];
-	int per_cell[num_cell];	
-
-	for (k = 0; k < num_cell; k++)
-			per_cell[k] = -1;
+	
+	mv->peri_cell = malloc(num_cell * sizeof(int));
+	if(mv->peri_cell == NULL)
+		{
+			printf("Not enough memory in quad periodic boundary constructed!\n");
+			exit(5);
+		}	
+	for(k = 0; k < num_cell; k++)
+		mv->peri_cell[k] = -1;
 	
 	for(k = 0; k < n_x; ++k)
 		{
 			if (down == -7)
-				per_cell[k] = k + n_x * (n_y-2);
-				
+				mv->peri_cell[k] = k + n_x * (n_y-2);				
 			// mv->border_cond[k] = k + n_x * (n_y-1);
-				mv->border_cond[k] = down;
+			mv->border_cond[k] = down;
 		}
 	for(k = n_x; k < n_x+n_y; ++k)
 		{
 			if (right == -7)				
-				per_cell[n_x * (k - n_x + 1) - 1] = n_x * (k - n_x) + 1;
-			
+				mv->peri_cell[n_x * (k - n_x + 1) - 1] = n_x * (k - n_x) + 1;			
 			// mv->border_cond[k] = n_x * (k - n_x);
-				mv->border_cond[k] = right;
+			mv->border_cond[k] = right;
 		}
 	for(k = n_x+n_y; k < n_x*2 + n_y; ++k)
 		{
 			if (up == -7)
-				per_cell[n_x*(n_y + 1) + n_y - k - 1] = n_x*3 + n_y - k - 1;
-					
+				mv->peri_cell[n_x*(n_y + 1) + n_y - k - 1] = n_x*3 + n_y - k - 1;					
 			// mv->border_cond[k] = n_x*2 + n_y - k - 1;
-				mv->border_cond[k] = up;
+			mv->border_cond[k] = up;
 		}
 	for(k = n_x*2 + n_y; k < num_border; ++k)
 		{
 			if (left == -7)
-				per_cell[(num_border - k -1) * n_x] = (num_border - k) * n_x - 2;
-				
-				// mv->border_cond[k] = (mv->num_border[1] - k) * n_x - 1;
-				mv->border_cond[k] = left;
+				mv->peri_cell[(num_border - k -1) * n_x] = (num_border - k) * n_x - 2;				
+			// mv->border_cond[k] = (mv->num_border[1] - k) * n_x - 1;
+			mv->border_cond[k] = left;
 		}
 
-
+	if(mv->num_ghost > 0)
+		period_cell_modi(mv);
 }
 
 void Sod_mesh(struct mesh_var * mv)

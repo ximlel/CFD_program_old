@@ -20,7 +20,7 @@ static inline double mu_Ven(double x)
 
 
 static void lsq_limiter
-(struct cell_var * cv, struct mesh_var * mv, 
+(struct cell_var cv, struct mesh_var mv, 
  double * grad_W_x, double * grad_W_y, double * W)
 {
 	const double eps = config[4];
@@ -29,12 +29,12 @@ static void lsq_limiter
 	const int lim = isinf(config[40]) ? 1 : (int)config[40]; //limiter
 	double (*mu[])(double) = { mu_BJ, mu_Ven };
 	
-	int **cp = mv->cell_pt;
-	int **cc = cv->cell_cell;
-	const double *X_c = cv->X_c;
-	const double *Y_c = cv->Y_c;	
-	const double *X = mv->X;
-	const double *Y = mv->Y;
+	int **cp = mv.cell_pt;
+	int **cc = cv.cell_cell;
+	const double *X_c = cv.X_c;
+	const double *Y_c = cv.Y_c;	
+	const double *X = mv.X;
+	const double *Y = mv.Y;
 
 	int cell_R;
 	double tmp_x, tmp_y;
@@ -123,17 +123,17 @@ static void lsq_limiter
 		}
 }
 
-void slope_limiter(struct cell_var * cv, struct mesh_var * mv, struct flu_var * FV)
+void slope_limiter(struct cell_var * cv, struct mesh_var mv, struct flu_var FV)
 {
 	const int dim = (int)config[0];
 
-	if (dim > 1)
+	if (dim == 2)
 		{
-			lsq_limiter(cv, mv, cv->gradx_rho, cv->grady_rho, cv->U_rho);
-			lsq_limiter(cv, mv, cv->gradx_e, cv->grady_e, cv->U_e);
-			lsq_limiter(cv, mv, cv->gradx_u, cv->grady_u, cv->U_u);
-			lsq_limiter(cv, mv, cv->gradx_v, cv->grady_v, cv->U_v);		
+			lsq_limiter(*cv, mv, cv->gradx_rho, cv->grady_rho, cv->U_rho);
+			lsq_limiter(*cv, mv, cv->gradx_e, cv->grady_e, cv->U_e);
+			lsq_limiter(*cv, mv, cv->gradx_u, cv->grady_u, cv->U_u);
+			lsq_limiter(*cv, mv, cv->gradx_v, cv->grady_v, cv->U_v);		
 			if ((int)config[2] == 2)
-				lsq_limiter(cv, mv, cv->gradx_phi, cv->grady_phi, cv->U_phi);	
+				lsq_limiter(*cv, mv, cv->gradx_phi, cv->grady_phi, cv->U_phi);	
 		}
 }

@@ -6,6 +6,7 @@
 
 #include "../include/var_struc.h"
 #include "../include/tools.h"
+#include "../include/finite_volume.h"
 
 
 #define MAX(a,b) ((a) > (b) ? (a) : (b))
@@ -29,7 +30,7 @@
 				fprintf(stderr, "Not enough memory in cell var init!\n"); \
 				goto return_NULL;										\
 			}															\
-		init_mem(cv.v, n, mv->cell_pt);									\
+		init_mem(cv.v, n, mv.cell_pt);									\
 	} while (0)															\
 
 #define cp_init_mem_int(v, n)											\
@@ -40,14 +41,14 @@
 				fprintf(stderr, "Not enough memory in cell var init!\n"); \
 				goto return_NULL;										\
 			}															\
-		init_mem_int(cv.v, n, mv->cell_pt);								\
+		init_mem_int(cv.v, n, mv.cell_pt);								\
 	} while (0)															\
 
-struct cell_var cell_mem_init(struct mesh_var * mv)
+struct cell_var cell_mem_init(const struct mesh_var mv)
 {
 	const int dim = (int)config[0];
 	const int order = (int)config[9];
-	const int num_cell_ghost = mv->num_ghost + (int)config[3];
+	const int num_cell_ghost = mv.num_ghost + (int)config[3];
 	const int num_cell = (int)config[3];
 
 	
@@ -59,12 +60,15 @@ struct cell_var cell_mem_init(struct mesh_var * mv)
 	cp_init_mem(n_x, num_cell);
 	cp_init_mem(F_u, num_cell);
 	cv_init_mem(U_u, num_cell_ghost);
+	cv_init_mem(U0_u, num_cell);
 
 	cp_init_mem(F_rho, num_cell);
 	cv_init_mem(U_rho, num_cell_ghost);
+	cv_init_mem(U0_rho, num_cell);
 
 	cp_init_mem(F_e, num_cell);
 	cv_init_mem(U_e, num_cell_ghost);
+	cv_init_mem(U0_e, num_cell);
 
 	if (order > 1)
 		{
@@ -79,6 +83,7 @@ struct cell_var cell_mem_init(struct mesh_var * mv)
 			cp_init_mem(n_y, num_cell);
 			cp_init_mem(F_v, num_cell);
 			cv_init_mem(U_v, num_cell_ghost);
+			cv_init_mem(U0_v, num_cell);
 			if (order > 1)
 				{
 					cv_init_mem(Y_c, num_cell_ghost);
@@ -93,7 +98,8 @@ struct cell_var cell_mem_init(struct mesh_var * mv)
 		{					
 			cp_init_mem(n_z, num_cell);
 			cp_init_mem(F_w, num_cell);
-			cv_init_mem(U_w, num_cell_ghost);		
+			cv_init_mem(U_w, num_cell_ghost);
+			cv_init_mem(U0_w, num_cell);		
 			if (order > 1)
 				{
 					cv_init_mem(Z_c, num_cell_ghost);
@@ -110,7 +116,8 @@ struct cell_var cell_mem_init(struct mesh_var * mv)
 	if ((int)config[2] == 2)
 		{	
 			cp_init_mem(F_phi, num_cell);
-			cv_init_mem(U_phi, num_cell_ghost);				
+			cv_init_mem(U_phi, num_cell_ghost);
+			cv_init_mem(U0_phi, num_cell);				
 			if (order > 1)
 				{
 					cv_init_mem(gradx_phi, num_cell);
@@ -128,124 +135,87 @@ struct cell_var cell_mem_init(struct mesh_var * mv)
 }
 
 
-
 //Initialize conserved quantities.
-void cons_qty_init(struct cell_var * cv, struct flu_var * FV)
+void cons_qty_init(struct cell_var * cv, const struct flu_var FV)
 {
 	const int dim = (int)config[0];
 	for(int k = 0; k < (int)config[3]; k++)
 		{
-			cv->U_rho[k] = FV->RHO[k];
-			cv->U_e[k] = FV->P[k]/(FV->gamma[k]-1.0) + 0.5*FV->RHO[k]*FV->U[k]*FV->U[k];
-			cv->U_u[k] = FV->RHO[k] * FV->U[k];
-			
+			cv->U_rho[k] = FV.RHO[k];
+			cv->U_e[k] = FV.P[k]/(FV.gamma[k]-1.0) + 0.5*FV.RHO[k]*FV.U[k]*FV.U[k];
+			cv->U_u[k] = FV.RHO[k] * FV.U[k];			
 			if (dim > 1)
 				{									
-					cv->U_v[k] = FV->RHO[k] * FV->V[k];
-					cv->U_e[k] += 0.5*FV->RHO[k]*FV->V[k]*FV->V[k];
+					cv->U_v[k] = FV.RHO[k] * FV.V[k];
+					cv->U_e[k] += 0.5*FV.RHO[k]*FV.V[k]*FV.V[k];
 				}
 			if (dim > 2)
 				{									
-					cv->U_w[k] = FV->RHO[k] * FV->W[k];
-					cv->U_e[k] += 0.5*FV->RHO[k]*FV->W[k]*FV->W[k];
+					cv->U_w[k] = FV.RHO[k] * FV.W[k];
+					cv->U_e[k] += 0.5*FV.RHO[k]*FV.W[k]*FV.W[k];
 				}
 
 			if ((int)config[2] == 2)					
-				cv->U_phi[k] = FV->RHO[k] * FV->PHI[k];
+				cv->U_phi[k] = FV.RHO[k] * FV.PHI[k];
+
+			cv->U0_rho[k] = cv->U_rho[k];
+			cv->U0_e[k]   = cv->U_e[k];
+			cv->U0_u[k]    = cv->U_u[k];			
+			if (dim > 1)									
+				cv->U0_v[k] = cv->U_v[k];
+			if (dim > 2)									
+				cv->U0_w[k] = cv->U_w[k];
+
+			if ((int)config[2] == 2)					
+				cv->U0_phi[k] = cv->U_phi[k];
 		}
 }
 
 
 //Calculate volume.
-void vol_comp(struct cell_var * cv, struct mesh_var * mv)
+void vol_comp(struct cell_var * cv, const struct mesh_var mv)
 {
 	const int dim = (int)config[0];
-	const int num_cell = mv->num_ghost + (int)config[3];
+	const int num_cell = mv.num_ghost + (int)config[3];
 	int p_p, p_n;
 
 	if (dim == 1)
 		for(int k = 0; k < num_cell; k++)
 			{
-				p_p = mv->cell_pt[k][1];
-				p_n = mv->cell_pt[k][2];					
-				cv->vol[k] = fabs(mv->X[p_p] - mv->X[p_n]);						
+				p_p = mv.cell_pt[k][1];
+				p_n = mv.cell_pt[k][2];					
+				cv->vol[k] = fabs(mv.X[p_p] - mv.X[p_n]);						
 			}
 	else if (dim == 2)
 		for(int k = 0; k < num_cell; k++)
 			{			
 				cv->vol[k] = 0.0;
-				for(int j = 1; j <= mv->cell_pt[k][0]; j++)
+				for(int j = 1; j <= mv.cell_pt[k][0]; j++)
 					{
-						if(j == mv->cell_pt[k][0]) 
+						if(j == mv.cell_pt[k][0]) 
 							{
-								p_p=mv->cell_pt[k][1];
-								p_n=mv->cell_pt[k][j];
+								p_p = mv.cell_pt[k][1];
+								p_n = mv.cell_pt[k][j];
 							}				  
 						else
 							{
-								p_p=mv->cell_pt[k][j+1];
-								p_n=mv->cell_pt[k][j];
+								p_p = mv.cell_pt[k][j+1];
+								p_n = mv.cell_pt[k][j];
 							} 
-						cv->vol[k] = cv->vol[k] + 0.5 * (mv->X[p_n]*mv->Y[p_p] - mv->Y[p_n]*mv->X[p_p]);
+						cv->vol[k] = cv->vol[k] + 0.5 * (mv.X[p_n]*mv.Y[p_p] - mv.Y[p_n]*mv.X[p_p]);
 					}
 			}
 }
 
 
-void cell_pt_clockwise(struct mesh_var * mv)
-{
-	const int num_cell = mv->num_ghost + (int)config[3];
-	int **cp = mv->cell_pt;
-	int p_p, p, p_n;
-	
-	int X_max, n_max;
-	for(int k = 0; k < num_cell; k++)
-		{
-			n_max = 1;
-			p = cp[k][n_max];
-			X_max = mv->X[p];
-			
-			for(int j = 2; j <= cp[k][0]; j++)
-				{
-					n_max = mv->X[cp[k][j]] > X_max ? j : n_max;
-					p = cp[k][n_max];
-					X_max = mv->X[p];
-				}
-
-			if(n_max == cp[k][0]) 
-				{
-					p_p=cp[k][1];
-					p_n=cp[k][n_max-1];
-				}
-			else if(n_max == 1)
-				{
-					p_p=cp[k][n_max+1];
-					p_n=cp[k][cp[k][0]];
-				}
-			else
-				{
-					p_p=cp[k][n_max+1];
-					p_n=cp[k][n_max-1];
-				}
-
-			if ((mv->X[p_p] - mv->X[p])*(mv->Y[p_n] - mv->Y[p]) - (mv->Y[p_p] - mv->Y[p])*(mv->X[p_n] - mv->X[p]) < 0.0)
-				for(int j = 1, temp; j < cp[k][0]/2; j++)
-					{
-						temp = cp[k][j];
-						cp[k][j] = cp[k][cp[k][0]+1-j];
-						cp[k][cp[k][0]+1-j] = temp;
-					}			
-		}
-}
-
 
 //Determine the normal direction and relationship between cells.
-void cell_rel(struct cell_var * cv, struct mesh_var * mv)
+void cell_rel(struct cell_var * cv, const struct mesh_var mv)
 {
 	const int dim = (int)config[0];
-	const int num_cell = mv->num_ghost + (int)config[3];
+	const int num_cell = mv.num_ghost + (int)config[3];
 	
-	int **cp = mv->cell_pt;
+	int **cp = mv.cell_pt;
 	int p_p, p_n, p2_p, p2_n;
 
 	int cell_rec, n_border;
@@ -257,8 +227,20 @@ void cell_rel(struct cell_var * cv, struct mesh_var * mv)
 			{ 						
 				for(int j = 1; j <= cp[k][0]; j++)
 					{
-						p_p = cp[k][j];
-						
+						if(j == cp[k][0]) 
+							{
+								p_p = cp[k][1];
+								p_n = cp[k][j];
+							}				  
+						else
+							{
+								p_p = cp[k][j+1];
+								p_n = cp[k][j];
+							}
+						p_p = cp[k][j];						
+						length = fabs(mv.X[p_p] - mv.X[p_n]);
+						cv->n_x[k][j] = (mv.X[p_p] - mv.X[p_n]) / length;
+				
 						cell_rec = 0;
 						ts = 1;
 						while (ts <= MAX(num_cell-k-1, k))
@@ -304,9 +286,9 @@ void cell_rel(struct cell_var * cv, struct mesh_var * mv)
 								p_p = cp[k][j+1];
 								p_n = cp[k][j];
 							}
-						length = sqrt((mv->Y[p_p] - mv->Y[p_n])*(mv->Y[p_p] - mv->Y[p_n])+(mv->X[p_n] - mv->X[p_p])*(mv->X[p_n] - mv->X[p_p]));
-						cv->n_x[k][j] = (mv->Y[p_p] - mv->Y[p_n]) / length;
-						cv->n_y[k][j] = (mv->X[p_n] - mv->X[p_p]) / length;
+						length = sqrt((mv.Y[p_p] - mv.Y[p_n])*(mv.Y[p_p] - mv.Y[p_n])+(mv.X[p_n] - mv.X[p_p])*(mv.X[p_n] - mv.X[p_p]));
+						cv->n_x[k][j] = (mv.Y[p_p] - mv.Y[p_n]) / length;
+						cv->n_y[k][j] = (mv.X[p_n] - mv.X[p_p]) / length;
 					
 						cell_rec = 0;							   		
 						ts = 1;
@@ -347,17 +329,17 @@ void cell_rel(struct cell_var * cv, struct mesh_var * mv)
 						if (cell_rec)
 							continue;								
 					
-						for(l = 1, i = -1; l <= mv->num_border[0]; l++)
+						for(l = 1, i = -1; l <= mv.num_border[0]; l++)
 							{
 								i++;
-								n_border = i + mv->num_border[l]; 
+								n_border = i + mv.num_border[l]; 
 								for( ; i < n_border; i++)
 									{				
-										p2_p = mv->border_pt[i+1];
-										p2_n = mv->border_pt[i];
+										p2_p = mv.border_pt[i+1];
+										p2_n = mv.border_pt[i];
 										if((p_p == p2_p && p_n == p2_n) || (p_p == p2_n && p_n == p2_p))
 											{
-												cv->cell_cell[k][j] = mv->border_cond[i];
+												cv->cell_cell[k][j] = mv.border_cond[i];
 												cell_rec = 1;
 												break;
 											}
@@ -376,28 +358,33 @@ void cell_rel(struct cell_var * cv, struct mesh_var * mv)
 }
 
 
-void cell_centroid(struct cell_var * cv, struct mesh_var * mv)
+void cell_centroid(struct cell_var * cv, const struct mesh_var mv)
 {
-	const int num_cell = mv->num_ghost + (int)config[3];
-
-	int **cp = mv->cell_pt;
-	double *X = mv->X, *Y = mv->Y;
+	const int dim = (int)config[0];
+	const int num_cell = mv.num_ghost + (int)config[3];
+	const double *X = mv.X, *Y = mv.Y;
+	int **cp = mv.cell_pt;
 	
 	double S, S_tri;
-	for(int k = 0; k < num_cell; ++k)
-		{
-			S = 0.0;
-			cv->X_c[k] = 0.0;
-			cv->Y_c[k] = 0.0;
 
-			for(int j = 2; j < cp[k][0]; ++j)
-				{
-					S_tri = X[cp[k][1]]*Y[cp[k][j]] + X[cp[k][j+1]]*Y[cp[k][1]] + X[cp[k][j]]*Y[cp[k][j+1]] - X[cp[k][j+1]]*Y[cp[k][j]] - X[cp[k][1]]*Y[cp[k][j+1]] - X[cp[k][j]]*Y[cp[k][1]];
-					cv->X_c[k] += (X[cp[k][1]] + X[cp[k][j]] + X[cp[k][j+1]]) * S_tri;
-					cv->Y_c[k] += (Y[cp[k][1]] + Y[cp[k][j]] + Y[cp[k][j+1]]) * S_tri;
-					S += S_tri;
-				}			 
-			cv->X_c[k] /= S/3;
-			cv->Y_c[k] /= S/3;
-		}
+	if (dim == 1)		
+		for(int k = 0; k < num_cell; ++k)
+			cv->X_c[k] = (X[cp[k][1]] + X[cp[k][2]])/2.0;							
+	else if (dim == 2)
+		for(int k = 0; k < num_cell; ++k)
+			{
+				S = 0.0;
+				cv->X_c[k] = 0.0;
+				cv->Y_c[k] = 0.0;
+
+				for(int j = 2; j < cp[k][0]; ++j)
+					{
+						S_tri = X[cp[k][1]]*Y[cp[k][j]] + X[cp[k][j+1]]*Y[cp[k][1]] + X[cp[k][j]]*Y[cp[k][j+1]] - X[cp[k][j+1]]*Y[cp[k][j]] - X[cp[k][1]]*Y[cp[k][j+1]] - X[cp[k][j]]*Y[cp[k][1]];
+						cv->X_c[k] += (X[cp[k][1]] + X[cp[k][j]] + X[cp[k][j+1]]) * S_tri;
+						cv->Y_c[k] += (Y[cp[k][1]] + Y[cp[k][j]] + Y[cp[k][j+1]]) * S_tri;
+						S += S_tri;
+					}			 
+				cv->X_c[k] /= S/3.0;
+				cv->Y_c[k] /= S/3.0;
+			}
 }

@@ -18,22 +18,18 @@ extern double config[];
 	} while (0)
 
 
+//fluid
 struct flu_var {
 	double *RHO, *U, *V, *W, *P, *PHI, *gamma;
 };
 
-
-struct mesh_var {
-	int num_pt, num_ghost, *cell_type, **cell_pt, num_border[10], *border_pt, *border_cond;
-	double *X, *Y, *Z;
-	void (*bc)(struct flu_var * FV, int i, int **cell_pt, double t);
-};
-
+//cell
 struct cell_var {
 	int **cell_cell;
 	double **n_x, **n_y, **n_z;
 	double **F_rho, **F_e, **F_phi, **F_u, **F_v, **F_w;
 	double *U_rho, *U_e, *U_phi, *U_u, *U_v, *U_w;
+	double *U0_rho, *U0_e, *U0_phi, *U0_u, *U0_v, *U0_w;
 	double *X_c, *Y_c, *Z_c;
 	double *vol;
 	double *gradx_rho, *grady_rho, *gradz_rho;
@@ -44,5 +40,28 @@ struct cell_var {
 	double *gradx_w, *grady_w, *gradz_w;
 };
 
+//interface
+struct i_f_var {
+	double n_x, n_y, n_z;
+	double delta_x, delta_y, delta_z;
+	double F_rho, F_e, F_phi, F_u, F_v, F_w;
+	double U_rho, U_e, U_phi, U_u, U_v, U_w;
+	double RHO, U, V, W, P, PHI, gamma;
+	double length;
+	double d_rho;
+	double d_phi;
+	double d_e;
+	double d_u;
+	double d_v;
+	double d_w;
+};
+
+//mesh
+struct mesh_var {
+	int num_pt, num_ghost, *cell_type, **cell_pt;
+	int num_border[10], *border_pt, *border_cond, *peri_cell;
+	double *X, *Y, *Z;
+	void (*bc)(struct cell_var * cv, struct mesh_var mv, double t);
+};
 	
 #endif

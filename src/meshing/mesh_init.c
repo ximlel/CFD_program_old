@@ -9,10 +9,58 @@
 
 
 
+static void cell_pt_clockwise(struct mesh_var *mv)
+{
+	const int num_cell = mv->num_ghost + (int)config[3];
+	int **cp = mv->cell_pt;
+	int p_p, p, p_n;
+	
+	int X_max, n_max;
+	for(int k = 0; k < num_cell; k++)
+		{
+			n_max = 1;
+			p = cp[k][n_max];
+			X_max = mv->X[p];
+			
+			for(int j = 2; j <= cp[k][0]; j++)
+				{
+					n_max = mv->X[cp[k][j]] > X_max ? j : n_max;
+					p = cp[k][n_max];
+					X_max = mv->X[p];
+				}
+
+			if(n_max == cp[k][0]) 
+				{
+					p_p=cp[k][1];
+					p_n=cp[k][n_max-1];
+				}
+			else if(n_max == 1)
+				{
+					p_p=cp[k][n_max+1];
+					p_n=cp[k][cp[k][0]];
+				}
+			else
+				{
+					p_p=cp[k][n_max+1];
+					p_n=cp[k][n_max-1];
+				}
+
+			if ((mv->X[p_p] - mv->X[p])*(mv->Y[p_n] - mv->Y[p]) - (mv->Y[p_p] - mv->Y[p])*(mv->X[p_n] - mv->X[p]) < 0.0)
+				for(int j = 1, temp; j < cp[k][0]/2; j++)
+					{
+						temp = cp[k][j];
+						cp[k][j] = cp[k][cp[k][0]+1-j];
+						cp[k][cp[k][0]+1-j] = temp;
+					}			
+		}
+}
+
 
 struct mesh_var mesh_load(const char *example, const char *mesh_name)
 {
-	struct mesh_var mv = {0, 0, NULL, NULL, {1}, NULL, NULL, NULL, NULL, NULL, NULL};
+	const int dim = (int)config[0];
+	
+	struct mesh_var mv = {0, 0, NULL, NULL, {1}, NULL, NULL, NULL, NULL, NULL, NULL, NULL};
 
 	char add_mkdir[FILENAME_MAX];
 	example_io(example, add_mkdir, 1);
@@ -38,31 +86,35 @@ struct mesh_var mesh_load(const char *example, const char *mesh_name)
 				}
 		}
 
-	if (strcmp(mesh_name,"Sod_mesh") == 0)
+	if (strcmp(mesh_name,"Sod") == 0)
 		Sod_mesh(&mv);
-	else if (strcmp(mesh_name,"Shear_mesh") == 0)
+	else if (strcmp(mesh_name,"Shear") == 0)
 		Shear_mesh(&mv);
-	else if (strcmp(mesh_name,"freee_mesh") == 0)
+	else if (strcmp(mesh_name,"freee") == 0)
 		free_mesh(&mv);
-	else if (strcmp(mesh_name,"RMI_mesh") == 0)
+	else if (strcmp(mesh_name,"RMI") == 0)
 		RMI_mesh(&mv);
-	else if (strcmp(mesh_name,"cylinder_mesh") == 0)
+	else if (strcmp(mesh_name,"cylinder") == 0)
 		cylinder_mesh(&mv);
-	else if (strcmp(mesh_name,"odd_even_mesh") == 0)
+	else if (strcmp(mesh_name,"odd_even") == 0)
 		odd_even_mesh(&mv);
-	else if (strcmp(mesh_name,"odd_even_EW_mesh") == 0)
-		odd_even_EW_mesh(&mv);
-	else if (strcmp(mesh_name,"odd_even_EW_upstream_mesh") == 0)
-		odd_even_EW_upstream_mesh(&mv);
-	else if (strcmp(mesh_name,"odd_even_all_mesh") == 0)
-		odd_even_all_mesh(&mv);
-	else if (strcmp(mesh_name,"free_1D_mesh") == 0)
+	else if (strcmp(mesh_name,"odd_even_periodic") == 0)
+		odd_even_periodic_mesh(&mv);
+	else if (strcmp(mesh_name,"odd_even_inflow") == 0)
+		odd_even_inflow_mesh(&mv);
+	else if (strcmp(mesh_name,"rand_disturb_inflow") == 0)
+		rand_disturb_inflow_mesh(&mv);
+	else if (strcmp(mesh_name,"free_1D") == 0)
 		free_1D_mesh(&mv);
 	else
 		{
 			fprintf(stderr, "No mesh setting!\n");
 			exit(2);
 		}
+
+
+	if (dim == 2)
+		cell_pt_clockwise(&mv);
 	
 	return mv;
 }
