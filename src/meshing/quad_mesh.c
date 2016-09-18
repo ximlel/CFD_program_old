@@ -151,7 +151,14 @@ static void quad_border_cond(struct mesh_var * mv, int n_x, int n_y, int down, i
 	for(k = 0; k < n_x; ++k)
 		{
 			if (down == -7)
-				mv->peri_cell[k] = k + n_x * (n_y-2);				
+				mv->peri_cell[k] = k + n_x * (n_y-2);
+			else if (down == -70)
+				{
+					if (k > 100)
+						mv->peri_cell[k] = k + n_x * (n_y-2) - 100;
+					else
+						mv->peri_cell[k] = n_x * (n_y-2);
+				}
 			// mv->border_cond[k] = k + n_x * (n_y-1);
 			mv->border_cond[k] = down;
 		}
@@ -162,10 +169,17 @@ static void quad_border_cond(struct mesh_var * mv, int n_x, int n_y, int down, i
 			// mv->border_cond[k] = n_x * (k - n_x);
 			mv->border_cond[k] = right;
 		}
-	for(k = n_x+n_y; k < n_x*2 + n_y; ++k)
+	for(k = n_x + n_y; k < n_x*2 + n_y; ++k)
 		{
 			if (up == -7)
-				mv->peri_cell[n_x*(n_y + 1) + n_y - k - 1] = n_x*3 + n_y - k - 1;					
+				mv->peri_cell[n_x*(n_y + 1) + n_y - k - 1] = n_x*3 + n_y - k - 1;
+			else if (up == -70)
+				{
+					if (k > n_x*2 + n_y - 100)
+						mv->peri_cell[n_x*(n_y + 1) + n_y - k - 1] = n_x*3 + n_y - k + 99;
+					else
+						mv->peri_cell[n_x*(n_y + 1) + n_y - k - 1] = n_x*2 - 1;
+				}
 			// mv->border_cond[k] = n_x*2 + n_y - k - 1;
 			mv->border_cond[k] = up;
 		}
@@ -289,4 +303,13 @@ void rand_disturb_inflow_mesh(struct mesh_var * mv)
 		}
 
 	quad_border_cond(mv, n_x, n_y, -7, -3, -7, -1);
+}
+
+void oblique_periodic_mesh(struct mesh_var * mv)
+{
+	const int n_x = (int)config[13], n_y = (int)config[14] + 2;				
+	if (quad_mesh(mv, n_x, n_y) == 0)
+		exit(5);
+
+	quad_border_cond(mv, n_x, n_y, -70, -3, -70, -3);
 }

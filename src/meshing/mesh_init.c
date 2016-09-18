@@ -90,7 +90,7 @@ struct mesh_var mesh_load(const char *example, const char *mesh_name)
 		Sod_mesh(&mv);
 	else if (strcmp(mesh_name,"Shear") == 0)
 		Shear_mesh(&mv);
-	else if (strcmp(mesh_name,"freee") == 0)
+	else if (strcmp(mesh_name,"free") == 0)
 		free_mesh(&mv);
 	else if (strcmp(mesh_name,"RMI") == 0)
 		RMI_mesh(&mv);
@@ -104,6 +104,8 @@ struct mesh_var mesh_load(const char *example, const char *mesh_name)
 		odd_even_inflow_mesh(&mv);
 	else if (strcmp(mesh_name,"rand_disturb_inflow") == 0)
 		rand_disturb_inflow_mesh(&mv);
+	else if (strcmp(mesh_name,"oblique_periodic") == 0)
+		oblique_periodic_mesh(&mv);
 	else if (strcmp(mesh_name,"free_1D") == 0)
 		free_1D_mesh(&mv);
 	else

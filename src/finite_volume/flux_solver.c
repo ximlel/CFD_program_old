@@ -39,9 +39,9 @@ void Riemann_exact_2D_scheme(struct i_f_var * ifv, struct i_f_var * ifv_R)
 
 	const double n_x = ifv->n_x, n_y = ifv->n_y;
 	const double u = ifv->U*n_x + ifv->V*n_y; 
-	const double u_R = ifv_R->U*ifv_R->n_x + ifv_R->V*ifv_R->n_y;
+	const double u_R = ifv_R->U*n_x + ifv_R->V*n_y;
 	const double c = sqrt(ifv->gamma * ifv->P / ifv->RHO);
-	const double c_R = sqrt(ifv->gamma * ifv->P / ifv->RHO);
+	const double c_R = sqrt(ifv_R->gamma * ifv_R->P / ifv_R->RHO);
 
 	double dire[3], mid[3];
 		
@@ -54,7 +54,7 @@ void Riemann_exact_2D_scheme(struct i_f_var * ifv, struct i_f_var * ifv_R)
 	if(mid[1]>0)
 		mid_qt = -ifv->U*n_y + ifv->V*n_x;
 	else
-		mid_qt = -ifv->U*n_y + ifv->V*n_x;
+		mid_qt = -ifv_R->U*n_y + ifv_R->V*n_x;
 	u_mid = mid[1]*n_x - mid_qt*n_y;
 	v_mid = mid[1]*n_y + mid_qt*n_x;
 											

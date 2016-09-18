@@ -139,8 +139,10 @@ void example_io(const char *example, char *add_mkdir, const int i_or_o)
 						printf("Output directory '%s' constructed.\n", add_mkdir);				
 				}
 			else
-				fprintf(stderr, "Input directory is not exist!\n");
-			exit(1);
+				{
+					fprintf(stderr, "Input directory is not exist!\n");
+					exit(1);
+				}
 		}
 	closedir(dir_test);
 	strcat(add_mkdir, "/");

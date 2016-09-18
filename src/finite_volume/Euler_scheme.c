@@ -58,7 +58,7 @@ void Euler_scheme(struct flu_var *FV, const struct mesh_var mv, const char *sche
 
 			if (mv.bc != NULL)
 				mv.bc(&cv, mv, t_all);
-			
+		
 			if (dim == 2)
 				tau = tau_calc(cv, mv);
 
@@ -128,6 +128,8 @@ void Euler_scheme(struct flu_var *FV, const struct mesh_var mv, const char *sche
 			if (stop_step == 1)
 				break;				
 		}
+
 	fluid_var_update(FV, cv);
+
 	printf("\nThe cost of CPU time for the Eulerian method is %g seconds.\n", cpu_time);
 }

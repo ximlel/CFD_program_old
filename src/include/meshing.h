@@ -15,6 +15,7 @@ void odd_even_periodic_mesh(struct mesh_var * mv);
 void odd_even_inflow_mesh(struct mesh_var * mv);
 
 void rand_disturb_inflow_mesh(struct mesh_var * mv);
+void oblique_periodic_mesh(struct mesh_var * mv);
 
 void free_1D_mesh(struct mesh_var * mv);
 

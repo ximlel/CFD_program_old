@@ -55,9 +55,9 @@ struct cell_var cell_mem_init(const struct mesh_var mv)
 	struct cell_var cv;
 
 	cp_init_mem_int(cell_cell, num_cell_ghost);
-	cv_init_mem(vol, num_cell);
+	cv_init_mem(vol, num_cell_ghost);
 	
-	cp_init_mem(n_x, num_cell);
+	cp_init_mem(n_x, num_cell_ghost);
 	cp_init_mem(F_u, num_cell);
 	cv_init_mem(U_u, num_cell_ghost);
 	cv_init_mem(U0_u, num_cell);
@@ -73,43 +73,43 @@ struct cell_var cell_mem_init(const struct mesh_var mv)
 	if (order > 1)
 		{
 			cv_init_mem(X_c, num_cell_ghost);
-			cv_init_mem(gradx_rho, num_cell);
-			cv_init_mem(gradx_e, num_cell);
-			cv_init_mem(gradx_u, num_cell);			
+			cv_init_mem(gradx_rho, num_cell_ghost);
+			cv_init_mem(gradx_e, num_cell_ghost);
+			cv_init_mem(gradx_u, num_cell_ghost);			
 		}
 	
 	if (dim > 1)
 		{
-			cp_init_mem(n_y, num_cell);
+			cp_init_mem(n_y, num_cell_ghost);
 			cp_init_mem(F_v, num_cell);
 			cv_init_mem(U_v, num_cell_ghost);
 			cv_init_mem(U0_v, num_cell);
 			if (order > 1)
 				{
 					cv_init_mem(Y_c, num_cell_ghost);
-					cv_init_mem(grady_rho, num_cell);
-					cv_init_mem(grady_e, num_cell);
-					cv_init_mem(grady_u, num_cell);
-					cv_init_mem(grady_v, num_cell);
-					cv_init_mem(gradx_v, num_cell);
+					cv_init_mem(grady_rho, num_cell_ghost);
+					cv_init_mem(grady_e, num_cell_ghost);
+					cv_init_mem(grady_u, num_cell_ghost);
+					cv_init_mem(grady_v, num_cell_ghost);
+					cv_init_mem(gradx_v, num_cell_ghost);
 				}
 		}
 	if (dim > 2)
 		{					
-			cp_init_mem(n_z, num_cell);
+			cp_init_mem(n_z, num_cell_ghost);
 			cp_init_mem(F_w, num_cell);
 			cv_init_mem(U_w, num_cell_ghost);
 			cv_init_mem(U0_w, num_cell);		
 			if (order > 1)
 				{
 					cv_init_mem(Z_c, num_cell_ghost);
-					cv_init_mem(gradz_rho, num_cell);
-					cv_init_mem(gradz_e, num_cell);
-					cv_init_mem(gradz_u, num_cell);
-					cv_init_mem(gradz_v, num_cell);
-					cv_init_mem(gradz_w, num_cell);
-					cv_init_mem(grady_w, num_cell);
-					cv_init_mem(gradx_w, num_cell);
+					cv_init_mem(gradz_rho, num_cell_ghost);
+					cv_init_mem(gradz_e, num_cell_ghost);
+					cv_init_mem(gradz_u, num_cell_ghost);
+					cv_init_mem(gradz_v, num_cell_ghost);
+					cv_init_mem(gradz_w, num_cell_ghost);
+					cv_init_mem(grady_w, num_cell_ghost);
+					cv_init_mem(gradx_w, num_cell_ghost);
 				}
 		}
 
@@ -120,11 +120,11 @@ struct cell_var cell_mem_init(const struct mesh_var mv)
 			cv_init_mem(U0_phi, num_cell);				
 			if (order > 1)
 				{
-					cv_init_mem(gradx_phi, num_cell);
+					cv_init_mem(gradx_phi, num_cell_ghost);
 					if (dim > 2)
-						cv_init_mem(grady_phi, num_cell);
+						cv_init_mem(grady_phi, num_cell_ghost);
 					if (dim > 3)
-						cv_init_mem(gradz_phi, num_cell);	
+						cv_init_mem(gradz_phi, num_cell_ghost);	
 				}
 		}
 
@@ -145,16 +145,16 @@ void cons_qty_init(struct cell_var * cv, const struct flu_var FV)
 	for(int k = 0; k < (int)config[3]; k++)
 		{
 			cv->U_rho[k] = FV.RHO[k];
-			cv->U_e[k] = FV.P[k]/(FV.gamma[k]-1.0) + 0.5*FV.RHO[k]*FV.U[k]*FV.U[k];
-			cv->U_u[k] = FV.RHO[k] * FV.U[k];			
+			cv->U_e[k]   = FV.P[k]/(FV.gamma[k]-1.0) + 0.5*FV.RHO[k]*FV.U[k]*FV.U[k];
+			cv->U_u[k]   = FV.RHO[k] * FV.U[k];			
 			if (dim > 1)
 				{									
-					cv->U_v[k] = FV.RHO[k] * FV.V[k];
+					cv->U_v[k]  = FV.RHO[k] * FV.V[k];
 					cv->U_e[k] += 0.5*FV.RHO[k]*FV.V[k]*FV.V[k];
 				}
 			if (dim > 2)
 				{									
-					cv->U_w[k] = FV.RHO[k] * FV.W[k];
+					cv->U_w[k]  = FV.RHO[k] * FV.W[k];
 					cv->U_e[k] += 0.5*FV.RHO[k]*FV.W[k]*FV.W[k];
 				}
 
@@ -164,7 +164,7 @@ void cons_qty_init(struct cell_var * cv, const struct flu_var FV)
 
 			cv->U0_rho[k] = cv->U_rho[k];
 			cv->U0_e[k]   = cv->U_e[k];
-			cv->U0_u[k]    = cv->U_u[k];			
+			cv->U0_u[k]   = cv->U_u[k];			
 			if (dim > 1)									
 				cv->U0_v[k] = cv->U_v[k];
 			if (dim > 2)									

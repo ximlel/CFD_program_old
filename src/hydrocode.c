@@ -52,13 +52,13 @@ int main(int argc, char *argv[])
 
 	printf("Output: %s.\n", argv[2]);
 
-	
+
+	file_write_TEC(FV, mv, argv[2], 0.0, (int)config[0]);	
 
 	
 	Euler_scheme(&FV, mv, scheme);
 
-
-	file_write_TEC(FV, mv, argv[2], 0.0, (int)config[0]);
+	file_write_TEC(FV, mv, argv[2], config[1], (int)config[0]);
 
 	if((int)config[0] > 1)
 		file_write_VTK_3D(FV, mv, argv[2]);

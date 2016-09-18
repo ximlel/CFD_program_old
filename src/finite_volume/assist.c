@@ -46,7 +46,7 @@ static int cons2prim(struct i_f_var * ifv)
 void fluid_var_update(struct flu_var *FV, struct cell_var cv)
 {
 	const int dim = (int)config[0];		
-	const double num_cell = (int)config[3];
+	const int num_cell = (int)config[3];
 	struct i_f_var ifv;
 	
 	for(int k = 0; k < num_cell; k++)
@@ -55,14 +55,16 @@ void fluid_var_update(struct flu_var *FV, struct cell_var cv)
 			ifv.U_e   = cv.U_e[k];
 			ifv.U_u   = cv.U_u[k];
 			if (dim > 1)
-				ifv.U_u = cv.U_u[k];
+				ifv.U_v = cv.U_v[k];
 			if (dim > 2)
 				ifv.U_w = cv.U_w[k];
 			if ((int)config[2] == 2)
 				ifv.U_phi = cv.U_phi[k];
 			ifv.gamma   = cv.gamma[k];
 
-			cons2prim(&ifv);
+			if(cons2prim(&ifv) == 0)
+				printf("WROUNG!\n");
+
 
 			FV->RHO[k] = ifv.RHO;
 			FV->P[k]   = ifv.P;
