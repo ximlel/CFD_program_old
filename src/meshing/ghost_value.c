@@ -65,6 +65,7 @@ void period_ghost(struct cell_var * cv, struct mesh_var mv, double t)
 								cv->gradz_phi[i] = cv->gradz_phi[per_cell[i]];
 						}
 				}
+			cv->gamma[i] = cv->gamma[per_cell[i]];
 		}
 }
 

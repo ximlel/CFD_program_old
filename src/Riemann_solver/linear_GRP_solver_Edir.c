@@ -2,10 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "../../../lib/Riemann_solver.h"
+#include "../include/Riemann_solver.h"
 
-
-extern double SSTTAARR[3];
 
 
 
@@ -150,9 +148,6 @@ void linear_GRP_solver_Edir
   c_star_L = sqrt(gamma * p_star / rho_star_L);
   c_star_R = sqrt(gamma * p_star / rho_star_R);
 
-  SSTTAARR[0] = rho_star_L;
-  SSTTAARR[1] = rho_star_R;
-  SSTTAARR[2] = u_star;
 
 
   //printf("%d\t%d\n", CRW[0], CRW[1]);

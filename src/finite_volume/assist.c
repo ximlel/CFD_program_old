@@ -7,7 +7,7 @@
 #include "../include/var_struc.h"
 
 
-static int prim2cons(struct i_f_var * ifv)
+static int cons2prim(struct i_f_var * ifv)
 {
 	const int dim = (int)config[0];
 	const double eps = (int)config[4];
@@ -40,6 +40,41 @@ static int prim2cons(struct i_f_var * ifv)
 		return 0;
 
 	return 1;
+}
+
+
+void fluid_var_update(struct flu_var *FV, struct cell_var cv)
+{
+	const int dim = (int)config[0];		
+	const double num_cell = (int)config[3];
+	struct i_f_var ifv;
+	
+	for(int k = 0; k < num_cell; k++)
+		{					
+			ifv.U_rho = cv.U_rho[k];
+			ifv.U_e   = cv.U_e[k];
+			ifv.U_u   = cv.U_u[k];
+			if (dim > 1)
+				ifv.U_u = cv.U_u[k];
+			if (dim > 2)
+				ifv.U_w = cv.U_w[k];
+			if ((int)config[2] == 2)
+				ifv.U_phi = cv.U_phi[k];
+			ifv.gamma   = cv.gamma[k];
+
+			cons2prim(&ifv);
+
+			FV->RHO[k] = ifv.RHO;
+			FV->P[k]   = ifv.P;
+			FV->U[k]   = ifv.U;
+			if (dim > 1)
+				FV->V[k] = ifv.V;
+			if (dim > 2)
+				FV->W[k] = ifv.W;
+			if ((int)config[2] == 2)
+				FV->PHI[k] = ifv.PHI;
+			FV->gamma[k] = ifv.gamma;
+		}
 }
 
 
@@ -120,9 +155,23 @@ int interface_var_init
 	const int dim = (int)config[0];
 	const int order = (int)config[9];
 	int **cc = cv.cell_cell;
-	int **cp = mv.cell_pt;
-	
+	int **cp = mv.cell_pt;	
 
+	int p_p, p_n;
+	if (dim == 2)
+		{	
+			if(j == cp[k][0]) 
+				{
+					p_p=cp[k][1];
+					p_n=cp[k][j];
+				}				  
+			else
+				{
+					p_p=cp[k][j+1];
+					p_n=cp[k][j];
+				}
+			ifv->length = sqrt((mv.X[p_p] - mv.X[p_n])*(mv.X[p_p] - mv.X[p_n]) + (mv.Y[p_p] - mv.Y[p_n])*(mv.Y[p_p] - mv.Y[p_n]));
+		}
 	ifv->n_x = cv.n_x[k][j];
 	ifv->U_rho = cv.U_rho[k];
 	ifv->U_e = cv.U_e[k];
@@ -139,9 +188,8 @@ int interface_var_init
 		}
 	if ((int)config[2] == 2)
 		ifv->U_phi = cv.U_phi[k];
-
+	ifv->gamma = cv.gamma[k];
 	
-	int p_p, p_n;
 	
 	if (order == 2)
 		{
@@ -149,16 +197,7 @@ int interface_var_init
 				ifv->delta_x = mv.X[cp[k][j]] - cv.X_c[k];
 			else if (dim == 2)
 				{					
-					if(j == cp[k][0]) 
-						{
-							p_p=cp[k][1];
-							p_n=cp[k][j];
-						}				  
-					else
-						{
-							p_p=cp[k][j+1];
-							p_n=cp[k][j];
-						}
+
 					ifv->delta_x = 0.5*(mv.X[p_p] + mv.X[p_n]) - cv.X_c[k];
 					ifv->delta_y = 0.5*(mv.Y[p_p] + mv.Y[p_n]) - cv.Y_c[k];
 				}
@@ -186,6 +225,7 @@ int interface_var_init
 				ifv_R->U_w = cv.U_w[cR];
 			if ((int)config[2] == 2)
 				ifv_R->U_phi = cv.U_phi[cR];
+			ifv_R->gamma = cv.gamma[cR];
 
 			if (order == 2)
 				{
@@ -215,18 +255,19 @@ int interface_var_init
 			ifv_R->U_e = cv.U0_e[k];
 			ifv_R->U_u = cv.U0_u[k];
 			if (dim > 1)
-				ifv_R->U_v = cv.U0_v[cR];
+				ifv_R->U_v = cv.U0_v[k];
 			if (dim > 2)
-				ifv_R->U_w = cv.U0_w[cR];
+				ifv_R->U_w = cv.U0_w[k];
 			if ((int)config[2] == 2)
-				ifv_R->U_phi = cv.U0_phi[cR];
+				ifv_R->U_phi = cv.U0_phi[k];
+			ifv_R->gamma = cv.gamma[k];
 
 			if (order == 2)
 				order2_i_f_var0(ifv_R);
 		}
 	else if (cc[k][j] == -2)//reflecting boundary condition.
 		{
-			if(prim2cons(ifv) == 0)
+			if(cons2prim(ifv) == 0)
 				{
 					fprintf(stderr, "Error happens on primitive variable!\n");
 					return -1;
@@ -248,6 +289,7 @@ int interface_var_init
 				ifv_R->U_w = cv.U_w[k];
 			if ((int)config[2] == 2)
 				ifv_R->U_phi = cv.U_phi[k];
+			ifv_R->gamma = cv.gamma[k];
 
 			if (order == 2)
 				order2_i_f_var0(ifv_R);
@@ -258,18 +300,17 @@ int interface_var_init
 			return -1;
 		}
 
-	if(prim2cons(ifv) == 0)
+	if(cons2prim(ifv) == 0)
 		{
 			fprintf(stderr, "Error happens on primitive variable!\n");
 			return -1;
 		}
-	if(prim2cons(ifv_R) == 0)
+	if(cons2prim(ifv_R) == 0)
 		{
 			fprintf(stderr, "Error happens on primitive variable!\n");
 			return -1;
 		}
 
-	printf("%d___%d", k, j);
 	return 1;
 }
 
@@ -278,6 +319,7 @@ double tau_calc(const struct cell_var cv, const struct mesh_var mv)
 	const double CFL = config[7];
 	if (CFL < 0.0)
 		return -CFL;
+	const int dim = (int)config[0];
 		
 	const int num_cell = (int)config[3];
 	int ** cp = mv.cell_pt;
@@ -285,9 +327,10 @@ double tau_calc(const struct cell_var cv, const struct mesh_var mv)
 	double tau = config[1];
 	struct i_f_var ifv, ifv_R;
 	double cum, lambda_max;
-
+	int ivi;
+	
 	double qn, qn_R;
-	double c, c_R;
+	double c, c_R;	
 	
 	for(int k = 0; k < num_cell; ++k)
 		{
@@ -295,18 +338,60 @@ double tau_calc(const struct cell_var cv, const struct mesh_var mv)
 			
 			for(int j = 1; j <= cp[k][0]; ++j)
 				{
-					interface_var_init(cv, mv, &ifv, &ifv_R, k, j);
-					
-					qn = ifv.U*ifv.n_x + ifv.V*ifv.n_y; 
-					qn_R = ifv_R.U*ifv_R.n_x + ifv_R.V*ifv_R.n_y;
-					c = sqrt(ifv.gamma * ifv.P / ifv.RHO);
-					c_R = sqrt(ifv_R.gamma * ifv_R.P / ifv_R.RHO);
-					lambda_max = fmax(c+fabs(qn), c_R+fabs(qn_R));					
-					cum +=  lambda_max * ifv.length;
-					// length = sqrt((X[p_p]-X[p_n])*(X[p_p]-X[p_n])+(Y[p_p]-Y[p_n])*(Y[p_p]-Y[p_n]));
-				}
-					
+					ivi = interface_var_init(cv, mv, &ifv, &ifv_R, k, j);
+					if (ivi == 0)
+						;
+					else if(ivi == -1)
+						return -1.0;
+					else if (dim == 2)
+						{
+							qn = ifv.U*ifv.n_x + ifv.V*ifv.n_y; 
+							qn_R = ifv_R.U*ifv_R.n_x + ifv_R.V*ifv_R.n_y;
+							c = sqrt(ifv.gamma * ifv.P / ifv.RHO);
+							c_R = sqrt(ifv_R.gamma * ifv_R.P / ifv_R.RHO);
+							lambda_max = fmax(c+fabs(qn), c_R+fabs(qn_R));					
+							cum +=  lambda_max * ifv.length;
+						}
+				}		
 			tau = fmin(tau, 2.0*cv.vol[k]/cum * CFL);
 		}	//To decide tau.
 	return tau;
+}
+
+
+void cons_qty_update(struct cell_var * cv, const struct mesh_var mv, const double tau)
+{
+	const int dim = (int)config[0];
+	const int num_cell = (int)config[3];
+	int ** cp = mv.cell_pt;
+	
+	int p_p, p_n;
+	double length;
+	for(int k = 0; k < num_cell; ++k)
+		{
+			for(int j = 1; j <= cp[k][0]; ++j)
+				{
+					if(j == cp[k][0]) 
+						{
+							p_p=cp[k][1];
+							p_n=cp[k][j];
+						}				  
+					else
+						{
+							p_p=cp[k][j+1];
+							p_n=cp[k][j];
+						}
+					length = sqrt((mv.X[p_p] - mv.X[p_n])*(mv.X[p_p]-mv.X[p_n]) + (mv.Y[p_p] - mv.Y[p_n])*(mv.Y[p_p]-mv.Y[p_n]));
+					
+					cv->U_rho[k] += - tau*cv->F_rho[k][j] * length / cv->vol[k];
+					cv->U_e[k]   += - tau*cv->F_e[k][j]   * length / cv->vol[k];
+					cv->U_u[k]   += - tau*cv->F_u[k][j]   * length / cv->vol[k];
+					if (dim > 1)
+						cv->U_v[k] += - tau*cv->F_v[k][j] * length / cv->vol[k];
+					if (dim > 2)
+						cv->U_w[k] += - tau*cv->F_w[k][j] * length / cv->vol[k];	
+					if ((int)config[2] == 2)
+						cv->U_phi[k] += - tau*cv->F_phi[k][j] * length / cv->vol[k];
+				}
+		}
 }

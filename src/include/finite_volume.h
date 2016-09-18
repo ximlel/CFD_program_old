@@ -13,6 +13,13 @@ int interface_var_init
 (const struct cell_var cv, const struct mesh_var mv, struct i_f_var * ifv,
  struct i_f_var * ifv_R, const int k, const int j);
 double tau_calc(const struct cell_var cv, const struct mesh_var mv);
+void cons_qty_update(struct cell_var * cv, const struct mesh_var mv, const double tau);
+void fluid_var_update(struct flu_var *FV, struct cell_var cv);
+
+
+void Roe_2D_scheme(struct i_f_var * ifv, struct i_f_var * ifv_R);
+void HLL_2D_scheme(struct i_f_var * ifv, struct i_f_var * ifv_R);
+void Riemann_exact_2D_scheme(struct i_f_var * ifv, struct i_f_var * ifv_R);
 
 
 void Euler_scheme(struct flu_var *FV, const struct mesh_var mv, const char *scheme);

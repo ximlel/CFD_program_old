@@ -128,6 +128,9 @@ struct cell_var cell_mem_init(const struct mesh_var mv)
 				}
 		}
 
+	cv_init_mem(gamma, num_cell_ghost);
+	cv_init_mem(gamma0, num_cell);
+
 	return cv;
 	
  return_NULL:
@@ -157,6 +160,7 @@ void cons_qty_init(struct cell_var * cv, const struct flu_var FV)
 
 			if ((int)config[2] == 2)					
 				cv->U_phi[k] = FV.RHO[k] * FV.PHI[k];
+			cv->gamma[k] = FV.gamma[k];
 
 			cv->U0_rho[k] = cv->U_rho[k];
 			cv->U0_e[k]   = cv->U_e[k];
@@ -165,9 +169,9 @@ void cons_qty_init(struct cell_var * cv, const struct flu_var FV)
 				cv->U0_v[k] = cv->U_v[k];
 			if (dim > 2)									
 				cv->U0_w[k] = cv->U_w[k];
-
 			if ((int)config[2] == 2)					
 				cv->U0_phi[k] = cv->U_phi[k];
+			cv->gamma0[k] = FV.gamma[k];
 		}
 }
 

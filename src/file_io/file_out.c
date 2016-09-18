@@ -13,10 +13,10 @@
 	do {											\
 		if (mv.v == NULL)							\
 			for(k = 0; k < mv.num_pt; k++)			\
-				fprintf(fp, "\t%.15g", 0.0);		\
+				fprintf(fp, "%.15g\n", 0.0);		\
 		else										\
 			for(k = 0; k < mv.num_pt; k++)			\
-				fprintf(fp, "\t%.15g", mv.v[k]);	\
+				fprintf(fp, "%.15g\n", mv.v[k]);	\
 		fprintf(fp,"\n");							\
 	} while (0)
 
@@ -24,10 +24,10 @@
 	do {											\
 		if (FV.v == NULL)							\
 			for(k = 0; k < num_cell; k++)			\
-				fprintf(fp, "\t%.15g", 0.0);		\
+				fprintf(fp, "%.15g\n", 0.0);		\
 		else										\
 			for(k = 0; k < num_cell; k++)			\
-				fprintf(fp, "\t%.15g", FV.v[k]);	\
+				fprintf(fp, "%.15g\n", FV.v[k]);	\
 		fprintf(fp,"\n");							\
 	} while (0)
 
@@ -109,15 +109,13 @@ void file_write_TEC(const struct flu_var FV, const struct mesh_var mv, const cha
 			exit(2);
 		}
 	
-	if (isinf(config[2]))
-		num_data = dim_plot + 2 + dim_plot;
-	else
-		switch((int)config[2])
-			{
-			case 2 :
-				num_data = dim_plot + 2 + dim_plot + 1;
-				break;				
-			}
+	num_data = dim_plot + 2 + dim_plot;
+	switch((int)config[2])
+		{
+		case 2 :
+			num_data++;
+			break;				
+		}
 	fprintf(fp, "VARLOCATION=([%d-%d]=CELLCENTERED)\n", dim_plot + 1, num_data);
 
 	PRINT_NP(X);

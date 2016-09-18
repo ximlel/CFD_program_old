@@ -28,8 +28,8 @@ struct cell_var {
 	int **cell_cell;
 	double **n_x, **n_y, **n_z;
 	double **F_rho, **F_e, **F_phi, **F_u, **F_v, **F_w;
-	double *U_rho, *U_e, *U_phi, *U_u, *U_v, *U_w;
-	double *U0_rho, *U0_e, *U0_phi, *U0_u, *U0_v, *U0_w;
+	double *U_rho, *U_e, *U_phi, *U_u, *U_v, *U_w, *gamma;
+	double *U0_rho, *U0_e, *U0_phi, *U0_u, *U0_v, *U0_w, *gamma0;
 	double *X_c, *Y_c, *Z_c;
 	double *vol;
 	double *gradx_rho, *grady_rho, *gradz_rho;

@@ -1,7 +1,7 @@
 #include <math.h>
 #include <stdio.h>
 
-#include "../../../lib/Riemann_solver.h"
+#include "../include/Riemann_solver.h"
 
 
 

@@ -12,6 +12,8 @@
 
 static void config_check()
 {
+	const int dim = (int)config[0];
+
 	if(isinf(config[1]) && isinf(config[5]))
 		{
 			fprintf(stderr, "The total time or the maximum number of time steps must be setted!\n");
@@ -40,6 +42,14 @@ static void config_check()
 		{
 			fprintf(stderr, "The constant of the perfect gas(%lf) should be larger than 1.0!\n", config[6]);
 			exit(2);
+		}
+
+	if (isinf(config[7]))
+		{
+			if (dim == 1)
+				config[7] = 0.9;
+			else if (dim == 2)
+				config[7] = 0.45;
 		}
 
 	config[8] = isinf(config[8]) ? 0 : config[8];

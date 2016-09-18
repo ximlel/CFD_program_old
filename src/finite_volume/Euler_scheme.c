@@ -18,9 +18,9 @@ void Euler_scheme(struct flu_var *FV, const struct mesh_var mv, const char *sche
 
 	const int dim = (int)config[0];
 	const int order = (int)config[9];
-	const int el = isinf(config[8]);
+	const int el = isinf(config[8]) ? 0 : (int)config[8];
 	const int num_cell = (int)config[3];
-
+	
 	struct cell_var cv = cell_mem_init(mv);
 
 	cons_qty_init(&cv, *FV);
@@ -59,8 +59,8 @@ void Euler_scheme(struct flu_var *FV, const struct mesh_var mv, const char *sche
 			if (mv.bc != NULL)
 				mv.bc(&cv, mv, t_all);
 			
-			if (order > 1 && dim == 2)
-				tau_calc(cv, mv);
+			if (dim == 2)
+				tau = tau_calc(cv, mv);
 
 			for(k = 0; k < num_cell; k++)
 				{
@@ -69,26 +69,65 @@ void Euler_scheme(struct flu_var *FV, const struct mesh_var mv, const char *sche
 					for(j = 1; j <= cp[k][0]; j++)
 						{
 							ivi = interface_var_init(cv, mv, &ifv, &ifv_R, k, j);
-																printf("%d\n", ivi);
+
 							if (ivi == 0)
-								break;
+								;
 							else if(ivi == -1)
 								{
 									stop_step = 1;
 									break;									
 								}
+							else if (dim == 2 && order == 1)
+								{													
+									if (strcmp(scheme,"Roe") == 0)
+										Roe_2D_scheme(&ifv, &ifv_R);
+									else if (strcmp(scheme,"HLL") == 0)
+										HLL_2D_scheme(&ifv, &ifv_R);
+									else if(strcmp(scheme,"Riemann_exact") == 0)
+										Riemann_exact_2D_scheme(&ifv, &ifv_R);
+									else										
+										{
+											printf("No Riemann solver!\n");
+											exit(7);
+										}
+								}
+
+							cv.F_rho[k][j] = ifv.F_rho;
+							cv.F_e[k][j]   = ifv.F_e;
+							cv.F_u[k][j]   = ifv.F_u;
+							if (dim > 1)
+								cv.F_v[k][j] = ifv.F_v;
+							if (dim > 2)
+								cv.F_w[k][j] = ifv.F_w;
+							if ((int)config[2] == 2)
+								cv.F_phi[k][j] = ifv.F_phi;
 						}
+					
+				}
+
+			t_all += tau;			
+			if(tau < 0.00000000001)
+				{
+					printf("\nThe length of the time step is so small at step %d, t_all=%lf, tau=%lf.\n",i,t_all,tau);
+					stop_step = 1;
 				}
 			
-			DispPro(i*100.0/config[5], i);
-			
+			if(t_all > config[1])
+				{
+					printf("\nThe time is enough at step %d.\n",i);
+					tau = tau - (t_all - config[1]);
+					stop_step = 1;
+				} // Time
+
+			cons_qty_update(&cv, mv, tau);			
+
+			DispPro(t_all*100.0/config[1], i);
+						
 			cpu_time += (clock() - start_clock) / (double)CLOCKS_PER_SEC;
 			
 			if (stop_step == 1)
-				{
-					printf("NOW : %d", i);
-					break;
-				}
+				break;				
 		}
+	fluid_var_update(FV, cv);
 	printf("\nThe cost of CPU time for the Eulerian method is %g seconds.\n", cpu_time);
 }
