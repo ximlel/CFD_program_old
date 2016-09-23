@@ -27,26 +27,26 @@ struct flu_var {
 struct cell_var {
 	int **cell_cell;
 	double **n_x, **n_y, **n_z;
-	double **F_rho, **F_e, **F_phi, **F_u, **F_v, **F_w;
-	double *U_rho, *U_e, *U_phi, *U_u, *U_v, *U_w, *gamma;
-	double *U0_rho, *U0_e, *U0_phi, *U0_u, *U0_v, *U0_w, *gamma0;
+	double **F_rho, **F_e, **F_s, **F_phi, **F_u, **F_v, **F_w;
+	double *U_rho,   *U_e,  *U_s,  *U_phi,  *U_u,  *U_v,  *U_w, *gamma;
+	double *U0_rho, *U0_e, *U0_s, *U0_phi, *U0_u, *U0_v, *U0_w, *gamma0;
 	double *X_c, *Y_c, *Z_c;
 	double *vol;
 	double *gradx_rho, *grady_rho, *gradz_rho;
 	double *gradx_phi, *grady_phi, *gradz_phi;
-	double *gradx_e, *grady_e, *gradz_e;
-	double *gradx_u, *grady_u, *gradz_u;
-	double *gradx_v, *grady_v, *gradz_v;
-	double *gradx_w, *grady_w, *gradz_w;
+	double *gradx_e,   *grady_e,   *gradz_e;
+	double *gradx_u,   *grady_u,   *gradz_u;
+	double *gradx_v,   *grady_v,   *gradz_v;
+	double *gradx_w,   *grady_w,   *gradz_w;
 };
 
 //interface
 struct i_f_var {
 	double n_x, n_y, n_z;
 	double delta_x, delta_y, delta_z;
-	double F_rho, F_e, F_phi, F_u, F_v, F_w;
-	double U_rho, U_e, U_phi, U_u, U_v, U_w;
-	double RHO, U, V, W, P, PHI, gamma;
+	double F_rho, F_e, F_s, F_phi, F_u, F_v, F_w;
+	double U_rho, U_e, U_s, U_phi, U_u, U_v, U_w;
+	double   RHO, P, gamma,   PHI,   U,   V,   W;
 	double length;
 	double d_rho;
 	double d_phi;

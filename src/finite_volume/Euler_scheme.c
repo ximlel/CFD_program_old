@@ -7,7 +7,6 @@
 
 #include "../include/var_struc.h"
 #include "../include/tools.h"
-//#include "../include/Riemann_solver.h"
 #include "../include/finite_volume.h"
 
 
@@ -58,9 +57,24 @@ void Euler_scheme(struct flu_var *FV, const struct mesh_var mv, const char *sche
 
 			if (mv.bc != NULL)
 				mv.bc(&cv, mv, t_all);
-		
+			
 			if (dim == 2)
 				tau = tau_calc(cv, mv);
+
+			t_all += tau;			
+			if(tau < 0.00001)
+				{
+					printf("\nThe length of the time step is so small at step %d, t_all=%lf, tau=%lf.\n",i,t_all,tau);
+					stop_step = 1;
+				}
+			
+			if(t_all > config[1])
+				{
+					printf("\nThe time is enough at step %d.\n",i);
+					tau = tau - (t_all - config[1]);
+					t_all = config[1];
+					stop_step = 1;
+				} // Time
 
 			for(k = 0; k < num_cell; k++)
 				{
@@ -95,6 +109,8 @@ void Euler_scheme(struct flu_var *FV, const struct mesh_var mv, const char *sche
 							cv.F_rho[k][j] = ifv.F_rho;
 							cv.F_e[k][j]   = ifv.F_e;
 							cv.F_u[k][j]   = ifv.F_u;
+							if(!isinf(config[60]))
+								cv.F_s[k][j] = ifv.F_s;
 							if (dim > 1)
 								cv.F_v[k][j] = ifv.F_v;
 							if (dim > 2)
@@ -104,20 +120,6 @@ void Euler_scheme(struct flu_var *FV, const struct mesh_var mv, const char *sche
 						}
 					
 				}
-
-			t_all += tau;			
-			if(tau < 0.00000000001)
-				{
-					printf("\nThe length of the time step is so small at step %d, t_all=%lf, tau=%lf.\n",i,t_all,tau);
-					stop_step = 1;
-				}
-			
-			if(t_all > config[1])
-				{
-					printf("\nThe time is enough at step %d.\n",i);
-					tau = tau - (t_all - config[1]);
-					stop_step = 1;
-				} // Time
 
 			cons_qty_update(&cv, mv, tau);			
 

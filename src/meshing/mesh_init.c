@@ -12,21 +12,23 @@
 static void cell_pt_clockwise(struct mesh_var *mv)
 {
 	const int num_cell = mv->num_ghost + (int)config[3];
+	const double *X = mv->X, *Y = mv->Y;
 	int **cp = mv->cell_pt;
 	int p_p, p, p_n;
-	
+
+
 	int X_max, n_max;
 	for(int k = 0; k < num_cell; k++)
 		{
 			n_max = 1;
 			p = cp[k][n_max];
-			X_max = mv->X[p];
+			X_max = X[p];
 			
 			for(int j = 2; j <= cp[k][0]; j++)
 				{
-					n_max = mv->X[cp[k][j]] > X_max ? j : n_max;
+					n_max = X[cp[k][j]] > X_max ? j : n_max;
 					p = cp[k][n_max];
-					X_max = mv->X[p];
+					X_max = X[p];
 				}
 
 			if(n_max == cp[k][0]) 
@@ -45,7 +47,7 @@ static void cell_pt_clockwise(struct mesh_var *mv)
 					p_n=cp[k][n_max-1];
 				}
 
-			if ((mv->X[p_p] - mv->X[p])*(mv->Y[p_n] - mv->Y[p]) - (mv->Y[p_p] - mv->Y[p])*(mv->X[p_n] - mv->X[p]) < 0.0)
+			if ((X[p_p] - X[p])*(Y[p_n] - Y[p]) - (Y[p_p] - Y[p])*(X[p_n] - X[p]) < 0.0)
 				for(int j = 1, temp; j < cp[k][0]/2; j++)
 					{
 						temp = cp[k][j];
@@ -70,7 +72,6 @@ struct mesh_var mesh_load(const char *example, const char *mesh_name)
 	strcat(add, ".msh");
 
 	FILE * fp;
-
 	if ((fp = fopen(add, "r")) != NULL)
 		{
 			if(msh_read(fp, &mv) == 0)

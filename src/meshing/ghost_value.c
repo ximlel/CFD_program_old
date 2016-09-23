@@ -7,65 +7,69 @@
 
 
 
+#define copy(var)  cv->var[i] = cv->var[pc[i]]
+
+
 void period_ghost(struct cell_var * cv, struct mesh_var mv, double t)
 {
 	const int dim = (int)config[0];
 	const int order = (int)config[9];
 	const int num_cell = (int)config[3];
-	const int num_cell_ghost = mv.num_ghost + (int)config[3];
-
+	const int num_cell_ghost = mv.num_ghost + num_cell;
 	const int *pc = mv.peri_cell;	
 	
 	for(int i = num_cell; i < num_cell_ghost; i++)
 		{
-			cv->U_rho[i] = cv->U_rho[pc[i]];
-			cv->U_e[i] = cv->U_e[pc[i]];
-			cv->U_u[i] = cv->U_u[pc[i]];
+			copy(U_rho);
+			copy(U_e);
+			copy(U_u);
 			if (order > 1)
 				{
-					cv->gradx_rho[i] = cv->gradx_rho[pc[i]];
-					cv->gradx_e[i] = cv->gradx_e[pc[i]];
-					cv->gradx_u[i] = cv->gradx_u[pc[i]];
+					copy(gradx_rho);
+					copy(gradx_e);
+					copy(gradx_u);;
 				}
 			if (dim > 1)
 				{
-					cv->U_v[i] = cv->U_v[pc[i]];
+					copy(U_v);
 					if (order > 1)
 						{
-							cv->grady_rho[i] = cv->grady_rho[pc[i]];
-							cv->grady_e[i] = cv->grady_e[pc[i]];
-							cv->grady_u[i] = cv->grady_u[pc[i]];
-							cv->grady_v[i] = cv->grady_v[pc[i]];
-							cv->gradx_v[i] = cv->gradx_v[pc[i]];
+							copy(grady_rho);
+							copy(grady_e);
+							copy(grady_u);
+							copy(grady_v);
+							copy(gradx_v);
 						}
 				}
 			if (dim > 2)
 				{
-					cv->U_w[i] = cv->U_w[pc[i]];
+					copy(U_w);
 					if (order > 1)
 						{
-							cv->gradz_rho[i] = cv->gradz_rho[pc[i]];
-							cv->gradz_e[i] = cv->gradz_e[pc[i]];
-							cv->gradz_u[i] = cv->gradz_u[pc[i]];
-							cv->gradz_v[i] = cv->gradz_v[pc[i]];
-							cv->gradz_w[i] = cv->gradz_w[pc[i]];
-							cv->grady_w[i] = cv->grady_w[pc[i]];
-							cv->gradx_w[i] = cv->gradx_w[pc[i]];
+							copy(gradz_rho);
+							copy(gradz_e);
+							copy(gradz_u);
+							copy(gradz_v);
+							copy(gradz_w);
+							copy(grady_w);
+							copy(gradx_w);
 						}
 				}
 			if ((int)config[2] == 2)
 				{
-					cv->U_phi[i] = cv->U_phi[pc[i]];
+					copy(U_phi);
 					if (order > 1)
 						{
-							cv->gradx_phi[i] = cv->gradx_phi[pc[i]];
+							copy(gradx_phi);
 							if (dim > 2)
-								cv->grady_phi[i] = cv->grady_phi[pc[i]];
+								copy(grady_phi);
 							if (dim > 3)
-								cv->gradz_phi[i] = cv->gradz_phi[pc[i]];
+								copy(gradz_phi);
 						}
 				}
-			cv->gamma[i] = cv->gamma[pc[i]];
+			copy(gamma);
+
+			copy(U_s);
 		}
 }
 
@@ -74,23 +78,23 @@ void period_ghost(struct cell_var * cv, struct mesh_var mv, double t)
 void period_cell_modi(struct mesh_var * mv)
 {
 	const int num_cell = mv->num_ghost + (int)config[3];
-
-	int *pc = mv->peri_cell;	
+	int *pc = mv->peri_cell;
+	
 	int per_num[num_cell], per_n = 0;
-	for (int i = 0; i < num_cell; i++)
+	int i, j;
+	for (i = 0; i < num_cell; i++)
 		{
 			if (pc[i] >= 0)
 				per_n++;
-
 			per_num[i] = per_n;
 		}
 
-	for (int i = 0; i < num_cell; i++)
+	for (i = 0; i < num_cell; i++)
 		if (pc[i] >= 0)
 			pc[i] -= per_num[pc[i]];
 
 	int *cc_tmp, pc_tmp; 
-	for (int i = 1, j; i < num_cell; i++)
+	for (i = 1; i < num_cell; i++)
 		{
 			j = i;
 			for(j = i; pc[j-1] >= 0 && j >= 1; j--)

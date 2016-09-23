@@ -2,24 +2,23 @@ line=100;
 column=200;
 shock=50;
 
-gamma=1.4;
-MS=2;
 
-rho_star=1;
-p_star=1;
+qt_L=1 
+qt_R=0
+qn=0.5
 
 rho_R=2
-u_R=-0.5
-v_R=1.5
+u_R=qn-qt_R
+v_R=qn+qt_R
 p_R=0.1
 rho_L=3
-u_L=0.5
-v_L=0.5
-p_L=0.1
-rho_M=2.5
-u_M=u_R*0.4+u_L*0.6
-v_M=v_R*0.4+v_L*0.6
-p_M=0.1
+u_L=qn-qt_L
+v_L=qn+qt_L
+p_L=p_R
+rho_M=(rho_R+rho_L)/2.0
+u_M=u_R*rho_R/(rho_R+rho_L)+u_L*rho_L/(rho_R+rho_L)
+v_M=v_R*rho_R/(rho_R+rho_L)+v_L*rho_L/(rho_R+rho_L)
+p_M=p_R
 
 rho=zeros(column,1);
 fid = fopen('RHO.txt','wt');

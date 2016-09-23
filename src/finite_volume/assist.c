@@ -35,12 +35,28 @@ static int cons2prim(struct i_f_var * ifv)
 			if (isnan(ifv->PHI) || ifv->PHI < -10*eps || ifv->PHI > 1.0 + 10*eps)
 				return 0;
 		}
+	if (!isinf(config[60]))
+		ifv->P = ifv->U_s * pow(ifv->U_rho, ifv->gamma-1.0);
 
 	if (isnan(ifv->RHO + ifv->U + ifv->P) || isinf(ifv->RHO + ifv->U + ifv->P) || ifv->RHO < -10*eps || ifv->P < -10*eps)
 		return 0;
 
 	return 1;
 }
+
+#define CONS_VAR_COPY(ifvU, cvU, c)				\
+	do{											\
+		ifvU##_rho = cvU##_rho[c];				\
+		ifvU##_e = cvU##_e[c];					\
+		ifvU##_u = cvU##_u[c];					\
+		if (dim > 1)							\
+			ifvU##_v = cvU##_v[c];				\
+		if (dim > 2)							\
+			ifvU##_w = cvU##_w[c];				\
+		if ((int)config[2] == 2)				\
+			ifvU##_phi = cvU##_phi[c];			\
+		ifvU##_s = cvU##_s[c];					\
+	} while (0)									\
 
 
 void fluid_var_update(struct flu_var *FV, struct cell_var cv)
@@ -50,20 +66,12 @@ void fluid_var_update(struct flu_var *FV, struct cell_var cv)
 	struct i_f_var ifv;
 	
 	for(int k = 0; k < num_cell; k++)
-		{					
-			ifv.U_rho = cv.U_rho[k];
-			ifv.U_e   = cv.U_e[k];
-			ifv.U_u   = cv.U_u[k];
-			if (dim > 1)
-				ifv.U_v = cv.U_v[k];
-			if (dim > 2)
-				ifv.U_w = cv.U_w[k];
-			if ((int)config[2] == 2)
-				ifv.U_phi = cv.U_phi[k];
+		{
+			CONS_VAR_COPY(ifv.U, cv.U, k);
 			ifv.gamma   = cv.gamma[k];
 
 			if(cons2prim(&ifv) == 0)
-				printf("WROUNG!\n");
+ ;//				printf("WROUNG!\n");
 
 
 			FV->RHO[k] = ifv.RHO;
@@ -150,6 +158,7 @@ static void order2_i_f_var0(struct i_f_var * ifv)
 		ifv->d_phi = 0.0;
 }
 
+	  
 int interface_var_init
 (const struct cell_var cv, const struct mesh_var mv, struct i_f_var * ifv,
  struct i_f_var * ifv_R, const int k, const int j)
@@ -175,21 +184,12 @@ int interface_var_init
 			ifv->length = sqrt((mv.X[p_p] - mv.X[p_n])*(mv.X[p_p] - mv.X[p_n]) + (mv.Y[p_p] - mv.Y[p_n])*(mv.Y[p_p] - mv.Y[p_n]));
 		}
 	ifv->n_x = cv.n_x[k][j];
-	ifv->U_rho = cv.U_rho[k];
-	ifv->U_e = cv.U_e[k];
-	ifv->U_u = cv.U_u[k];
-	if (dim > 1)
-		{			
-			ifv->n_y = cv.n_y[k][j];
- 			ifv->U_v = cv.U_v[k];
-		}
+	if (dim > 1)	
+		ifv->n_y = cv.n_y[k][j];
 	if (dim > 2)
-		{
-			ifv->n_z = cv.n_z[k][j];
-			ifv->U_w = cv.U_w[k];		
-		}
-	if ((int)config[2] == 2)
-		ifv->U_phi = cv.U_phi[k];
+		ifv->n_z = cv.n_z[k][j];
+
+	CONS_VAR_COPY(ifv->U, cv.U, k);
 	ifv->gamma = cv.gamma[k];
 	
 	
@@ -218,15 +218,7 @@ int interface_var_init
 	if (cc[k][j] >= 0)
 		{
 			cR = cc[k][j];
-			ifv_R->U_rho = cv.U_rho[cR];
-			ifv_R->U_e = cv.U_e[cR];
-			ifv_R->U_u = cv.U_u[cR];
-			if (dim > 1)
-				ifv_R->U_v = cv.U_v[cR];
-			if (dim > 2)
-				ifv_R->U_w = cv.U_w[cR];
-			if ((int)config[2] == 2)
-				ifv_R->U_phi = cv.U_phi[cR];
+			CONS_VAR_COPY(ifv_R->U, cv.U, cR);
 			ifv_R->gamma = cv.gamma[cR];
 
 			if (order == 2)
@@ -253,16 +245,8 @@ int interface_var_init
 		}
 	else if (cc[k][j] == -1)//initial boundary condition.		
 		{
-			ifv_R->U_rho = cv.U0_rho[k];
-			ifv_R->U_e = cv.U0_e[k];
-			ifv_R->U_u = cv.U0_u[k];
-			if (dim > 1)
-				ifv_R->U_v = cv.U0_v[k];
-			if (dim > 2)
-				ifv_R->U_w = cv.U0_w[k];
-			if ((int)config[2] == 2)
-				ifv_R->U_phi = cv.U0_phi[k];
-			ifv_R->gamma = cv.gamma[k];
+			CONS_VAR_COPY(ifv_R->U, cv.U0, k);
+			ifv_R->gamma = cv.gamma0[k];
 
 			if (order == 2)
 				order2_i_f_var0(ifv_R);
@@ -278,19 +262,12 @@ int interface_var_init
 			ifv->F_u = ifv->P*ifv->n_x;
 			ifv->F_v = ifv->P*ifv->n_y;
 			ifv->F_e = 0.0;
+			ifv->F_s = 0.0;
 			return 0;
 		}
 	else if (cc[k][j] == -3)//prescribed boundary condition.
 		{
-			ifv_R->U_rho = cv.U_rho[k];
-			ifv_R->U_e = cv.U_e[k];
-			ifv_R->U_u = cv.U_u[k];
-			if (dim > 1)
-				ifv_R->U_v = cv.U_v[k];
-			if (dim > 2)
-				ifv_R->U_w = cv.U_w[k];
-			if ((int)config[2] == 2)
-				ifv_R->U_phi = cv.U_phi[k];
+			CONS_VAR_COPY(ifv_R->U, cv.U, k);
 			ifv_R->gamma = cv.gamma[k];
 
 			if (order == 2)
@@ -351,7 +328,7 @@ double tau_calc(const struct cell_var cv, const struct mesh_var mv)
 							qn_R = ifv_R.U*ifv_R.n_x + ifv_R.V*ifv_R.n_y;
 							c = sqrt(ifv.gamma * ifv.P / ifv.RHO);
 							c_R = sqrt(ifv_R.gamma * ifv_R.P / ifv_R.RHO);
-							lambda_max = fmax(c+fabs(qn), c_R+fabs(qn_R));					
+							lambda_max = fmax(c+fabs(qn), c_R+fabs(qn_R));
 							cum +=  lambda_max * ifv.length;
 						}
 				}		
@@ -394,6 +371,8 @@ void cons_qty_update(struct cell_var * cv, const struct mesh_var mv, const doubl
 						cv->U_w[k] += - tau*cv->F_w[k][j] * length / cv->vol[k];	
 					if ((int)config[2] == 2)
 						cv->U_phi[k] += - tau*cv->F_phi[k][j] * length / cv->vol[k];
+					if(!isinf(config[60]))
+						cv->U_s[k]   += - tau*cv->F_s[k][j]   * length / cv->vol[k];
 				}
 		}
 }

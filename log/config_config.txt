@@ -21,6 +21,8 @@
 
 40	limiter			(默认1:Ven) 0:Barth
 
+60	U_s			(默认inf) 不为inf即取U_s(一般取1):守恒量增加(熵,U_e->U_s)
+70	周期边界设定偏移
 
 #./FLUID_SRC.out 输入 输出 维数 solver 网格 (EUL, 步数)
 

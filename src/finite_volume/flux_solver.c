@@ -61,6 +61,8 @@ void Riemann_exact_2D_scheme(struct i_f_var * ifv, struct i_f_var * ifv_R)
 	ifv->F_rho = rho_mid*mid[1];
 	ifv->F_u   = ifv->F_rho*u_mid + p_mid*n_x;
 	ifv->F_v   = ifv->F_rho*v_mid + p_mid*n_y;
-	ifv->F_e   = (ifv->gamma/(ifv->gamma-1.0))*p_mid/rho_mid + 0.5*u_mid*u_mid + 0.5*v_mid*v_mid;
+	ifv->F_e   = (ifv->gamma/(ifv->gamma-1.0))*p_mid/rho_mid + 0.5*(u_mid*u_mid + v_mid*v_mid);
 	ifv->F_e   = ifv->F_rho*ifv->F_e;
+	if (!isinf(config[60]))
+		ifv->F_s   = mid[1]*p_mid/pow(rho_mid,ifv->gamma-1.0);
 }
